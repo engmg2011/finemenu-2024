@@ -105,7 +105,7 @@ class RegisterController extends Controller
             'name' => $request->businessName , 'slug'=> slug($request->businessName)];
         $restaurant = $this->restaurantAction->createModel($businessData);
         $this->permissionAction->setRestaurantOwnerPermissions($user->id, $restaurant->id);
-
+/*
         // Create hotel and give permission
         $hotel = $this->hotelAction->createModel($businessData);
         $this->permissionAction->setHotelOwnerPermissions($user->id, $hotel->id);
@@ -115,6 +115,8 @@ class RegisterController extends Controller
         $expiry = (new Carbon())->addDays($package->days)->format('Y-m-d H:i:s');
         $this->subscriptionAction->create(['creator_id' => $user->id, 'user_id' => $user->id,
             'package_id' => $package->id, 'from' => Carbon::now(), 'to' => $expiry]);
+
+*/
 
         // TODO:: Notify user on his accounts
 

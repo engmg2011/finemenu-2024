@@ -175,7 +175,7 @@ return [
         //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 //        App\Providers\TelescopeServiceProvider::class,
         App\Providers\RepositoryServiceProvider::class,
-//        Spatie\Permission\PermissionServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 //        NotificationChannels\OneSignal\OneSignalServiceProvider::class,
 //        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 

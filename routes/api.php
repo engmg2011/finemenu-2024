@@ -65,10 +65,10 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
     });
 
     Route::group(['prefix' => 'restaurants'], function () {
-        Route::get('/', RestaurantsController::class . '@index');
-        Route::get('/{id}', RestaurantsController::class . '@show');
-        Route::post('/', RestaurantsController::class . '@create');
-        Route::post('/{id}', RestaurantsController::class . '@update');
+        Route::get('/', [RestaurantsController::class , 'index']);
+        Route::get('/{id}', [RestaurantsController::class , 'show']);
+        Route::post('/', [RestaurantsController::class , 'create']);
+        Route::post('/{id}', [RestaurantsController::class , 'update']);
     });
 
     Route::group(['prefix' => 'contacts'], function () {
@@ -175,7 +175,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
     });
 
     Route::group(['prefix' => 'webapp'], function () {
-        Route::get('restaurant/{id}', WebAppController::class . '@index');
+        Route::get('restaurant/{id}', [WebAppController::class , 'index']);
     });
 
     Route::group(['prefix' => 'kitchen'], function () {
