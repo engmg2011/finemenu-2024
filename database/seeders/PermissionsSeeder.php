@@ -21,16 +21,16 @@ class PermissionsSeeder extends Seeder
          *  Create admin role
          * Admin can manage all the data
          */
-        Role::create(['name' => RolesConstants::ADMIN]);
-        Role::create(['name' => RolesConstants::OWNER]);
-        Role::create(['name' => RolesConstants::CASHIER]);
-        Role::create(['name' => RolesConstants::KITCHEN]);
-        Role::create(['name' => RolesConstants::SUPERVISOR]);
-        Role::create(['name' => RolesConstants::GUEST]);
-        Role::create(['name' => RolesConstants::DRIVER]);
+        Role::findOrCreate(RolesConstants::ADMIN);
+        Role::findOrCreate(RolesConstants::OWNER);
+        Role::findOrCreate(RolesConstants::CASHIER);
+        Role::findOrCreate(RolesConstants::KITCHEN);
+        Role::findOrCreate(RolesConstants::SUPERVISOR);
+        Role::findOrCreate(RolesConstants::GUEST);
+        Role::findOrCreate(RolesConstants::DRIVER);
 
         // * => create , update, delete
-        Permission::create(['name'=>'restaurants.*.1']);
+        Permission::findOrCreate('restaurants.*.1');
         User::find(1)->givePermissionTo('restaurants.*.1');
 //        User::find(1)->assignRole(Roles::ADMIN);
 
