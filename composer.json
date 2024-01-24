@@ -9,6 +9,7 @@
         "ext-json": "*",
         "arcanedev/log-viewer": "^10.0",
         "berkayk/onesignal-laravel": "^2.0",
+        "beyondcode/laravel-websockets": "^1.14",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/passport": "^11.10",
