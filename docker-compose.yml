@@ -21,7 +21,7 @@ services:
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
-            - '.:/var/www/html'
+            - '.:/var/www/html/backend'
         networks:
             - sail
         depends_on:
@@ -33,7 +33,7 @@ services:
             dockerfile: Dockerfile
         command: npm run dev
         ports:
-            - '8080:8080'
+            - '80:3000'
         volumes:
             - '../dashboard:/var/www/html/dashboard'
         depends_on:

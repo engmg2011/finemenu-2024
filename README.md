@@ -23,6 +23,7 @@ It’s the FineMenu version for the Diet & healthy restaurants, It is a SAAS pro
     - create database finemenu;
 - In backend directory
   - composer install
+  - cp Dockerfile vendor/laravel/sail/runtimes/8.2/Dockerfile
   - ./vendor/bin/sail build
   - ./vendor/bin/sail up
 - In backend container
