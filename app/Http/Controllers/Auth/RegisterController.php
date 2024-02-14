@@ -9,14 +9,17 @@ use App\Actions\SubscriptionAction;
 use App\Actions\UserAction;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Controller;
+use App\Models\IpTries;
 use App\Models\Package;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\Traits\Date;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
 {
@@ -64,8 +67,12 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => [ 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
+            'phone' => [ 'string', 'min:8', 'max:15', 'unique:users'],
+            'phone_required' => Rule::requiredIf(fn () => !isset($data['email']) && !isset($data['phone'])),
+        ], [
+            'phone_required' => "phone or email required"
         ]);
     }
 
@@ -80,16 +87,38 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+
+    public function canRegister(): bool
+    {
+        $triesAvailable = 10;
+        $tried_times = IpTries::where('ip', '=', "")->where('created_at' ,'>', Carbon::yesterday())->first()?->tries || 0;
+        return $tried_times < $triesAvailable;
+    }
+
+    public function saveIpTry(): void
+    {
+        $lastTry = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('created_at' ,'>',Carbon::yesterday())->get()->first();
+        if(!$lastTry)
+            $lastTry = IpTries::create(['ip' => $_SERVER['REMOTE_ADDR'] , 'tries' => 1]);
+        $lastTry->tries = $lastTry->tries++;
+        $lastTry->save();
     }
 
     public function register(Request $request)
     {
         $data = $request->all();
         $validator = $this->validator($data);
+//        return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
         if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        if(!$this->canRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
         $data['password'] = bcrypt($request->password);

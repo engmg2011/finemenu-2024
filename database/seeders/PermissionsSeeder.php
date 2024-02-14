@@ -30,9 +30,9 @@ class PermissionsSeeder extends Seeder
         Role::findOrCreate(RolesConstants::DRIVER);
 
         // * => create , update, delete
-        Permission::findOrCreate('restaurants.*.1');
+        /*Permission::findOrCreate('restaurants.*.1');
         User::find(1)->givePermissionTo('restaurants.*.1');
-//        User::find(1)->assignRole(Roles::ADMIN);
+        User::find(1)->assignRole(Roles::ADMIN);*/
 
 
         /**
