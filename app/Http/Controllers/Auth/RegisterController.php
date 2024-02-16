@@ -245,6 +245,7 @@ class RegisterController extends Controller
 
         $data['password'] = bcrypt($request->password);
         $data['type'] = RolesConstants::OWNER;
+        $data['email_verified_at'] = Carbon::now();
 
         // Create user && assign general role
         $user = $this->userAction->create($data);
@@ -258,7 +259,7 @@ class RegisterController extends Controller
         // $this->createSubscription($user);
 
         // TODO:: Notify user on his accounts
-        return response()->json(['user' => $user, 'access_token' => $token]);
+        return response()->json($user->toArray() + ['token' => $token]);
     }
 
 }
