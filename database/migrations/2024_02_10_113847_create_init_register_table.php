@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('init_register', function (Blueprint $table) {
+        Schema::create('init_registers', function (Blueprint $table) {
             $table->id();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('code');
-            $table->integer('tries_count');
+            $table->integer('tries_count')->default(1);
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('init_register');
+        Schema::dropIfExists('init_registers');
     }
 };

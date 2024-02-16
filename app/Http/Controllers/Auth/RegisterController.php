@@ -9,17 +9,19 @@ use App\Actions\SubscriptionAction;
 use App\Actions\UserAction;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Controller;
+use App\Models\InitRegister;
 use App\Models\IpTries;
 use App\Models\Package;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
-use Carbon\Traits\Date;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use function PHPUnit\Framework\isEmpty;
 
 class RegisterController extends Controller
 {
@@ -67,10 +69,21 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [ 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
-            'phone' => [ 'string', 'min:8', 'max:15', 'unique:users'],
-            'phone_required' => Rule::requiredIf(fn () => !isset($data['email']) && !isset($data['phone'])),
+            'email' => ['string', 'email', 'max:255', 'unique:users'],
+            'password' => 'required|confirmed|min:8',
+            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+        ], [
+            'phone_required' => "phone or email required"
+        ]);
+    }
+
+    protected function sendCodeValidator(array $data)
+    {
+        return Validator::make($data, [
+            'email' => ['string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
         ], [
             'phone_required' => "phone or email required"
         ]);
@@ -92,33 +105,123 @@ class RegisterController extends Controller
         ]);
     }
 
-
-    public function canRegister(): bool
+    /**
+     * @return bool
+     */
+    public function IpCanRegister(): bool
     {
-        $triesAvailable = 10;
-        $tried_times = IpTries::where('ip', '=', "")->where('created_at' ,'>', Carbon::yesterday())->first()?->tries || 0;
-        return $tried_times < $triesAvailable;
+        // TODO :: set times = 3
+        $triesAvailable = 30;
+        $tried = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('created_at', '>', Carbon::now()->addHours(-1))->first();
+        if (is_null($tried))
+            $tried = IpTries::create(['ip' => $_SERVER['REMOTE_ADDR'], 'tries' => 0]);
+        if ($tried->tries < $triesAvailable)
+            $tried->update(['tries' => $tried->tries + 1]);
+        return $tried->tries < $triesAvailable;
     }
 
-    public function saveIpTry(): void
+    /**
+     * @param $data
+     * @return void
+     */
+    public function sendCodeProcess($data): bool
     {
-        $lastTry = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('created_at' ,'>',Carbon::yesterday())->get()->first();
-        if(!$lastTry)
-            $lastTry = IpTries::create(['ip' => $_SERVER['REMOTE_ADDR'] , 'tries' => 1]);
-        $lastTry->tries = $lastTry->tries++;
-        $lastTry->save();
+        // TODO:: create a random code
+        $randomCode = '123456';
+
+        // TODO :: set $available_code_tries = 3
+        $available_code_tries = 30;
+
+        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
+        $codeData = InitRegister::where($searchArray)
+            ->where('created_at', '>', Carbon::now()->subHour())
+            ->first();
+        if (is_null($codeData)) {
+            $codeData = InitRegister::create( $searchArray +
+                [
+                    'tries_count' => 0,
+                    'code' => $randomCode,
+                    'created_at' => Carbon::now()
+                ]);
+        }
+        $tries = $codeData->tries_count;
+        if ($tries >= $available_code_tries)
+            return false;
+
+        // TODO:: send the random code
+
+        $codeData->tries_count = $tries + 1;
+        $codeData->code = $randomCode;
+        $codeData->save();
+        return true;
     }
 
-    public function register(Request $request)
+    /**
+     * This method to ve
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendCode(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->all();
-        $validator = $this->validator($data);
-//        return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+        $validator = $this->sendCodeValidator($data);
 
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
-        if(!$this->canRegister())
+        if (!$this->IpCanRegister())
+            return response()->json(['message' => 'Too many tries, try again later.'], 403);
+
+        if (!$this->sendCodeProcess($data))
+            return response()->json(['message' => 'Too many code tries, try again later.'], 403);
+
+        return response()->json(["message" => "Code sent, Please enter the code you have received"]);
+    }
+
+    /**
+     * @param Request $request
+     * @param $user
+     * @return void
+     */
+    public function createBusiness(Request $request, $user): void
+    {
+
+        $businessData = ['user_id' => $user->id, 'creator_id' => $user->id,
+            'name' => $request->businessName, 'slug' => slug($request->businessName)];
+        $restaurant = $this->restaurantAction->createModel($businessData);
+        $this->permissionAction->setRestaurantOwnerPermissions($user->id, $restaurant->id);
+        /*
+        // Create hotel and give permission
+        $hotel = $this->hotelAction->createModel($businessData);
+        $this->permissionAction->setHotelOwnerPermissions($user->id, $hotel->id);*/
+
+    }
+
+    /**
+     * @param $user
+     * @return void
+     */
+    public function createSubscription($user): void
+    {
+        // Create subscription and assign trial package
+        $package = Package::where('slug', 'trial')->first();
+        $expiry = (new Carbon())->addDays($package->days)->format('Y-m-d H:i:s');
+        $this->subscriptionAction->create(['creator_id' => $user->id, 'user_id' => $user->id,
+            'package_id' => $package->id, 'from' => Carbon::now(), 'to' => $expiry]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $data = $request->all();
+        $validator = $this->validator($data);
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        if (!$this->IpCanRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
         $data['password'] = bcrypt($request->password);
@@ -130,26 +233,13 @@ class RegisterController extends Controller
         $token = $user->createToken('API Token')->accessToken;
 
         // Create restaurant and give permission
-        $businessData = ['user_id' => $user->id, 'creator_id' => $user->id,
-            'name' => $request->businessName , 'slug'=> slug($request->businessName)];
-        $restaurant = $this->restaurantAction->createModel($businessData);
-        $this->permissionAction->setRestaurantOwnerPermissions($user->id, $restaurant->id);
-/*
-        // Create hotel and give permission
-        $hotel = $this->hotelAction->createModel($businessData);
-        $this->permissionAction->setHotelOwnerPermissions($user->id, $hotel->id);
+        $this->createBusiness($request, $user);
 
-        // Create subscription and assign trial package
-        $package = Package::where('slug', 'trial')->first();
-        $expiry = (new Carbon())->addDays($package->days)->format('Y-m-d H:i:s');
-        $this->subscriptionAction->create(['creator_id' => $user->id, 'user_id' => $user->id,
-            'package_id' => $package->id, 'from' => Carbon::now(), 'to' => $expiry]);
-
-*/
+        // Create subscription
+        $this->createSubscription($user);
 
         // TODO:: Notify user on his accounts
-
-        return response(['user' => $user, 'access_token' => $token]);
+        return response()->json(['user' => $user, 'access_token' => $token]);
     }
 
 }

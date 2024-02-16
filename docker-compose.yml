@@ -69,6 +69,24 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: pma
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+        restart: always
+        ports:
+            - 8085:80
+        networks:
+            - sail
+
     redis:
         env_file:
             - .env
