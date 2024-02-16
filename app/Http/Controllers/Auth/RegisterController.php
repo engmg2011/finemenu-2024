@@ -65,22 +65,9 @@ class RegisterController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data , array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['string', 'email', 'max:255', 'unique:users'],
-            'password' => 'required|confirmed|min:8',
-            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
-            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
-        ], [
-            'phone_required' => "phone or email required"
-        ]);
-    }
-
-    protected function sendCodeValidator(array $data)
-    {
-        return Validator::make($data, [
+        return Validator::make($data, $extraValidation + [
             'email' => ['string', 'email', 'max:255', 'unique:users'],
             'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
             'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
@@ -164,7 +151,7 @@ class RegisterController extends Controller
     public function sendCode(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->all();
-        $validator = $this->sendCodeValidator($data);
+        $validator = $this->validator($data);
 
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
@@ -214,15 +201,47 @@ class RegisterController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    public function validateCode(Request $request): JsonResponse
+    {
+        $data = $request->all();
+        $validator = $this->validator($data , [ 'code' => ['required'] ]);
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
+        $isValidCode = InitRegister::where($searchArray)
+            ->where('created_at', '>', Carbon::now()->subHour())
+            ->where('code', $data['code'])->first();
+        if( !$isValidCode )
+            return response()->json(['message' => 'Wrong code, try again'], 403);
+        return response()->json(['message' => 'success']);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function register(Request $request): JsonResponse
     {
         $data = $request->all();
-        $validator = $this->validator($data);
+        $validator = $this->validator($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'password' => 'required|confirmed|min:8',
+            'code' => 'required'
+        ]);
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
         if (!$this->IpCanRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
+        $isValidCode = InitRegister::where($searchArray)
+            ->where('created_at', '>', Carbon::now()->subHour())
+            ->where('code', $data['code'])->first();
+
+        if( !$isValidCode )
+            return response()->json(['message' => 'Wrong code, try again'], 403);
 
         $data['password'] = bcrypt($request->password);
         $data['type'] = RolesConstants::OWNER;
@@ -236,7 +255,7 @@ class RegisterController extends Controller
         $this->createBusiness($request, $user);
 
         // Create subscription
-        $this->createSubscription($user);
+        // $this->createSubscription($user);
 
         // TODO:: Notify user on his accounts
         return response()->json(['user' => $user, 'access_token' => $token]);

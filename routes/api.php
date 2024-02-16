@@ -46,6 +46,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [LoginController::class , 'login']);
     Route::post('register', [RegisterController::class , 'register']);
     Route::post('send-code', [RegisterController::class, 'sendCode'] );
+    Route::post('validate-code', [RegisterController::class, 'validateCode'] );
 });
 
 
