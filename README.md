@@ -21,14 +21,14 @@ It’s the FineMenu version for the Diet & healthy restaurants, It is a SAAS pro
 - In mysql container
     - mysql -u sail -ppassword
     - create database finemenu;
+- alias sail='/vendor/bin/sail';
 - In backend directory
   - composer install
   - cp Dockerfile vendor/laravel/sail/runtimes/8.2/Dockerfile
-  - ./vendor/bin/sail build
-  - ./vendor/bin/sail up
-- In backend container
-    - php artisan migrate
-    - php artisan db:seed --class PermissionsSeeder
-    - php artisan storage:link
-    - php artisan passport:install
+  - sail build
+  - sail up
+  - sail artisan migrate
+  - sail artisan db:seed --class PermissionsSeeder
+  - sail artisan storage:link
+  - sail artisan passport:install
 
