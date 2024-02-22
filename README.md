@@ -26,7 +26,7 @@ It’s the FineMenu version for the Diet & healthy restaurants, It is a SAAS pro
   - composer install
   - cp Dockerfile vendor/laravel/sail/runtimes/8.2/Dockerfile
   - sail build
-  - sail up
+  - sail up -d
   - sail artisan migrate
   - sail artisan db:seed --class PermissionsSeeder
   - sail artisan storage:link

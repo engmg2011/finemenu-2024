@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PlansController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -208,4 +209,13 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}/delete', DevicesController::class . '@destroy');
         Route::post('/{id}', DevicesController::class . '@update');
     });
+
+
+    Route::group(['prefix' => 'plans'], function () {
+        Route::get('/', PlansController::class . '@index');
+        Route::get('/{id}', PlansController::class . '@show');
+        Route::post('/', PlansController::class . '@create');
+        Route::post('/{id}', PlansController::class . '@update');
+    });
+
 });
