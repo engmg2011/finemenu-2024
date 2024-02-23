@@ -55,5 +55,8 @@ class Item extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function plans(){
+        return $this->belongsToMany(Plan::class);
+    }
 
 }

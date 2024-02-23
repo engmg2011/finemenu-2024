@@ -3,6 +3,8 @@
 
 namespace App\Actions;
 
+use App\Models\Category;
+use App\Models\Plan;
 use App\Models\Restaurant;
 use App\Repository\Eloquent\RestaurantRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,7 @@ class RestaurantAction
 {
 
     public function __construct(private RestaurantRepository $repository, private MediaAction $mediaAction,
-                                private LocaleAction $localeAction, private SettingAction $settingAction)
+                                private LocaleAction         $localeAction, private SettingAction $settingAction)
     {
     }
 
@@ -63,7 +65,7 @@ class RestaurantAction
     public function menu($restaurantId)
     {
         return Restaurant::with([
-            'media','settings',
+            'media', 'settings',
             'categories.locales', 'categories.media', 'categories.children.locales',
             'categories.children.media', 'categories.items.locales',
             'categories.items.addons.locales', 'categories.items.addons.children.locales', 'categories.items.discounts.locales',
@@ -73,4 +75,13 @@ class RestaurantAction
             'categories.children.items.addons.locales', 'categories.children.items.discounts.locales'
         ])->find($restaurantId);
     }
+
+    public function dietMenu($restaurantId)
+    {
+        $restaurant = Restaurant::with(['locales', 'media', 'settings'])->find($restaurantId);
+        $plans = Plan::with(['locales', 'prices', 'media', 'discounts'])->where('restaurant_id', $restaurantId)->get();
+        $categories = Category::with(['locales', 'media'])->where('restaurant_id', $restaurantId)->get();
+        return compact('restaurant','plans', 'categories');
+    }
+
 }

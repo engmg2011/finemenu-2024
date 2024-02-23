@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Actions\RestaurantAction;
 use App\Actions\WebAppAction;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class WebAppController extends Controller
 {
-    public function __construct(private WebAppAction     $action,
-                                private RestaurantAction $restaurantAction)
+    public function __construct(private readonly WebAppAction     $action,
+                                private readonly RestaurantAction $restaurantAction)
     {
 
     }
@@ -17,9 +17,10 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param $restaurantId
+     * @return JsonResponse
      */
-    public function index($restaurantId)
+    public function restaurant($restaurantId): JsonResponse
     {
         $menu = $this->restaurantAction->menu($restaurantId);
         $response = [];
@@ -39,69 +40,18 @@ class WebAppController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param $restaurantId
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function dietRestaurant($restaurantId): JsonResponse
     {
-        //
+        $menu = $this->restaurantAction->dietMenu($restaurantId);
+        return response()->json($menu);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

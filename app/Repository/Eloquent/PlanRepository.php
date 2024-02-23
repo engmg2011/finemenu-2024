@@ -9,8 +9,8 @@ use App\Actions\PriceAction;
 use App\Models\Plan;
 use App\Repository\PlanRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PlanRepository extends BaseRepository implements PlanRepositoryInterface
 {
@@ -33,41 +33,24 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
         parent::__construct($model);
     }
 
+    public function processPlan(array $data): array
+    {
+        $data['user_id'] = auth('api')->user()->id;
+        return array_only($data, ['restaurant_id', 'category_id', 'user_id', 'item_ids']);
+    }
+
     /**
      * @param int $id
      * @return Builder|Plan
      */
-    public function getModel(int $id): Builder|Plan
+    public function getModel(int $id, array $extraRelations = []): Builder|Plan
     {
-        return Plan::with($this->relations)->find($id);
+        $allRelations = array_merge($this->relations , $extraRelations);
+        return Plan::with($allRelations)->find($id);
     }
 
-    public function processPlan(array $data): array
-    {
-        $data['user_id'] = auth('api')->user()->id;
-        return array_only($data, ['restaurant_id', 'category_id', 'user_id']);
-    }
-
-    public function createModel(array $data): Model
-    {
-        $data["creator_id"] = auth('api')->user()->id;
-        $model = $this->model->create($this->processPlan($data));
+    public function relationsProcess(&$model, &$data): void{
         if (isset($data['locales']))
-            $this->localeAction->createLocale($model, $data['locales']);
-        if (isset($data['media']))
-            $this->mediaAction->setMedia($model, $data['media']);
-        if (isset($data['prices']))
-            $this->priceAction->setPrices($model, $data['prices']);
-        if (isset($data['discounts']))
-            $this->discountAction->set($model, $data['discounts']);
-        return $this->getModel($model->id);
-    }
-
-    public function updateModel($id, array $data): Model
-    {
-        $model = tap($this->model->find($id))
-            ->update($this->processPlan($data));
-        if (isset($model['locales']))
             $this->localeAction->updateLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
@@ -75,7 +58,28 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['discounts']))
             $this->discountAction->set($model, $data['discounts']);
-        return $model;
+    }
+
+    public function createModel(array $data): Model
+    {
+        $data["creator_id"] = auth('api')->user()->id;
+        $model = $this->model->create($this->processPlan($data));
+        if (isset($data['item_ids']))
+            $model->items()->attach($data['item_ids']);
+        $this->relationsProcess($model,$data);
+        return $this->getModel($model->id);
+    }
+
+    public function updateModel($id, array $data): Model
+    {
+        $model = $this->model->find($id);
+        if(!$model)
+            throw new NotFoundHttpException("No plans found with id $id");
+        $model->update($this->processPlan($data));
+        if (isset($data['item_ids']))
+            $model->items()->sync($data['item_ids']);
+        $this->relationsProcess($model,$data);
+        return $this->getModel($model->id, ['items']);
     }
 
     /**
@@ -86,5 +90,14 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
         return Plan::with($this->relations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function delete($id)
+    {
+        $plan = $this->model->find($id);
+        $plan->items()->detach();
+        return $plan->delete();
+    }
 
+    public function getPlan(int $id){
+        return $this->getModel($id, ['items']);
+    }
 }

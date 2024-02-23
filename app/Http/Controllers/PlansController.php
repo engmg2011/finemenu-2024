@@ -47,7 +47,7 @@ class PlansController extends Controller
      */
     public function show($id)
     {
-        return \response()->json($this->repository->getModel($id));
+        return \response()->json($this->repository->getPlan($id));
     }
 
     /**
@@ -66,10 +66,9 @@ class PlansController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return Response
      */
     public function destroy($id)
     {
-        //
+        return \response()->json($this->repository->delete($id));
     }
 }

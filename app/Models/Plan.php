@@ -14,10 +14,8 @@ class Plan extends Model
     use HasFactory, Localizable, Priceable, Mediable, Discountable;
     protected $guarded = ['id'];
     protected $hidden = ['updated_at' , 'created_at'];
-    /**
-     * {
-     *
-     *
-     * }
-     */
+
+    public function items(){
+        return $this->belongsToMany(Item::class, 'plan_item');
+    }
 }
