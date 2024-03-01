@@ -76,7 +76,7 @@ class RestaurantAction
         ])->find($restaurantId);
     }
 
-    public function dietMenu($restaurantId)
+    public function dietMenu($restaurantId): array
     {
         $restaurant = Restaurant::with(['locales', 'media', 'settings'])->find($restaurantId);
         $plans = Plan::with(['locales', 'prices', 'media', 'discounts'])->where('restaurant_id', $restaurantId)->get();
