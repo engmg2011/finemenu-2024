@@ -23,6 +23,7 @@ class CategoryAction
 
     public function create(array $data)
     {
+        $data['user_id'] = auth('api')->user()->id;
         $category = $this->repository->create($this->process($data));
         app(LocaleAction::class)->createLocale($category, $data['locales']);
         if (isset($data['media']))
