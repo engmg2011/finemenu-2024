@@ -80,7 +80,9 @@ class RestaurantAction
     {
         $restaurant = Restaurant::with(['locales', 'media', 'settings'])->find($restaurantId);
         $plans = Plan::with(['locales', 'prices', 'media', 'discounts'])->where('restaurant_id', $restaurantId)->get();
-        $categories = Category::with(['locales', 'media'])->where('restaurant_id', $restaurantId)->get();
+        $categories = Category::whereNull('parent_id')
+                    ->with(['locales', 'media', 'children.locales', 'children.children.locales'])
+                    ->where('restaurant_id', $restaurantId)->get();
         return compact('restaurant','plans', 'categories');
     }
 
