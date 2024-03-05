@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\OrderAction;
 use App\Constants\RolesConstants;
-use App\Http\Resources\OrdersResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -31,7 +31,7 @@ class OrdersController extends Controller
             RolesConstants::CASHIER => $this->action->cashierOrders(),
             default => $this->action->list(),
         };
-        return OrdersResource::collection($ordersList);
+        return DataResource::collection($ordersList);
     }
 
     /**

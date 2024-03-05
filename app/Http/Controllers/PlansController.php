@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\PlansResource;
+use App\Http\Resources\DataResource;
 use App\Repository\PlanRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class PlansController extends Controller
      */
     public function index()
     {
-        return PlansResource::collection($this->repository->list());
+        return DataResource::collection($this->repository->list());
     }
 
     /**

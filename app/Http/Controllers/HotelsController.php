@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\HotelAction;
-use App\Http\Resources\HotelsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,7 +25,7 @@ class HotelsController extends Controller
      */
     public function index()
     {
-        return HotelsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

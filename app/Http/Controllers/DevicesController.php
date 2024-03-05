@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\DeviceAction;
-use App\Http\Resources\EventsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -23,7 +23,7 @@ class DevicesController extends Controller
      */
     public function index()
     {
-        return EventsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

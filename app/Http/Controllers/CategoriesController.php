@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CategoryAction;
-use App\Http\Resources\CategoriesResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -23,7 +23,7 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        return CategoriesResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

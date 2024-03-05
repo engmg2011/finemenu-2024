@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\PackageAction;
 use App\Actions\SubscriptionAction;
-use App\Http\Resources\PackagesResource;
-use App\Http\Resources\SubscriptionsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -23,7 +22,7 @@ class SubscriptionsController extends Controller
      */
     public function index()
     {
-        return SubscriptionsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

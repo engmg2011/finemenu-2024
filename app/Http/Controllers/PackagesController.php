@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\PackageAction;
-use App\Http\Resources\PackagesResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -23,7 +23,7 @@ class PackagesController extends Controller
      */
     public function index()
     {
-        return PackagesResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

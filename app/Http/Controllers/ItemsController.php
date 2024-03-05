@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\ItemAction;
-use App\Http\Resources\ItemsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -23,7 +23,7 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        return ItemsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\ContactAction ;
-use App\Http\Resources\ContactsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -24,7 +24,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return ContactsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

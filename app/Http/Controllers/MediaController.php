@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Actions\MediaAction;
-use App\Http\Resources\MediaResource;
+use App\Http\Resources\DataResource;
 use App\Jobs\UploadMenuQueue;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        return MediaResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

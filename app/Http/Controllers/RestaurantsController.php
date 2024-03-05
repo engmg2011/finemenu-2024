@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\RestaurantAction;
+use App\Http\Resources\DataResource;
 use App\Http\Resources\RestaurantsResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -27,7 +28,7 @@ class RestaurantsController extends Controller
      */
     public function index()
     {
-        return RestaurantsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**

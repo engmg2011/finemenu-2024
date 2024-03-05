@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\UserAction;
-use App\Http\Resources\UsersResource;
+use App\Http\Resources\DataResource;
 use App\Models\Category;
-use App\Models\Item;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +25,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        return UsersResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**
@@ -44,7 +43,7 @@ class UsersController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return Response
+     * @return JsonResponse
      */
     public function show($id)
     {

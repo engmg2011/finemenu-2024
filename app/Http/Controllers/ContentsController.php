@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\ContentAction ;
-use App\Http\Resources\ContentsResource;
+use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -25,7 +25,7 @@ class ContentsController extends Controller
      */
     public function index()
     {
-        return ContentsResource::collection($this->action->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**
