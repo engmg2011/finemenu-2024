@@ -98,6 +98,6 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
     }
 
     public function getPlan(int $id){
-        return $this->getModel($id, ['items']);
+        return $this->getModel($id, ['items.locales', 'items.media']);
     }
 }
