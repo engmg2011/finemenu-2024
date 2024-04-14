@@ -64,7 +64,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::get("/{id}", [RestaurantsController::class, 'menu']);
     });
 
-    Route::group(['prefix' => 'hotels', 'middleware' => ['SetRequestModel']], function () {
+    Route::group(['prefix' => 'hotels', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [HotelsController::class, 'index']);
         Route::get('/{id}', [HotelsController::class, 'show']);
         Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
-    Route::group(['prefix' => 'restaurants', 'middleware' => ['SetRequestModel']], function () {
+    Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [RestaurantsController::class, 'index']);
         Route::get('/{id}', [RestaurantsController::class, 'show']);
         Route::post('/', [RestaurantsController::class, 'create']);
@@ -94,7 +94,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [ContactController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'categories', 'middleware' => ['SetRequestModel']], function () {
+    Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [CategoriesController::class, 'index']);
         Route::get('/{id}', [CategoriesController::class, 'show']);
         Route::post('/', [CategoriesController::class, 'create']);
@@ -175,7 +175,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [SettingsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'users', 'middleware' => ['SetRequestModel']], function () {
+    Route::group(['prefix' => 'users', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::get('/info', [UsersController::class, 'info']);
         Route::get('/{id}', [UsersController::class, 'show']);
