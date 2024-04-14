@@ -10,7 +10,7 @@ use App\Models\DietPlanSubscription;
 use App\Models\Item;
 use App\Models\Restaurant;
 use App\Models\Subscription;
-use App\Repository\Eloquent\PlanSubscriptionRepository;
+use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -40,8 +40,8 @@ class DietPlanSubscriptionAction
      * Work days like
      * ['Saturday', 'Sunday', 'Monday']
      */
-    public function __construct(private PlanSubscriptionRepository $repository,
-                                private LocaleAction               $localeAction)
+    public function __construct(private DietPlanSubscriptionRepository $repository,
+                                private LocaleAction                   $localeAction)
     {
     }
 

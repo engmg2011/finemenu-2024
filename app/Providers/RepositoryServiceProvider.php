@@ -15,7 +15,7 @@ use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\OrderLineRepository;
 use App\Repository\Eloquent\OrderRepository;
-use App\Repository\Eloquent\PlanRepository;
+use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\Eloquent\SettingRepository;
 use App\Repository\ContentRepositoryInterface;
@@ -25,7 +25,7 @@ use App\Repository\LocaleRepositoryInterface;
 use App\Repository\MediaRepositoryInterface;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
-use App\Repository\PlanRepositoryInterface;
+use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
@@ -61,7 +61,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PriceRepositoryInterface::class, PriceRepositoryInterface::class);
         $this->app->bind(RestaurantRepositoryInterface::class, RestaurantRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
-        $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
+        $this->app->bind(DietPlanRepositoryInterface::class, DietPlanRepository::class);
     }
 
     /**

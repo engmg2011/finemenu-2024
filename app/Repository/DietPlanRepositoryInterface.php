@@ -6,7 +6,7 @@ namespace App\Repository;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface PlanRepositoryInterface
+interface DietPlanRepositoryInterface
 {
     public function getModel(int $id);
     public function getPlan(int $id);

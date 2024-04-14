@@ -7,12 +7,12 @@ use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
 use App\Actions\PriceAction;
 use App\Models\DietPlan;
-use App\Repository\PlanRepositoryInterface;
+use App\Repository\DietPlanRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class PlanRepository extends BaseRepository implements PlanRepositoryInterface
+class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInterface
 {
     public array $relations = ['locales', 'prices', 'media', 'discounts'];
 

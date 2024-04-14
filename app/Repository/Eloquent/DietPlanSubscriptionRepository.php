@@ -3,9 +3,9 @@
 namespace App\Repository\Eloquent;
 
 use App\Models\DietPlanSubscription;
-use App\Repository\PlanSubscriptionRepositoryInterface;
+use App\Repository\DietPlanSubscriptionRepositoryInterface;
 
-class PlanSubscriptionRepository extends BaseRepository implements PlanSubscriptionRepositoryInterface
+class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanSubscriptionRepositoryInterface
 {
     /**
      * UserRepository constructor.

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
-use App\Repository\PlanRepositoryInterface;
+use App\Repository\DietPlanRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 
 class DietPlansController extends Controller
 {
-    public function __construct(private PlanRepositoryInterface $repository)
+    public function __construct(private DietPlanRepositoryInterface $repository)
     {
     }
 
