@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Hash;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -66,9 +67,9 @@ class LoginController extends Controller
         if($validator->fails())
             return response()->json(["message" => "Error occurred" , 'errors' => $validator->errors()] , 403);
 
-        $user = User::where(array_only($data, ['email' , 'phone']))->with('restaurants')->first();
+        $user = User::where(array_only($data, ['email' , 'phone']))->with('restaurants','settings')->first();
 
-        if(!\Hash::check( $data['password'] ,$user->password))
+        if( !( $user && Hash::check( $data['password'] ,$user->password) ))
             return response()->json(["message" => "Invalid user credentials"] , 403);
 
         $token = $user->createToken('authToken')->accessToken;

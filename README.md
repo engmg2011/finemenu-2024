@@ -31,4 +31,6 @@ It’s the FineMenu version for the Diet & healthy restaurants, It is a SAAS pro
   - sail artisan db:seed --class PermissionsSeeder
   - sail artisan storage:link
   - sail artisan passport:install
+- In backend container
+  - chown -R 1000:1000 storage
 

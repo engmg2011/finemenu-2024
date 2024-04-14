@@ -5,32 +5,36 @@ namespace App\Models;
 
 
 use App\Traits\Localizable;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Price
  *
  * @property int $id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property float $price
  * @property string $priceable_type
  * @property int $priceable_id
  * @property int $user_id
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Locales> $locales
+ * @property-read Collection<int, Locales> $locales
  * @property-read int|null $locales_count
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|Price newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Price newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Price query()
- * @method static \Illuminate\Database\Eloquent\Builder|Price whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price wherePriceableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price wherePriceableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Price whereUserId($value)
- * @mixin \Eloquent
+ * @property-read User $user
+ * @method static Builder|Price newModelQuery()
+ * @method static Builder|Price newQuery()
+ * @method static Builder|Price query()
+ * @method static Builder|Price whereCreatedAt($value)
+ * @method static Builder|Price whereId($value)
+ * @method static Builder|Price wherePrice($value)
+ * @method static Builder|Price wherePriceableId($value)
+ * @method static Builder|Price wherePriceableType($value)
+ * @method static Builder|Price whereUpdatedAt($value)
+ * @method static Builder|Price whereUserId($value)
+ * @mixin Eloquent
  */
 class Price extends Model
 {

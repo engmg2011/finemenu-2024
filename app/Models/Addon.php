@@ -5,8 +5,12 @@ namespace App\Models;
 use App\Traits\Localizable;
 use App\Traits\Mediable;
 use App\Traits\Priceable;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Addon
@@ -19,30 +23,30 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $max
  * @property int $user_id
  * @property int|null $parent_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Addon> $children
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Addon> $children
  * @property-read int|null $children_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Locales> $locales
+ * @property-read Collection<int, Locales> $locales
  * @property-read int|null $locales_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
+ * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Price> $prices
+ * @property-read Collection<int, Price> $prices
  * @property-read int|null $prices_count
- * @method static \Illuminate\Database\Eloquent\Builder|Addon newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Addon newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Addon query()
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereAddonableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereAddonableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereMax($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereMultiple($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereParentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Addon whereUserId($value)
- * @mixin \Eloquent
+ * @method static Builder|Addon newModelQuery()
+ * @method static Builder|Addon newQuery()
+ * @method static Builder|Addon query()
+ * @method static Builder|Addon whereAddonableId($value)
+ * @method static Builder|Addon whereAddonableType($value)
+ * @method static Builder|Addon whereCreatedAt($value)
+ * @method static Builder|Addon whereId($value)
+ * @method static Builder|Addon whereMax($value)
+ * @method static Builder|Addon whereMultiple($value)
+ * @method static Builder|Addon whereParentId($value)
+ * @method static Builder|Addon wherePrice($value)
+ * @method static Builder|Addon whereUpdatedAt($value)
+ * @method static Builder|Addon whereUserId($value)
+ * @mixin Eloquent
  */
 class Addon extends Model
 {

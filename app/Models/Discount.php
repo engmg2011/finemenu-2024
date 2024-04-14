@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use App\Traits\Localizable;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Discount
@@ -17,24 +21,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $from
  * @property string|null $to
  * @property int $user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Locales> $locales
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Locales> $locales
  * @property-read int|null $locales_count
- * @method static \Illuminate\Database\Eloquent\Builder|Discount newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Discount newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Discount query()
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereDiscountableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereDiscountableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereFrom($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereTo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Discount whereUserId($value)
- * @mixin \Eloquent
+ * @method static Builder|Discount newModelQuery()
+ * @method static Builder|Discount newQuery()
+ * @method static Builder|Discount query()
+ * @method static Builder|Discount whereAmount($value)
+ * @method static Builder|Discount whereCreatedAt($value)
+ * @method static Builder|Discount whereDiscountableId($value)
+ * @method static Builder|Discount whereDiscountableType($value)
+ * @method static Builder|Discount whereFrom($value)
+ * @method static Builder|Discount whereId($value)
+ * @method static Builder|Discount whereTo($value)
+ * @method static Builder|Discount whereType($value)
+ * @method static Builder|Discount whereUpdatedAt($value)
+ * @method static Builder|Discount whereUserId($value)
+ * @mixin Eloquent
  */
 class Discount extends Model
 {

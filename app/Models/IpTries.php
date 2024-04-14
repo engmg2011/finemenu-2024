@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\IpTries
@@ -11,17 +14,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $ip
  * @property int $tries
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries query()
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries whereIp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries whereTries($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IpTries whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|IpTries newModelQuery()
+ * @method static Builder|IpTries newQuery()
+ * @method static Builder|IpTries query()
+ * @method static Builder|IpTries whereCreatedAt($value)
+ * @method static Builder|IpTries whereId($value)
+ * @method static Builder|IpTries whereIp($value)
+ * @method static Builder|IpTries whereTries($value)
+ * @method static Builder|IpTries whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class IpTries extends Model
 {

@@ -13,7 +13,9 @@ use App\Models\Restaurant;
 use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\Eloquent\OrderRepository;
+use HttpException;
 use Illuminate\Database\Eloquent\Model;
+use Log;
 
 class OrderAction
 {
@@ -65,14 +67,14 @@ class OrderAction
         $order = Order::find($id);
         if (!($user->hasRole('admin') || $order->user_id === $userId ||
             $user->hasAnyDirectPermission($this->getOrderPermittedRules($order))))
-            return throw new \HttpException('You Don\'t have permission', 403);
+            return throw new HttpException('You Don\'t have permission', 403);
 
         // TODO:: check if data['paid']
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         $this->setOrderData($model, $data);
         if ($data['status'] === OrderStatus::Ready) {
-            \Log::debug("will send message");
+            Log::debug("will send message");
             User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))

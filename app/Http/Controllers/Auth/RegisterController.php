@@ -80,7 +80,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param array $data
-     * @return \App\Models\User
+     * @return User
      */
     protected function create(array $data)
     {
@@ -148,7 +148,7 @@ class RegisterController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendCode(Request $request): \Illuminate\Http\JsonResponse
+    public function sendCode(Request $request): JsonResponse
     {
         $data = $request->all();
         $validator = $this->validator($data);

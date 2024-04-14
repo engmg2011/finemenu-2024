@@ -36,7 +36,7 @@ class EmailNotification extends Notification
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
@@ -44,7 +44,7 @@ class EmailNotification extends Notification
             ->greeting($this->project['greeting'])
             ->line($this->project['body'])
             ->action($this->project['actionText'], $this->project['actionURL'])
-            ->line($this->project['thanks']);;
+            ->line($this->project['thanks']);
     }
 
     /**

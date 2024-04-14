@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\DietPlanSubscriptionAction;
 use App\Http\Resources\DataResource;
-use App\Repository\PlanRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
+use function response;
 
-class PlansController extends Controller
+class DietPlanSubscriptionsController extends Controller
 {
-    public function __construct(private PlanRepositoryInterface $repository)
+
+    public function __construct(private DietPlanSubscriptionAction $action)
     {
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +22,7 @@ class PlansController extends Controller
      */
     public function index()
     {
-        return DataResource::collection($this->repository->list());
+        return DataResource::collection($this->action->list());
     }
 
     /**
@@ -33,42 +33,40 @@ class PlansController extends Controller
      */
     public function create(Request $request)
     {
-        return \response()->json($this->repository->createModel($request->all() + [
-                "name" => $request->name,
-                "user_id" => $request->user_id,
-                "creator_id" => auth('api')->user()->id]));
+        return response()->json($this->action->create($request->all()));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param  int  $id
      * @return JsonResponse
      */
     public function show($id)
     {
-        return \response()->json($this->repository->getPlan($id));
+        return response()->json($this->action->get($id));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
+     * @param  int  $id
      * @return JsonResponse
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->repository->updateModel($id, $request->all()));
+        return response()->json($this->action->update($id,$request->all()));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param  int  $id
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        return \response()->json($this->repository->delete($id));
+        return response()->json($this->action->destroy($id));
     }
 }

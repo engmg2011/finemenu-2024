@@ -6,7 +6,7 @@ use App\Actions\DiscountAction;
 use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
 use App\Actions\PriceAction;
-use App\Models\Plan;
+use App\Models\DietPlan;
 use App\Repository\PlanRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,13 +18,13 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
 
     /**
      * UserRepository constructor.
-     * @param Plan $model
+     * @param DietPlan $model
      * @param MediaAction $mediaAction
      * @param LocaleAction $localeAction
      * @param PriceAction $priceAction
      * @param DiscountAction $discountAction
      */
-    public function __construct(Plan                            $model,
+    public function __construct(DietPlan                        $model,
                                 private readonly MediaAction    $mediaAction,
                                 private readonly LocaleAction   $localeAction,
                                 private readonly PriceAction    $priceAction,
@@ -41,12 +41,12 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
 
     /**
      * @param int $id
-     * @return Builder|Plan
+     * @return Builder|DietPlan
      */
-    public function getModel(int $id, array $extraRelations = []): Builder|Plan
+    public function getModel(int $id, array $extraRelations = []): Builder|DietPlan
     {
         $allRelations = array_merge($this->relations , $extraRelations);
-        return Plan::with($allRelations)->find($id);
+        return DietPlan::with($allRelations)->find($id);
     }
 
     public function relationsProcess(&$model, &$data): void{
@@ -85,9 +85,9 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
     /**
      * @return mixed
      */
-    public function list()
+    public function list(): mixed
     {
-        return Plan::with($this->relations)->orderByDesc('id')->paginate(request('per-page', 15));
+        return DietPlan::with($this->relations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function delete($id)

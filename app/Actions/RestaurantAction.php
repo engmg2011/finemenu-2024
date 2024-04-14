@@ -4,7 +4,7 @@
 namespace App\Actions;
 
 use App\Models\Category;
-use App\Models\Plan;
+use App\Models\DietPlan;
 use App\Models\Restaurant;
 use App\Repository\Eloquent\RestaurantRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -79,7 +79,7 @@ class RestaurantAction
     public function dietMenu($restaurantId): array
     {
         $restaurant = Restaurant::with(['locales', 'media', 'settings'])->find($restaurantId);
-        $plans = Plan::with(['locales', 'prices', 'prices.locales', 'media', 'discounts'])->where('restaurant_id', $restaurantId)->get();
+        $plans = DietPlan::with(['locales', 'prices', 'prices.locales', 'media', 'discounts'])->where('restaurant_id', $restaurantId)->get();
         $categories = Category::whereNull('parent_id')
                     ->with(['locales', 'media', 'children.locales', 'children.children.locales'])
                     ->where('restaurant_id', $restaurantId)->get();

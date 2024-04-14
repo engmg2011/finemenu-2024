@@ -12,7 +12,7 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
-            - '8000:80'
+            - '8000:8000'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
             - '6001:6001'
         environment:
@@ -28,21 +28,21 @@ services:
         depends_on:
             - mysql
             - redis
-
-    dashboard:
-        build:
-            context: ../dashboard
-            dockerfile: Dockerfile
-#        command: npm run dev
-        ports:
-            - '80:80'
-#            - '80:3000'
-        volumes:
-            - '../dashboard:/var/www/html/dashboard'
-        depends_on:
-            - backend
-        networks:
-            - sail
+#
+#    dashboard:
+#        build:
+#            context: ../dashboard
+#            dockerfile: Dockerfile
+##        command: npm run dev
+#        ports:
+#            - '80:80'
+##            - '80:3000'
+#        volumes:
+#            - '../dashboard:/var/www/html/dashboard'
+#        depends_on:
+#            - backend
+#        networks:
+#            - sail
 
     mysql:
         env_file:

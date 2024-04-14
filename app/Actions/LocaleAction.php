@@ -4,8 +4,10 @@
 namespace App\Actions;
 
 
+use App;
 use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class LocaleAction
 {
@@ -25,7 +27,7 @@ class LocaleAction
      * Creates single or multiple locales
      * @param Model|null $model
      * @param array $locales
-     * @return \phpDocumentor\Reflection\Types\Boolean
+     * @return Boolean
      */
     public function createLocale(Model $model = null, array $locales)
     {
@@ -35,7 +37,7 @@ class LocaleAction
                 $singleLocale += [
                     'localizable_id' => $model->id,
                     'localizable_type' => get_class($model),
-                    'locale' => $singleLocale['locale'] ?? \App::getLocale()
+                    'locale' => $singleLocale['locale'] ?? App::getLocale()
                 ];
                 $dataLocales[] = $this->processLocale($singleLocale);
             }
@@ -63,7 +65,7 @@ class LocaleAction
                 $this->updateLocale($locale['id'], [
                     "name" => $locale['name'],
                     "description" => $locale['description'] ?? '',
-                    "locale" => $locale['locale'] ?? \App::getLocale(),
+                    "locale" => $locale['locale'] ?? App::getLocale(),
                     "localizable_type" => get_class($model),
                     "localizable_id" => $model->id
                 ]);

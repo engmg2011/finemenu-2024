@@ -2,6 +2,8 @@
 
 namespace App\Constants;
 
+use Illuminate\Validation\Rules\Enum;
+
 class SettingConstants
 {
     const primary = "primary";
@@ -18,5 +20,10 @@ class SettingConstants
         'textSecondary' => "5E5E5EFF",
         'dark' => "57390EFF",
         'light' => "EFEFEFFF"
+    ];
+
+    const Keys = [
+        'SHIFTS' => 'SHIFTS',
+        'WORK_DAYS' => 'WORK_DAYS'
     ];
 }

@@ -6,6 +6,7 @@ namespace App\Actions;
 use App\Models\Item;
 use App\Repository\Eloquent\ItemRepository;
 use Illuminate\Database\Eloquent\Model;
+use function array_only;
 
 class ItemAction
 {
@@ -24,7 +25,7 @@ class ItemAction
     }
 
     public function process(Array $data) {
-        return \array_only( $data , ['category_id', 'user_id', 'sort']);
+        return array_only( $data , ['category_id', 'user_id', 'sort']);
     }
 
     public function create(Array $data) {

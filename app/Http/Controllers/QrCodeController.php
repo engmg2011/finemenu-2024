@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use QrCode;
 use Storage;
 
 class QrCodeController extends Controller
@@ -12,7 +13,7 @@ class QrCodeController extends Controller
     }
     public function save()
     {
-        $image = \QrCode::format('png')
+        $image = QrCode::format('png')
 //            ->merge('img/t.jpg', 0.1, true)
             ->size(200)->errorCorrection('H')
             ->generate('A simple example of QR code!');

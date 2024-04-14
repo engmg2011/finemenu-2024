@@ -7,6 +7,7 @@ use App\Http\Resources\DataResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use function response;
 
 class ServicesController extends Controller
 {
@@ -32,7 +33,7 @@ class ServicesController extends Controller
      */
     public function create(Request $request)
     {
-        return \response()->json($this->action->create($request->all()));
+        return response()->json($this->action->create($request->all()));
     }
 
     /**
@@ -43,7 +44,7 @@ class ServicesController extends Controller
      */
     public function show($id)
     {
-        return \response()->json($this->action->get($id));
+        return response()->json($this->action->get($id));
     }
 
     /**
@@ -55,7 +56,7 @@ class ServicesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->action->update($id,$request->all()));
+        return response()->json($this->action->update($id,$request->all()));
     }
 
     /**
@@ -66,6 +67,6 @@ class ServicesController extends Controller
      */
     public function destroy($id)
     {
-        return \response()->json($this->action->destroy($id));
+        return response()->json($this->action->destroy($id));
     }
 }

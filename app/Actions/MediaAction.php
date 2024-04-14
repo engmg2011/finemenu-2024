@@ -8,6 +8,7 @@ use App\Models\Media;
 use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
+use Storage;
 
 class MediaAction
 {
@@ -100,7 +101,7 @@ class MediaAction
 
     public function uploadMedia($file, $file_name, $savePath)
     {
-        \Storage::putFileAs($savePath, $file->path(), $file_name);
+        Storage::putFileAs($savePath, $file->path(), $file_name);
         return $savePath . $file_name;
     }
 

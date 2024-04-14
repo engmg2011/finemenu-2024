@@ -15,7 +15,8 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackagesController;
-use App\Http\Controllers\PlansController;
+use App\Http\Controllers\DietPlansController;
+use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\PricesController;
 use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\ServicesController;
@@ -23,6 +24,11 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WebAppController;
+use App\Http\Middleware\SetRequestModel;
+use App\Models\Category;
+use App\Models\Item;
+use App\Models\Restaurant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -58,19 +64,27 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::get("/{id}", [RestaurantsController::class, 'menu']);
     });
 
-    Route::group(['prefix' => 'hotels'], function () {
+    Route::group(['prefix' => 'hotels', 'middleware' => ['SetRequestModel']], function () {
         Route::get('/', [HotelsController::class, 'index']);
         Route::get('/{id}', [HotelsController::class, 'show']);
         Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
         Route::post('/{id}', [HotelsController::class, 'update'])
             ->middleware('role:' . RolesConstants::ADMIN . '|permission:hotels.owner.{id}');
+        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
-    Route::group(['prefix' => 'restaurants'], function () {
+    Route::group(['prefix' => 'restaurants', 'middleware' => ['SetRequestModel']], function () {
         Route::get('/', [RestaurantsController::class, 'index']);
         Route::get('/{id}', [RestaurantsController::class, 'show']);
         Route::post('/', [RestaurantsController::class, 'create']);
         Route::post('/{id}', [RestaurantsController::class, 'update']);
+        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
     Route::group(['prefix' => 'contacts'], function () {
@@ -80,22 +94,30 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [ContactController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'categories'], function () {
+    Route::group(['prefix' => 'categories', 'middleware' => ['SetRequestModel']], function () {
         Route::get('/', [CategoriesController::class, 'index']);
         Route::get('/{id}', [CategoriesController::class, 'show']);
         Route::post('/', [CategoriesController::class, 'create']);
         Route::post('/{id}/delete', [CategoriesController::class, 'destroy']);
         Route::post('/sort', [CategoriesController::class, 'updateSort']);
         Route::post('/{id}', [CategoriesController::class, 'update']);
+        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
-    Route::group(['prefix' => 'items'], function () {
+    Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [ItemsController::class, 'index']);
         Route::get('/{id}', [ItemsController::class, 'show']);
         Route::post('/', [ItemsController::class, 'create']);
         Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
         Route::post('/sort', [ItemsController::class, 'sort']);
         Route::post('/{id}', [ItemsController::class, 'update']);
+        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
     Route::group(['prefix' => 'prices'], function () {
@@ -153,13 +175,17 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [SettingsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'users'], function () {
+    Route::group(['prefix' => 'users', 'middleware' => ['SetRequestModel']], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::get('/info', [UsersController::class, 'info']);
         Route::get('/{id}', [UsersController::class, 'show']);
         Route::post('/', [UsersController::class, 'create']);
         Route::post('/{id}', [UsersController::class, 'update']);
         Route::get('/{id}/items', [UsersController::class, 'userItems']);
+        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
     Route::group(['prefix' => 'addons'], function () {
@@ -202,6 +228,14 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [SubscriptionsController::class, 'update']);
     });
 
+    Route::group(['prefix' => 'plan-subscriptions'], function () {
+        Route::get('/', [DietPlanSubscriptionsController::class, 'index']);
+        Route::get('/{id}', [DietPlanSubscriptionsController::class, 'show']);
+        Route::post('/', [DietPlanSubscriptionsController::class, 'create']);
+        Route::post('/{id}/delete', [DietPlanSubscriptionsController::class, 'destroy']);
+        Route::post('/{id}', [DietPlanSubscriptionsController::class, 'update']);
+    });
+
     Route::group(['prefix' => 'devices'], function () {
         Route::get('/', [DevicesController::class, 'index']);
         Route::get('/{id}', [DevicesController::class, 'show']);
@@ -211,10 +245,10 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
     });
 
     Route::group(['prefix' => 'plans'], function () {
-        Route::get('/', [PlansController::class, 'index']);
-        Route::get('/{id}', [PlansController::class, 'show']);
-        Route::post('/', [PlansController::class, 'create']);
-        Route::post('/{id}', [PlansController::class, 'update']);
+        Route::get('/', [DietPlansController::class, 'index']);
+        Route::get('/{id}', [DietPlansController::class, 'show']);
+        Route::post('/', [DietPlansController::class, 'create']);
+        Route::post('/{id}', [DietPlansController::class, 'update']);
     });
 
 });

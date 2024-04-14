@@ -92,4 +92,12 @@ class BaseRepository implements EloquentRepositoryInterface
     {
         return $this->model->whereId($id);
     }
+
+    /**
+     * @return mixed
+     */
+    public function list(): mixed
+    {
+        return $this->model::orderByDesc('id')->paginate(request('per-page', 15));
+    }
 }

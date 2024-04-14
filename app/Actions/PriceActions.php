@@ -4,6 +4,7 @@
 namespace App\Actions;
 
 
+use App;
 use App\Models\Price;
 use App\Repository\Eloquent\PriceRepository;
 
@@ -37,7 +38,7 @@ class PriceActions
         foreach ($data['price_locales'] as &$locale)
             app(LocaleAction::class)->createLocale([
                 "name" => $locale['price_name'],
-                "locale" => $locale['price_locale'] ?? \App::getLocale(),
+                "locale" => $locale['price_locale'] ?? App::getLocale(),
                 "localizable_type" => Price::class,
                 "localizable_id" => $price->id
             ]);

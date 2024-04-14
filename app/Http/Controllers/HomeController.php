@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Notifications\EmailNotification;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Notification;
 
@@ -21,7 +22,7 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function index()
     {
