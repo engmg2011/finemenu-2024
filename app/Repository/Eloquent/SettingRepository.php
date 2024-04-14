@@ -3,26 +3,33 @@
 namespace App\Repository\Eloquent;
 
 
-
 use App\Actions\DiscountAction;
 use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
 use App\Models\Setting;
 use App\Repository\SettingRepositoryInterface;
-use Hamcrest\Core\Set;
 use Illuminate\Database\Eloquent\Model;
 
 class SettingRepository extends BaseRepository implements SettingRepositoryInterface
 {
+
+    /*
+     * Shifts like
+        [{"day": "Sat","shift": [{"00:00": "01:00"}]},
+         {"day": "Sun","shift": [{"00:00": "01:00"}]} ]
+    */
+
     public array $relations = ['locales', 'media', 'discounts'];
+
     /**
      * UserRepository constructor.
      * @param Setting $model
      */
-    public function __construct(Setting $model,
+    public function __construct(Setting                         $model,
                                 private readonly MediaAction    $mediaAction,
                                 private readonly LocaleAction   $localeAction,
-                                private readonly DiscountAction $discountAction) {
+                                private readonly DiscountAction $discountAction)
+    {
         parent::__construct($model);
     }
 
@@ -40,7 +47,8 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $data['user_id'] = auth('api')->user()->id;
     }
 
-    public function relationsProcess(&$model, &$data): void{
+    public function relationsProcess(&$model, &$data): void
+    {
         if (isset($data['locales']))
             $this->localeAction->updateLocales($model, $data['locales']);
         if (isset($data['media']))
@@ -57,6 +65,14 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     public function createSetting($relationModel, $data): Model
     {
         $this->setSettable($relationModel, $data);
+        $currentSetting = $this->model->where(
+            ['key' => $data['key']] +
+            array_only($data, ['settable_id', 'settable_type'])
+        )->first();
+        if ($currentSetting){
+            $data['id'] = $currentSetting->id;
+            return $this->updateSetting($relationModel, $data);
+        }
         $this->relationsProcess($relationModel, $data);
         return $this->model->create($this->process($data));
     }
@@ -83,8 +99,8 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $deleteData = [];
         $this->setSettable($relationModel, $deleteData);
         unset($deleteData['user_id']);
-        $setting = $this->model->where( $deleteData )->find($data['id']);
-        if($setting)
+        $setting = $this->model->where($deleteData)->find($data['id']);
+        if ($setting)
             return $setting->delete();
         throw new \Exception("No data found!");
     }

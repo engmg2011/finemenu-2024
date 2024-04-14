@@ -29,16 +29,6 @@ class DietPlanSubscriptionAction
      *      '16-10-2022': 112,
      *      '18-10-2022': 114
      * ]
-     * * Hint 17 should be vacation
-     *
-     */
-
-    /**
-     * Shifts like [
-     *  '12-12-2012' => ['00:00-11:00' , '12:00-18:00']
-     * ]
-     * Work days like
-     * ['Saturday', 'Sunday', 'Monday']
      */
     public function __construct(private DietPlanSubscriptionRepository $repository,
                                 private LocaleAction                   $localeAction)
