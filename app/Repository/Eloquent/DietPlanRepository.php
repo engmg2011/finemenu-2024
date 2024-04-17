@@ -41,9 +41,9 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
 
     /**
      * @param int $id
-     * @return Builder|DietPlan
+     * @return Builder|DietPlan|null
      */
-    public function getModel(int $id, array $extraRelations = []): Builder|DietPlan
+    public function getModel(int $id, array $extraRelations = []): Builder|DietPlan|null
     {
         $allRelations = array_merge($this->relations , $extraRelations);
         return DietPlan::with($allRelations)->find($id);

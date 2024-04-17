@@ -38,6 +38,6 @@ class DietPlan extends Model
     protected $hidden = ['updated_at' , 'created_at'];
 
     public function items(){
-        return $this->belongsToMany(Item::class, 'plan_item');
+        return $this->belongsToMany(Item::class, 'diet_plan_item');
     }
 }

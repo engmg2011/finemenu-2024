@@ -31,6 +31,44 @@ class SettingsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
+    /*
+     * [
+    {
+        "day": "Sat",
+        "shifts": [
+            {
+                "to": "01:00",
+                "from": "00:00"
+            }
+        ]
+    },
+    {
+        "day": "Sun",
+        "shifts": [
+            {
+                "to": "01:00",
+                "from": "00:00"
+            }
+        ]
+    }
+]
+SELECT settings.id , JSON_EXTRACT(settings.data ,"$[*].day") day,
+	JSON_EXTRACT(settings.data ,"$[0].shifts[0].from") sfrom,
+	JSON_EXTRACT(settings.data ,"$[0].shifts[0].to") sto
+	FROM `settings` WHERE settings.key like "shifts"
+ AND '10:30' BETWEEN TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].from'))) AND TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].to')));
+
+    //////
+
+SELECT
+    CASE
+        WHEN CURRENT_TIME() BETWEEN TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].from'))) AND TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].to'))) THEN 'Open'
+        ELSE 'Closed'
+    END AS status
+FROM
+    settings  WHERE settings.key like "shifts";
+
+     */
     public function createSetting(Request $request, int $modelId): JsonResponse
     {
         $modelName = $request->get('model');

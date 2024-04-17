@@ -244,11 +244,12 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [DevicesController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'plans'], function () {
+    Route::group(['prefix' => 'diet-plans'], function () {
         Route::get('/', [DietPlansController::class, 'index']);
         Route::get('/{id}', [DietPlansController::class, 'show']);
         Route::post('/', [DietPlansController::class, 'create']);
         Route::post('/{id}', [DietPlansController::class, 'update']);
+        Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
     });
 
 });
