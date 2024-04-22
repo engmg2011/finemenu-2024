@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
+use App\Repository\DietPlanSubscriptionRepositoryInterface;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
+use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\HotelRepository;
 use App\Repository\Eloquent\ItemRepository;
@@ -62,6 +64,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(RestaurantRepositoryInterface::class, RestaurantRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
         $this->app->bind(DietPlanRepositoryInterface::class, DietPlanRepository::class);
+        $this->app->bind(DietPlanSubscriptionRepositoryInterface::class, DietPlanSubscriptionRepository::class);
     }
 
     /**

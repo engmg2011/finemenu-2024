@@ -47,6 +47,7 @@ class DietPlanSubscription extends Model
     use HasFactory, Localizable;
 
     protected $guarded = ['id'];
+    protected $casts = ['selected_meals'=>'array'];
 
     public function user(): BelongsTo
     {

@@ -6,6 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Actions\DiscountAction;
 use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
+use App\Constants\SettingConstants;
 use App\Models\Setting;
 use App\Repository\SettingRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     public function __construct(Setting                         $model,
                                 private readonly MediaAction    $mediaAction,
                                 private readonly LocaleAction   $localeAction,
+                                private readonly RestaurantRepository $restaurantRepository,
                                 private readonly DiscountAction $discountAction)
     {
         parent::__construct($model);
@@ -116,6 +118,20 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $data['settable_id'] = $model->id;
         $data['settable_type'] = get_class($model);
         return $this->model::where($data)->get();
+    }
+
+    private function getShifts($restaurant_id){
+        $restaurant = $this->restaurantRepository->find($restaurant_id);
+        return $restaurant->settings
+            ->where('key', SettingConstants::Keys['SHIFTS'])
+            ->first()?->data;
+    }
+
+    public function getWorkingDays($restaurant_id){
+        $shifts = $this->getShifts($restaurant_id);
+        if(is_null($shifts))
+            return SettingConstants::WORK_DAYS;
+        return array_keys($shifts);
     }
 
 }

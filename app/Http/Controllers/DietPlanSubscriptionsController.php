@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Actions\DietPlanSubscriptionAction;
 use App\Http\Resources\DataResource;
+use App\Repository\Eloquent\DietPlanRepository;
+use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -12,7 +14,7 @@ use function response;
 class DietPlanSubscriptionsController extends Controller
 {
 
-    public function __construct(private DietPlanSubscriptionAction $action)
+    public function __construct(private DietPlanSubscriptionRepository $repository)
     {
     }
     /**
@@ -22,7 +24,7 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function index()
     {
-        return DataResource::collection($this->action->list());
+        return DataResource::collection($this->repository->list());
     }
 
     /**
@@ -33,7 +35,19 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json($this->action->create($request->all()));
+        return response()->json($this->repository->create($request->all()));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function subscribe(Request $request, $diet_plan_id)
+    {
+        $request->request->add(['diet_plan_id'=>$diet_plan_id]);
+        return response()->json($this->repository->create($request->all()));
     }
 
     /**
@@ -44,7 +58,7 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function show($id)
     {
-        return response()->json($this->action->get($id));
+        return response()->json($this->repository->get($id));
     }
 
     /**
@@ -56,7 +70,7 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json($this->action->update($id,$request->all()));
+        return response()->json($this->repository->update($id,$request->all()));
     }
 
     /**
@@ -67,6 +81,6 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json($this->action->destroy($id));
+        return response()->json($this->repository->destroy($id));
     }
 }

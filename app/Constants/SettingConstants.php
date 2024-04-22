@@ -26,4 +26,8 @@ class SettingConstants
         'SHIFTS' => 'SHIFTS',
         'WORK_DAYS' => 'WORK_DAYS'
     ];
+
+    const WORK_DAYS = [
+      "Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"
+    ];
 }
