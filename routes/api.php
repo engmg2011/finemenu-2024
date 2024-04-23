@@ -236,10 +236,6 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}', [DietPlanSubscriptionsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'diet-plan'], function () {
-        Route::post('/{id}/subscribe', [DietPlanSubscriptionsController::class, 'subscribe']);
-    });
-
     Route::group(['prefix' => 'devices'], function () {
         Route::get('/', [DevicesController::class, 'index']);
         Route::get('/{id}', [DevicesController::class, 'show']);
@@ -251,6 +247,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
     Route::group(['prefix' => 'diet-plans'], function () {
         Route::get('/', [DietPlansController::class, 'index']);
         Route::get('/{id}', [DietPlansController::class, 'show']);
+        Route::post('/{id}/subscribe', [DietPlanSubscriptionsController::class, 'subscribe']);
         Route::post('/', [DietPlansController::class, 'create']);
         Route::post('/{id}', [DietPlansController::class, 'update']);
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
