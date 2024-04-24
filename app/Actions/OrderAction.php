@@ -9,9 +9,9 @@ use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Events\SendOrders;
 use App\Models\Order;
-use App\Models\Restaurant;
 use App\Models\User;
 use App\Notifications\OneSignalNotification;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\OrderRepository;
 use HttpException;
 use Illuminate\Database\Eloquent\Model;
@@ -20,12 +20,14 @@ use Log;
 class OrderAction
 {
     public $orderItemRelations = [
-        'prices.locales', 'discounts.locales',
+        'locales','prices.locales', 'discounts.locales',
         'orderLines.prices.locales', 'orderLines.item.locales',
         'orderLines.addons.locales', 'orderLines.addons.prices', 'orderLines.discounts.locales'
     ];
 
-    public function __construct(private OrderRepository $repository, private OrderLineAction $orderLineAction,
+    public function __construct(private LocaleRepository $localeRepository,
+                                private OrderRepository $repository,
+                                private OrderLineAction $orderLineAction,
                                 private PriceAction     $priceAction,
                                 private DiscountAction  $discountAction)
     {
@@ -42,18 +44,26 @@ class OrderAction
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
+        $totalPrice = 0;
         foreach ($data['order_lines'] as &$ol) {
             $ol['order_id'] = $model->id;
-            $this->orderLineAction->create($ol);
+            $orderLine = $this->orderLineAction->create($ol);
+            $totalPrice += $orderLine->prices[0]->price;
         }
+        $data['prices'] = [];
+        $data['prices'][] =  [
+            'price' => $totalPrice
+        ];
         $this->setOrderData($model, $data);
         // Send Event
         event(new SendOrders($model->orderable_id));
-        return $model;
+        return $this->repository->get($model->id);
     }
 
     public function setOrderData(&$model, &$data)
     {
+        if (isset($data['locales']))
+            $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['prices']))
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['discounts']))

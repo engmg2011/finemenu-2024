@@ -24,11 +24,12 @@ class PriceAction
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
-        $this->localeRepository->createLocale($model, $data['locales']);
+        if(isset($data['locales']))
+            $this->localeRepository->setLocales($model, $data['locales']);
         return $model;
     }
 
-    public function update($id, array $data): Model
+    public function update($id, $data): Model
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
@@ -36,14 +37,14 @@ class PriceAction
         return $model;
     }
 
-    public function setPrices($model, &$prices)
+    public function setPrices(&$model, $prices)
     {
         foreach ($prices as &$price) {
             $price['priceable_id'] = $model['id'];
             $price['priceable_type'] = get_class($model);
             $price['user_id'] = auth('api')->user()->id;
-            if (isset($price['id']) && $price['id'])
-                $this->update($price['id'], $price);
+            if (isset($priceData['id']) && $priceData['id'])
+                $this->update($priceData['id'], $priceData);
             else
                 $this->create($price);
         }
@@ -64,7 +65,7 @@ class PriceAction
 
     public function destroy($id): ?bool
     {
-        $this->localeAction->deleteEntityLocales(Price::find($id));
+        $this->localeRepository->deleteEntityLocales(Price::find($id));
         return $this->repository->delete($id);
     }
 }

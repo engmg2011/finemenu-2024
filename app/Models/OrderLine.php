@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Addonable;
 use App\Traits\Discountable;
+use App\Traits\Localizable;
 use App\Traits\Priceable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,7 +49,7 @@ use Illuminate\Support\Carbon;
  */
 class OrderLine extends Model
 {
-    use HasFactory, Priceable, Addonable, Discountable;
+    use HasFactory, Priceable, Addonable, Discountable, Localizable;
     protected $guarded = ['id'];
 
     public function user() {

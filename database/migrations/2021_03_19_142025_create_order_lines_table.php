@@ -16,6 +16,8 @@ class CreateOrderLinesTable extends Migration
         Schema::create('order_lines', function (Blueprint $table) {
             $table->id();
             $table->char("note")->nullable();
+            // Be noted that list of order lines will be for items,
+            // but for services will be one by one and the orderable_type is the service
             $table->unsignedBigInteger("item_id")->nullable();
             $table->foreign("item_id")->references("id")->on('items')->onDelete("set null");
             $table->unsignedBigInteger("order_id")->nullable();
