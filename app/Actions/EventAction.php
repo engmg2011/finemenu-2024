@@ -5,6 +5,7 @@ namespace App\Actions;
 
 use App\Models\Event;
 use App\Repository\Eloquent\EventRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class EventAction
@@ -12,7 +13,7 @@ class EventAction
 
     public function __construct(private EventRepository $repository,
                                 private MediaAction $mediaAction,
-                                private LocaleAction $localeAction)
+                                private LocaleRepository $localeAction)
     {
     }
 
@@ -35,7 +36,7 @@ class EventAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->updateLocales($model, $data['locales']);
+        $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;

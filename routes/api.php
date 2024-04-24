@@ -12,6 +12,7 @@ use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackagesController;
@@ -25,14 +26,8 @@ use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
-use App\Models\Category;
-use App\Models\Item;
-use App\Models\Restaurant;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-//use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +54,13 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]], function () {
+
+
+
+
+    Route::group(['prefix' => 'locales'], function () {
+        Route::post("", [LocalesController::class, 'createModel']);
+    });
 
     Route::group(['prefix' => 'menu'], function () {
         Route::get("/{id}", [RestaurantsController::class, 'menu']);

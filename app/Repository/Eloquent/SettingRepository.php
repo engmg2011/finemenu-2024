@@ -4,7 +4,6 @@ namespace App\Repository\Eloquent;
 
 
 use App\Actions\DiscountAction;
-use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
 use App\Constants\SettingConstants;
 use App\Models\Setting;
@@ -28,7 +27,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
      */
     public function __construct(Setting                         $model,
                                 private readonly MediaAction    $mediaAction,
-                                private readonly LocaleAction   $localeAction,
+                                private readonly LocaleRepository   $localeAction,
                                 private readonly RestaurantRepository $restaurantRepository,
                                 private readonly DiscountAction $discountAction)
     {
@@ -52,7 +51,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     public function relationsProcess(&$model, &$data): void
     {
         if (isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['discounts']))

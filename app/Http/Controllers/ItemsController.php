@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\ItemAction;
 use App\Http\Resources\DataResource;
+use App\Repository\ItemRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -11,11 +11,8 @@ use function response;
 
 class ItemsController extends Controller
 {
-    private $action;
-
-    public function __construct(ItemAction $action)
+    public function __construct(private ItemRepositoryInterface $repository)
     {
-        $this->action = $action;
     }
     /**
      * Display a listing of the resource.
@@ -24,7 +21,7 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        return DataResource::collection($this->action->list());
+        return DataResource::collection($this->repository->list());
     }
 
     /**
@@ -35,7 +32,7 @@ class ItemsController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json($this->action->create($request->all()));
+        return response()->json($this->repository->create($request->all()));
     }
 
     /**
@@ -46,7 +43,7 @@ class ItemsController extends Controller
      */
     public function show($id)
     {
-        return response()->json($this->action->get($id));
+        return response()->json($this->repository->get($id));
     }
 
     /**
@@ -58,7 +55,7 @@ class ItemsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json($this->action->update($id, $request->all()));
+        return response()->json($this->repository->update($id, $request->all()));
     }
 
     /**
@@ -69,11 +66,11 @@ class ItemsController extends Controller
      */
     public function destroy($id)
     {
-        return response()->json($this->action->destroy($id));
+        return response()->json($this->repository->destroy($id));
     }
 
     public function sort(Request $request)
     {
-        return response()->json($this->action->sort($request->all()));
+        return response()->json($this->repository->sort($request->all()));
     }
 }

@@ -6,6 +6,7 @@ namespace App\Actions;
 use App\Models\Category;
 use App\Models\DietPlan;
 use App\Models\Restaurant;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,7 @@ class RestaurantAction
 {
 
     public function __construct(private RestaurantRepository $repository, private MediaAction $mediaAction,
-                                private LocaleAction         $localeAction, private SettingAction $settingAction)
+                                private LocaleRepository         $localeAction, private SettingAction $settingAction)
     {
     }
 
@@ -44,7 +45,7 @@ class RestaurantAction
         $model = tap($this->repository->find($id))
             ->update($this->processRestaurant($data));
         if (isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeAction->setLocales($model, $data['locales']);
         $this->setModel($model, $data);
         return $model;
     }

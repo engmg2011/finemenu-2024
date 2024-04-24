@@ -5,13 +5,14 @@ namespace App\Actions;
 
 
 use App\Models\Price;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\PriceRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class PriceAction
 {
 
-    public function __construct(private PriceRepository $repository, private LocaleAction $localeAction)
+    public function __construct(private PriceRepository $repository, private LocaleRepository $localeRepository)
     {
     }
 
@@ -23,7 +24,7 @@ class PriceAction
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
-        app(LocaleAction::class)->createLocale($model, $data['locales']);
+        $this->localeRepository->createLocale($model, $data['locales']);
         return $model;
     }
 
@@ -31,7 +32,7 @@ class PriceAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        app(LocaleAction::class)->updateLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
         return $model;
     }
 

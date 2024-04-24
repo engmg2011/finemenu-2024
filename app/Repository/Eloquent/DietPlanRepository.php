@@ -3,7 +3,6 @@
 namespace App\Repository\Eloquent;
 
 use App\Actions\DiscountAction;
-use App\Actions\LocaleAction;
 use App\Actions\MediaAction;
 use App\Actions\PriceAction;
 use App\Models\DietPlan;
@@ -20,13 +19,13 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
      * UserRepository constructor.
      * @param DietPlan $model
      * @param MediaAction $mediaAction
-     * @param LocaleAction $localeAction
+     * @param LocaleRepository $localeAction
      * @param PriceAction $priceAction
      * @param DiscountAction $discountAction
      */
     public function __construct(DietPlan                        $model,
                                 private readonly MediaAction    $mediaAction,
-                                private readonly LocaleAction   $localeAction,
+                                private readonly LocaleRepository   $localeAction,
                                 private readonly PriceAction    $priceAction,
                                 private readonly DiscountAction $discountAction)
     {
@@ -51,7 +50,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
 
     public function relationsProcess(&$model, &$data): void{
         if (isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['prices']))

@@ -5,15 +5,15 @@ namespace App\Actions;
 
 
 use App\Models\Media;
-use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\LocaleRepository;
+use App\Repository\Eloquent\MediaRepository;
 use Illuminate\Database\Eloquent\Model;
 use Storage;
 
 class MediaAction
 {
 
-    public function __construct(private MediaRepository $repository, private LocaleAction $localeAction)
+    public function __construct(private MediaRepository $repository, private LocaleRepository $localeAction)
     {
     }
 
@@ -24,15 +24,16 @@ class MediaAction
 
     public static function relationMediaFields($mediable): array
     {
-        return ["mediable_type" => get_class($mediable),
-            "mediable_id" => $mediable->id,
-            "user_id" => auth('api')->user()->id];
+        return [
+                "mediable_type" => get_class($mediable),
+                "mediable_id" => $mediable->id,
+                "user_id" => auth('api')->user()->id];
     }
 
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
-        $this->localeAction->createLocale($model, $data['locales']);
+        $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['image']))
             $this->addMedia($model, $data);
         return $model;
@@ -42,7 +43,7 @@ class MediaAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->updateLocales($model, $data['locales']);
+        $this->localeAction->setLocales($model, $data['locales']);
 //        if (isset($data['image_id']) && isset($data['image']))
 //            $this->updateMedia($model, $data);
         return $model;
@@ -63,16 +64,16 @@ class MediaAction
     public function removeUnsentMedia(&$model, &$data)
     {
         // Get current assigned media
-        $mediaList = Media::where(['mediable_id'=>$model->id, 'mediable_type' => get_class($model)])->pluck('id')->toArray();
+        $mediaList = Media::where(['mediable_id' => $model->id, 'mediable_type' => get_class($model)])->pluck('id')->toArray();
         // Compare with sent ids
         $sentList = [];
-        foreach ( $data as &$media) {
-            if(isset($media['id']))
+        foreach ($data as &$media) {
+            if (isset($media['id']))
                 $sentList[] = $media['id'];
         }
         // remove difference
-        $difference = array_diff($mediaList,$sentList);
-        Media::whereIn('id',$difference)->delete();
+        $difference = array_diff($mediaList, $sentList);
+        Media::whereIn('id', $difference)->delete();
     }
 
     public function updateMediaMulti(&$data, &$mediable)
@@ -81,7 +82,7 @@ class MediaAction
         $processedData = $this->process($data + ['src' => $mediaSrc, 'type' => 'image']
             + MediaAction::relationMediaFields($mediable));
         $this->repository->updateOrCreate(
-            ['id' => $data['id'] ?? null ],
+            ['id' => $data['id'] ?? null],
             $processedData
         );
     }

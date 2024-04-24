@@ -4,6 +4,7 @@
 namespace App\Actions;
 
 use App\Models\Service;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\ServiceRepository;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class ServiceAction
 {
     public function __construct(private ServiceRepository $repository,
                                 private MediaAction $mediaAction,
-                                private LocaleAction $localeAction){
+                                private LocaleRepository $localeAction){
     }
 
     public function process(array $data): array
@@ -35,7 +36,7 @@ class ServiceAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->updateLocales($model, $data['locales']);
+        $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;

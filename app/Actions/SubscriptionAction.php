@@ -5,6 +5,7 @@ namespace App\Actions;
 
 use App\Constants\SubscriptionStatuses;
 use App\Models\Subscription;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\SubscriptionRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class SubscriptionAction
 {
     public function __construct(private SubscriptionRepository $repository,
-                                private LocaleAction           $localeAction)
+                                private LocaleRepository           $localeAction)
     {
     }
 
@@ -34,7 +35,7 @@ class SubscriptionAction
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         if(isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeAction->setLocales($model, $data['locales']);
         return $model;
     }
 

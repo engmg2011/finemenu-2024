@@ -5,13 +5,16 @@ namespace App\Actions;
 
 use App\Models\Category;
 use App\Repository\Eloquent\CategoryRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class CategoryAction
 {
 
-    public function __construct(private CategoryRepository $repository,
+    public function __construct(
+                                protected LocaleRepository $localeRepository,
+                                private CategoryRepository $repository,
                                 private MediaAction $mediaAction)
     {
     }
@@ -25,7 +28,7 @@ class CategoryAction
     {
         $data['user_id'] = auth('api')->user()->id;
         $category = $this->repository->create($this->process($data));
-        app(LocaleAction::class)->createLocale($category, $data['locales']);
+        $this->localeRepository->createLocale($category, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($category, $data['media']);
         return $category;
@@ -36,7 +39,7 @@ class CategoryAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        app(LocaleAction::class)->updateLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;

@@ -47,6 +47,8 @@ class OrderAction
             $this->orderLineAction->create($ol);
         }
         $this->setOrderData($model, $data);
+        // Send Event
+        event(new SendOrders($model->orderable_id));
         return $model;
     }
 
@@ -56,7 +58,6 @@ class OrderAction
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['discounts']))
             $this->discountAction->set($model, $data['discounts']);
-        event(new SendOrders($model->orderable_id));
     }
 
     public function update($id, array $data): Model
@@ -73,6 +74,10 @@ class OrderAction
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         $this->setOrderData($model, $data);
+
+        // Send event
+        event(new SendOrders($model->orderable_id));
+
         if ($data['status'] === OrderStatus::Ready) {
             Log::debug("will send message");
             User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));

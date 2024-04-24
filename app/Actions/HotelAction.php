@@ -5,13 +5,14 @@ namespace App\Actions;
 
 use App\Models\Hotel;
 use App\Repository\Eloquent\HotelRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class HotelAction
 {
     private $repository, $mediaAction;
 
-    public function __construct(HotelRepository $repository, MediaAction $mediaAction, private LocaleAction $localeAction)
+    public function __construct(HotelRepository $repository, MediaAction $mediaAction, private LocaleRepository $localeAction)
     {
         $this->repository = $repository;
         $this->mediaAction = $mediaAction;
@@ -38,7 +39,7 @@ class HotelAction
         $model = tap($this->repository->find($id))
             ->update($this->processHotel($data));
         if (isset($model['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;

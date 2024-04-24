@@ -4,13 +4,14 @@
 namespace App\Actions;
 
 use App\Models\Package;
+use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\PackageRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class PackageAction
 {
     public function __construct(private PackageRepository $repository,
-                                private LocaleAction $localeAction){
+                                private LocaleRepository $localeAction){
     }
 
     public function process(array $data): array
@@ -29,7 +30,7 @@ class PackageAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->updateLocales($model, $data['locales']);
+        $this->localeAction->setLocales($model, $data['locales']);
         return $model;
     }
 

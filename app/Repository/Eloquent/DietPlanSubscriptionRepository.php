@@ -2,7 +2,6 @@
 
 namespace App\Repository\Eloquent;
 
-use App\Actions\LocaleAction;
 use App\Constants\SubscriptionStatuses;
 use App\Models\DietPlan;
 use App\Models\DietPlanSubscription;
@@ -30,7 +29,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
     public function __construct( DietPlanSubscription $model,
                                 private SettingRepositoryInterface $settingRepository,
-                                private LocaleAction                   $localeAction) {
+                                private LocaleRepository                   $localeAction) {
         parent::__construct($model);
     }
 
@@ -49,7 +48,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $model = tap($this->model->find($id))
             ->update($this->process($attributes));
         if (isset($attributes['locales']))
-            $this->localeAction->updateLocales($model, $attributes['locales']);
+            $this->localeAction->setLocales($model, $attributes['locales']);
         return true;
     }
 

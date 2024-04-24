@@ -5,12 +5,13 @@ namespace App\Actions;
 
 use App\Models\Discount;
 use App\Repository\Eloquent\DiscountRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class DiscountAction
 {
     public function __construct(private DiscountRepository $repository,
-                                private LocaleAction       $localeAction)
+                                private LocaleRepository       $localeRespository)
     {
     }
 
@@ -23,7 +24,7 @@ class DiscountAction
     {
         $model = $this->repository->create($this->process($data));
         if (isset($data['locales']))
-            $this->localeAction->createLocale($model, $data['locales']);
+            $this->localeRespository->createLocale($model, $data['locales']);
         return $model;
     }
 
@@ -32,7 +33,7 @@ class DiscountAction
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         if (isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeRespository->setLocales($model, $data['locales']);
         return $model;
     }
 

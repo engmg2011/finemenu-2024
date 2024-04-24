@@ -5,14 +5,15 @@ namespace App\Actions;
 
 use App\Models\Addon;
 use App\Repository\Eloquent\AddonRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class AddonAction
 {
-    public function __construct(private AddonRepository $repository,
-                                private MediaAction $mediaAction,
-                                private LocaleAction $localeAction,
-    private PriceAction $priceAction){
+    public function __construct(private AddonRepository  $repository,
+                                private MediaAction      $mediaAction,
+                                private LocaleRepository $localeRepository,
+                                private PriceAction      $priceAction){
     }
 
     public function process(array $data): array
@@ -24,7 +25,7 @@ class AddonAction
     {
         $model = $this->repository->create($this->process($data));
         if (isset($data['locales']))
-            $this->localeAction->createLocale($model, $data['locales']);
+            $this->localeRepository->createLocale($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['prices']))
@@ -38,7 +39,7 @@ class AddonAction
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         if (isset($data['locales']))
-            $this->localeAction->updateLocales($model, $data['locales']);
+            $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;

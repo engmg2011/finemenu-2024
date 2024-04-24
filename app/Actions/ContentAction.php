@@ -5,13 +5,14 @@ namespace App\Actions;
 
 use App\Models\Content;
 use App\Repository\Eloquent\ContentRepository;
+use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class ContentAction
 {
 
     public function __construct(private ContentRepository $repository,
-                                private LocaleAction      $localeAction)
+                                private LocaleRepository $localeRepository)
     {
     }
 
@@ -24,7 +25,7 @@ class ContentAction
     {
         $data['user_id'] = request()->get('user_id') ?? auth('api')->user()->id;
         $model = $this->repository->create($this->process($data));
-        $this->localeAction->createLocale($model, $data['locales']);
+        $this->localeRepository->createLocale($model, $data['locales']);
         return $model;
     }
 
@@ -32,7 +33,7 @@ class ContentAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->updateLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
         return $model;
     }
 

@@ -21,11 +21,11 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
-     * @param array $attributes
+     * @param array $data
      * @return Model
      */
-    public function create(array $attributes): Model {
-        return $this->model->create($attributes);
+    public function create(array $data): Model {
+        return $this->model->create($data);
     }
 
     /**
@@ -38,9 +38,9 @@ class BaseRepository implements EloquentRepositoryInterface
 
     /**
      * @param array $attributes
-     * @return bool
+     * @return bool | Model
      */
-    public function update($id, array $attributes): bool
+    public function update($id, array $attributes): bool | Model
     {
         return $this->model->find($id)->update($id, $attributes);
     }

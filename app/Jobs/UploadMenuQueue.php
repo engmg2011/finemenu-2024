@@ -6,6 +6,7 @@ use App\Actions\CategoryAction;
 use App\Actions\ItemAction;
 use App\Actions\MediaAction;
 use App\Models\Category;
+use App\Repository\Eloquent\ItemRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -64,7 +65,7 @@ class UploadMenuQueue implements ShouldQueue
                 "restaurant_id" => $this->user['restaurantId']]);
         }
         // TODO :: Pass first user locale
-        $item = app(ItemAction::class)->create([
+        $item = app(ItemRepository::class)->create([
             'locales' => [['name' => $item_name, 'locale' => $this->user['locale']]],
             'category_id' => ($savingCategory->id),
             'user_id' => $this->user['userId']

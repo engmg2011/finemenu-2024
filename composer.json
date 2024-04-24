@@ -17,8 +17,10 @@
         "laravel/telescope": "^4.17",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.2",
+        "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "spatie/laravel-permission": "^6.1"
+        "spatie/laravel-permission": "^6.1",
+        "ext-http": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.15",
