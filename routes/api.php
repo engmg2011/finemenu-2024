@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
 
     Route::group(['prefix' => 'locales'], function () {
         Route::post("", [LocalesController::class, 'createModel']);
+        Route::post("{id}/delete", [LocalesController::class, 'delete']);
     });
 
     Route::group(['prefix' => 'menu'], function () {
