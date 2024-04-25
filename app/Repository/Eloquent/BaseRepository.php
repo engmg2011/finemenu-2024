@@ -29,20 +29,20 @@ class BaseRepository implements EloquentRepositoryInterface
     }
 
     /**
-     * @param array $attributes
+     * @param array $data
      * @return Boolean
      */
-    public function insert(array $attributes){
-        return $this->model->insert($attributes);
+    public function insert(array $data){
+        return $this->model->insert($data);
     }
 
     /**
-     * @param array $attributes
+     * @param array $data
      * @return bool | Model
      */
-    public function update($id, array $attributes): bool | Model
+    public function update($id, array $data): bool | Model
     {
-        return $this->model->find($id)->update($id, $attributes);
+        return $this->model->find($id)->update($id, $data);
     }
 
     /**

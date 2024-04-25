@@ -2,34 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\OrderAction;
 use App\Constants\RolesConstants;
 use App\Http\Resources\DataResource;
+use App\Repository\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class OrdersController extends Controller
 {
-    private $action;
 
-    public function __construct(OrderAction $action)
+    public function __construct(protected OrderRepositoryInterface $orderRepository)
     {
-        $this->action = $action;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return AnonymousResourceCollection
-     */
     public function index()
     {
         $ordersList = match (\request()->get('for')) {
-            RolesConstants::DRIVER => $this->action->driverOrders(),
-            RolesConstants::CASHIER => $this->action->cashierOrders(),
-            default => $this->action->list(),
+            RolesConstants::DRIVER => $this->orderRepository->driverOrders(),
+            RolesConstants::CASHIER => $this->orderRepository->cashierOrders(),
+            default => $this->orderRepository->list(),
         };
         return DataResource::collection($ordersList);
     }
@@ -42,7 +34,7 @@ class OrdersController extends Controller
      */
     public function create(Request $request)
     {
-        return \response()->json($this->action->create($request->all()));
+        return \response()->json($this->orderRepository->create($request->all()));
     }
 
     /**
@@ -53,7 +45,7 @@ class OrdersController extends Controller
      */
     public function show($id)
     {
-        return \response()->json($this->action->get($id));
+        return \response()->json($this->orderRepository->get($id));
     }
 
     /**
@@ -65,7 +57,7 @@ class OrdersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->action->update($id, $request->all()));
+        return \response()->json($this->orderRepository->update($id, $request->all()));
     }
 
     /**

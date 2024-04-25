@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Actions\OrderAction;
+use App\Repository\OrderRepositoryInterface;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -13,17 +13,16 @@ class SendOrders implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $orders;
-    public OrderAction $orderAction;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(public int $restaurant_id)
+    public function __construct(OrderRepositoryInterface $orderRepository,
+                                public int $restaurant_id)
     {
-        $this->orderAction = app(OrderAction::class);
         request()->request->add(['per-page'=>1000]);
-        $this->orders = json_decode(json_encode($this->orderAction->kitchenOrders($restaurant_id)))->data ;
+        $this->orders = json_decode(json_encode($orderRepository->kitchenOrders($restaurant_id)))->data ;
     }
 
     /**

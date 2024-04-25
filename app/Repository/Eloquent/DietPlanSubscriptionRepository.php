@@ -43,12 +43,12 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
             'status', 'selected_meals', 'diet_plan_id']);
     }
 
-    public function update($id, array $attributes): bool
+    public function update($id, array $data): bool
     {
         $model = tap($this->model->find($id))
-            ->update($this->process($attributes));
-        if (isset($attributes['locales']))
-            $this->localeAction->setLocales($model, $attributes['locales']);
+            ->update($this->process($data));
+        if (isset($data['locales']))
+            $this->localeAction->setLocales($model, $data['locales']);
         return true;
     }
 
