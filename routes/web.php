@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\MyEvent;
+//use App\Events\SendOrders;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,12 +31,15 @@ Route::get('notification', function (){
     return view('notification');
 });
 
-Route::get('orders-sender', function (){
-    $restaurant_id = request()->get('restaurantId') ;
-    event(new SendOrders($restaurant_id));
-});
-
 Route::get('/generate-qrcode', [QrCodeController::class, 'index']);
 Route::get('/save-qrcode', [QrCodeController::class, 'save']);
 
 Route::get('/send', [HomeController::class, 'send'])->name('home.send');*/
+
+Route::get('orders-sender', function (){
+    $restaurant_id = request()->get('restaurantId') ;
+    event(new \App\Events\NewOrder(78));
+//    event(new \App\Events\SendOrders($restaurant_id));
+//    event(new MyEvent('hello world'));
+
+});

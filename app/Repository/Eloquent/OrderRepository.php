@@ -11,6 +11,7 @@ use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Events\SendOrders;
 use App\Models\Order;
+use App\Models\Restaurant;
 use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\OrderRepositoryInterface;
@@ -39,6 +40,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->with(OrderRepository::Relations)->find($id);
     }
 
+    public function restaurantOrders($restaurantId){
+        return $this->model->where([
+            'orderable_type' => Restaurant::class,
+            'orderable_id' => $restaurantId
+        ])->with(OrderRepository::Relations)->paginate(request('per-page', 15));
+    }
+
     public function process(array $data): array
     {
         $data['user_id'] = auth('api')->user()->id;
@@ -62,8 +70,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         ];
         $this->setOrderData($model, $data);
         // Send Event
-        event(new SendOrders(app(OrderRepository::class),$model->orderable_id));
-        return $this->model->get($model->id);
+        event(new SendOrders($model->orderable_id));
+        return $this->get($model->id);
     }
 
     public function setOrderData(&$model, &$data)
@@ -92,7 +100,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
 
         // Send event
-        event(new SendOrders(app(OrderRepository::class), $model->orderable_id));
+        event(new SendOrders($model->orderable_id));
 
         if (isset($data['status'] ) && $data['status'] === OrderStatus::Ready) {
             \Log::debug("will send message");
@@ -100,7 +108,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         }
         if (isset($data['order_lines']))
             $this->orderLineAction->updateMany($data['order_lines']);
-        return $model;
+        return $this->get($model->id);
     }
 
     /**
@@ -122,7 +130,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $restaurantId = $restaurantId ?? request()->header('restaurant-id');
         return Order::with(OrderRepository::Relations)
             ->where(fn($q) => $restaurantId ?
-                $q->where(['orderable_id' => $restaurantId, 'orderable_type' => '\\App\\Models\\Restaurant']) : $q)
+                $q->where(['orderable_id' => $restaurantId, 'orderable_type' =>  Restaurant::class]) : $q)
             ->where('status', '!=', OrderStatus::Delivered)
             ->orderByDesc('id')
             ->paginate(10);
@@ -140,7 +148,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function getOrderPermittedRules(&$order): array
     {
-        $orderableType = $order->orderable_type === '\APP\Models\Restaurant' ?
+        $orderableType = $order->orderable_type === Restaurant::class ?
             PermissionsConstants::Restaurants : PermissionsConstants::Hotels;
         return [
             $orderableType . '.' . RolesConstants::OWNER . '.' . $order->orderable()->id,

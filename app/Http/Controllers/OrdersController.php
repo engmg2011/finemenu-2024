@@ -7,6 +7,7 @@ use App\Http\Resources\DataResource;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class OrdersController extends Controller
@@ -15,6 +16,7 @@ class OrdersController extends Controller
     public function __construct(protected OrderRepositoryInterface $orderRepository)
     {
     }
+
 
     public function index()
     {
@@ -48,6 +50,14 @@ class OrdersController extends Controller
         return \response()->json($this->orderRepository->get($id));
     }
 
+    /**
+     * @param $restaurantId
+     * @return AnonymousResourceCollection
+     */
+    public function restaurantOrders($restaurantId)
+    {
+        return DataResource::collection($this->orderRepository->restaurantOrders($restaurantId));
+    }
     /**
      * Update the specified resource in storage.
      *

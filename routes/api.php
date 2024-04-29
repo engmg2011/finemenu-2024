@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+        Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
     });
 
     Route::group(['prefix' => 'contacts'], function () {

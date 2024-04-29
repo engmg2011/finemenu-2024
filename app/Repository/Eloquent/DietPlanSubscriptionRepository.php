@@ -19,12 +19,8 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
      *
      * diet_plan_id => id of plan to subscribe
      * * Get the restaurant, and it's weekend for validating the dates
-     * start_date for subscription  => start from
      * data['selected_meals'] => [day:mealId] like
-     * [
-     *      '16-10-2022': 112,
-     *      '18-10-2022': 114
-     * ]
+     * [  { "day":"22-04-2024", "meal_id": 16 }, ... ]
      */
 
     public function __construct( DietPlanSubscription $model,
@@ -165,7 +161,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
                 $mealIds = array_merge($mealIds , [$selectedMeal['meal_id']]);
 
             $countExist = $plan->items->whereIn('id', $mealIds)->count();
-            if($countExist < count($mealIds))
+            if($countExist < count( array_unique( $mealIds )))
                 throw new \Exception('Wrong meals');
         }
     }
