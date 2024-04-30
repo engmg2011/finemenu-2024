@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App;
 use App\Models\Locales;
 use App\Repository\LocaleRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;

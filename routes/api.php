@@ -54,7 +54,10 @@ Route::group(['prefix' => 'auth'], function () {
 
 
 // TODO :: put admin only roles
-Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]], function () {
+Route::group(['middleware' => [
+                    'auth:api',
+                    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+            ], function () {
 
 
     Route::group(['prefix' => 'locales'], function () {

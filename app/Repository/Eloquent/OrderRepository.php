@@ -9,7 +9,8 @@ use App\Actions\PriceAction;
 use App\Constants\OrderStatus;
 use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
-use App\Events\SendOrders;
+use App\Events\NewOrder;
+use App\Events\UpdateOrder;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\User;
@@ -70,7 +71,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         ];
         $this->setOrderData($model, $data);
         // Send Event
-        event(new SendOrders($model->orderable_id));
+        event(new NewOrder($model->id));
         return $this->get($model->id);
     }
 
@@ -100,10 +101,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
 
         // Send event
-        event(new SendOrders($model->orderable_id));
+        event(new UpdateOrder($model->id));
 
         if (isset($data['status'] ) && $data['status'] === OrderStatus::Ready) {
-            \Log::debug("will send message");
             User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))

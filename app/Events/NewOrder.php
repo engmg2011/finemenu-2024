@@ -2,10 +2,9 @@
 
 namespace App\Events;
 
-use App\Repository\Eloquent\OrderRepository;
+use App\Models\Order;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -22,8 +21,8 @@ class NewOrder implements ShouldBroadcast
      */
     public function __construct($orderId)
     {
-        $orderRepository = app(OrderRepository::class);
-        $this->order = $orderRepository->get($orderId);
+        $this->order = Order::with([  'orderLines.locales', 'locales',
+            'orderLines.prices', 'orderLines.item.locales' ])->find($orderId);
     }
 
     /**
@@ -37,11 +36,6 @@ class NewOrder implements ShouldBroadcast
             new PrivateChannel('restaurant-'.$this->order->orderable_id.'-orders'),
         ];
     }
-
-//    public function broadcastOn()
-//    {
-//        return new Channel("public_channel");
-//    }
 
     public function broadcastAs()
     {
