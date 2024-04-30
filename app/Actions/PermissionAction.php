@@ -13,8 +13,8 @@ class PermissionAction
     public function setPermission($userId, $permissionName)
     {
         $user = User::find($userId);
-        Permission::findOrCreate($permissionName);
-        $user->givePermissionTo([$permissionName]);
+        $myWebPermission = Permission::findOrCreate($permissionName , 'web');
+        $user->givePermissionTo([$myWebPermission]);
     }
 
 

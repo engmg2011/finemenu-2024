@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\Broadcast;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
+/*
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
 Broadcast::channel('restaurant-12-orders', function ($user, $id) {
-    return true;
+    return false;
 });
 
-Broadcast::channel('restaurant-2-orders', function ($user, $id) {
+Broadcast::channel('private-restaurant-2-orders', function ($user, $id) {
     return true;
-});
+});*/

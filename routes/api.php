@@ -8,6 +8,8 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\DietPlansController;
+use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\HotelsController;
@@ -16,9 +18,8 @@ use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackagesController;
-use App\Http\Controllers\DietPlansController;
-use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\PricesController;
+use App\Http\Controllers\PusherAuthController;
 use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
@@ -54,8 +55,6 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]], function () {
-
-
 
 
     Route::group(['prefix' => 'locales'], function () {
@@ -257,4 +256,8 @@ Route::group(['middleware' => ['auth:api', 'role:' . RolesConstants::ADMIN . '|'
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
     });
 
+});
+
+Route::group(['middleware' => [ 'auth:api']], function () {
+    Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 });
