@@ -63,7 +63,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         foreach ($data['order_lines'] as &$ol) {
             $ol['order_id'] = $model->id;
             $orderLine = $this->orderLineAction->create($ol);
-            $totalPrice += $orderLine->prices[0]->price;
+            if(isset($orderLine->prices[0]))
+                $totalPrice += $orderLine->prices[0]->price;
         }
         $data['prices'] = [];
         $data['prices'][] =  [
