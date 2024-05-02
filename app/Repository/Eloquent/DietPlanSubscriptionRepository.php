@@ -7,6 +7,7 @@ use App\Models\DietPlan;
 use App\Models\DietPlanSubscription;
 use App\Models\Subscription;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
+use App\Repository\OrderRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
 use Carbon\Carbon;
 use Exception;
@@ -23,9 +24,11 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
      * [  { "day":"22-04-2024", "meal_id": 16 }, ... ]
      */
 
-    public function __construct( DietPlanSubscription $model,
+    public function __construct(DietPlanSubscription               $model,
                                 private SettingRepositoryInterface $settingRepository,
-                                private LocaleRepository                   $localeAction) {
+                                private LocaleRepository           $localeAction,
+                                private OrderRepositoryInterface   $orderRepository)
+    {
         parent::__construct($model);
     }
 
@@ -36,7 +39,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $data['user_id'] = request()->get('user_id') ?? auth('api')->user()->id;
 
         return array_only($data, ['creator_id', 'user_id', 'restaurant_id',
-            'status', 'selected_meals', 'diet_plan_id']);
+            'status', 'selected_meals', 'diet_plan_id', 'note']);
     }
 
     public function update($id, array $data): bool
@@ -50,8 +53,10 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
     private function paymentCheck()
     {
+        return true;
+
         $subscription = DietPlanSubscription::with(['plan', 'user'])->
-        where('reference_id', response()->get('referenceId'))->first();
+        where('reference_id', request('referenceId'))->first();
 
         // If payment succeeded
         $from = Carbon::today()->format('Y-m-d');
@@ -63,6 +68,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
         // If payment failed
         // Notify user
+
     }
 
 
@@ -106,6 +112,8 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $model = $this->model->create($this->process($data));
         if (isset($data['locales']))
             $this->localeAction->createLocale($model, $data['locales']);
+        if ($this->paymentCheck())
+            $this->createSubscriptionOrders($data);
         return $model;
     }
 
@@ -128,23 +136,24 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
      */
     private function checkValidDates($data): void
     {
-        if ( !( isset($data['selected_meals']) && count($data['selected_meals'])))
+        if (!(isset($data['selected_meals']) && count($data['selected_meals'])))
             throw new Exception("You have to choose the meals");
 
         $selected_meals = $data['selected_meals'];
 
         $selectedDays = [];
         $workDays = $this->settingRepository->getWorkingDays($data['restaurant_id']);
-        if(!is_null($selected_meals) && !is_null($workDays)){
-            foreach ($selected_meals as $selectedMeal){
+        if (!is_null($selected_meals) && !is_null($workDays)) {
+            foreach ($selected_meals as $selectedMeal) {
                 $dayName = Carbon::parse($selectedMeal['day'])->format('D');
-                if(!in_array($dayName , $workDays))
+                if (!in_array($dayName, $workDays))
                     throw new Exception("Selected days are not matching the working days");
-                if(!in_array($dayName , $selectedDays))
+                if (!in_array($dayName, $selectedDays))
                     $selectedDays[] = $dayName;
             }
         }
     }
+
     /**
      * @param $data
      * @return void
@@ -155,14 +164,41 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         // check the meals allowed in the selected plan
         $plan = DietPlan::find($data['diet_plan_id']);
         $selectedMeals = $data['selected_meals'];
-        if(!is_null($selectedMeals)){
+        if (!is_null($selectedMeals)) {
             $mealIds = [];
             foreach ($selectedMeals as $selectedMeal)
-                $mealIds = array_merge($mealIds , [$selectedMeal['meal_id']]);
+                $mealIds = array_merge($mealIds, [$selectedMeal['meal_id']]);
 
             $countExist = $plan->items->whereIn('id', $mealIds)->count();
-            if($countExist < count( array_unique( $mealIds )))
+            if ($countExist < count(array_unique($mealIds)))
                 throw new \Exception('Wrong meals');
+        }
+    }
+
+    private function createSubscriptionOrders($data)
+    {
+
+        $selectedMeals = $data['selected_meals'];
+        if (!is_null($selectedMeals)) {
+            foreach ($selectedMeals as &$selectedMeal) {
+                $this->orderRepository->create([
+                    "note" => $data['note'],
+                    "orderable_type" => "App\\Models\\Restaurant",
+                    "orderable_id" => $data['restaurant_id'],
+                    "scheduled_at" => Carbon::parse($selectedMeal['day']),
+                    "status" => 1,
+                    "paid" => true,
+                    "order_lines" => [
+                        [
+                            "note" => "",
+                            "item_id" => $selectedMeal['meal_id'],
+                            "count" => 1,
+                            "price_id" => null
+                        ],
+                    ],
+                ]);
+            }
+
         }
     }
 

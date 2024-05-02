@@ -45,7 +45,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->where([
             'orderable_type' => Restaurant::class,
             'orderable_id' => $restaurantId
-        ])->with(OrderRepository::Relations)->paginate(request('per-page', 15));
+        ])->with(OrderRepository::Relations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function process(array $data): array
@@ -123,6 +123,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->where(fn($q) => $restaurantId ?
                 $q->where(['orderable_id' => $restaurantId, 'orderable_type' => '\\App\\Models\\Restaurant']) : $q)
+            ->orderByDesc('id')
             ->paginate(request('per-page', 15));
     }
 
