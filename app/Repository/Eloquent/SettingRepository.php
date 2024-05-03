@@ -2,10 +2,11 @@
 
 namespace App\Repository\Eloquent;
 
-
+//
 use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
 use App\Constants\SettingConstants;
+use App\Models\Restaurant;
 use App\Models\Setting;
 use App\Repository\SettingRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -28,8 +29,8 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     public function __construct(Setting                         $model,
                                 private readonly MediaAction    $mediaAction,
                                 private readonly LocaleRepository   $localeAction,
-                                private readonly RestaurantRepository $restaurantRepository,
-                                private readonly DiscountAction $discountAction)
+                                private readonly DiscountAction $discountAction
+    )
     {
         parent::__construct($model);
     }
@@ -120,7 +121,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     }
 
     private function getShifts($restaurant_id){
-        $restaurant = $this->restaurantRepository->find($restaurant_id);
+        $restaurant = Restaurant::find($restaurant_id);
         return $restaurant->settings
             ->where('key', SettingConstants::Keys['SHIFTS'])
             ->first()?->data;

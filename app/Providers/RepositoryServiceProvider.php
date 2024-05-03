@@ -18,6 +18,7 @@ use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\OrderLineRepository;
 use App\Repository\Eloquent\OrderRepository;
 use App\Repository\Eloquent\DietPlanRepository;
+use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\Eloquent\SettingRepository;
 use App\Repository\ContentRepositoryInterface;
@@ -60,7 +61,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MediaRepositoryInterface::class, MediaRepository::class);
         $this->app->bind(OrderLineRepositoryInterface::class, OrderLineRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
-        $this->app->bind(PriceRepositoryInterface::class, PriceRepositoryInterface::class);
+        $this->app->bind(PriceRepositoryInterface::class, PriceRepository::class);
         $this->app->bind(RestaurantRepositoryInterface::class, RestaurantRepository::class);
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
         $this->app->bind(DietPlanRepositoryInterface::class, DietPlanRepository::class);

@@ -6,7 +6,6 @@ use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
-
 class PermissionAction
 {
 
@@ -24,6 +23,12 @@ class PermissionAction
         $this->setPermission($ownerId, $permissionName);
     }
 
+    /**
+     * @param $ownerId
+     * @param $restaurantId
+     * @return void
+     * For tinker $ac = app(\App\Actions\PermissionAction::class);
+     */
     public function setRestaurantOwnerPermissions($ownerId, $restaurantId)
     {
         $permissionName = PermissionsConstants::Restaurants.'.'.RolesConstants::OWNER.'.' . $restaurantId;

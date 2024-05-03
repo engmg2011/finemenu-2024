@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\RestaurantAction;
+
 use App\Actions\WebAppAction;
+use App\Repository\Eloquent\RestaurantRepository;
 use Illuminate\Http\JsonResponse;
 
 class WebAppController extends Controller
 {
-    public function __construct(private readonly WebAppAction     $action,
-                                private readonly RestaurantAction $restaurantAction)
+    public function __construct(private readonly WebAppAction         $action,
+                                private readonly RestaurantRepository $restaurantRepository)
     {
 
     }
@@ -22,7 +23,7 @@ class WebAppController extends Controller
      */
     public function restaurant($restaurantId): JsonResponse
     {
-        $menu = $this->restaurantAction->menu($restaurantId);
+        $menu = $this->restaurantRepository->menu($restaurantId);
         $response = [];
         $response['categories'] = [];
         foreach ($menu->categories as &$mainCategory) {
@@ -49,7 +50,7 @@ class WebAppController extends Controller
      */
     public function dietRestaurant($restaurantId): JsonResponse
     {
-        $menu = $this->restaurantAction->dietMenu($restaurantId);
+        $menu = $this->restaurantRepository->dietMenu($restaurantId);
         return response()->json($menu);
     }
 
