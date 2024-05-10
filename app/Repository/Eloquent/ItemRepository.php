@@ -6,7 +6,6 @@ namespace App\Repository\Eloquent;
 use App\Actions\AddonAction;
 use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
-use App\Actions\PriceAction;
 use App\Models\Item;
 use App\Repository\ItemRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +16,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function __construct( Item                  $model,
                                 private MediaAction    $mediaAction,
                                 private LocaleRepository   $localeAction,
-                                private PriceAction    $priceAction,
+                                private PriceRepository    $priceAction,
                                 private AddonAction    $addonAction,
                                 private DiscountAction $discountAction)
     {

@@ -6,6 +6,7 @@ namespace App\Actions;
 use App\Models\Addon;
 use App\Repository\Eloquent\AddonRepository;
 use App\Repository\Eloquent\LocaleRepository;
+use App\Repository\Eloquent\PriceRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class AddonAction
@@ -13,7 +14,7 @@ class AddonAction
     public function __construct(private AddonRepository  $repository,
                                 private MediaAction      $mediaAction,
                                 private LocaleRepository $localeRepository,
-                                private PriceAction      $priceAction){
+                                private PriceRepository      $priceAction){
     }
 
     public function process(array $data): array

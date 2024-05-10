@@ -5,7 +5,6 @@ namespace App\Repository\Eloquent;
 
 use App\Actions\DiscountAction;
 use App\Actions\OrderLineAction;
-use App\Actions\PriceAction;
 use App\Constants\OrderStatus;
 use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
@@ -31,7 +30,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function __construct(Order $model,
                                 private LocaleRepository $localeRepository,
                                 private OrderLineAction $orderLineAction,
-                                private PriceAction     $priceAction,
+                                private PriceRepository     $priceAction,
                                 private DiscountAction  $discountAction
     ) {
         parent::__construct($model);

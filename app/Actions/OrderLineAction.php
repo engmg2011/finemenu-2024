@@ -14,7 +14,7 @@ class OrderLineAction
 {
 
     public function __construct(private OrderLineRepository $repository,
-                                private PriceAction $priceAction,
+                                private PriceRepository $priceAction,
                                 private AddonAction $addonAction,
                                 private DiscountAction $discountAction)
     {

@@ -4,7 +4,6 @@ namespace App\Repository\Eloquent;
 
 use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
-use App\Actions\PriceAction;
 use App\Models\DietPlan;
 use App\Repository\DietPlanRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,13 +19,13 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
      * @param DietPlan $model
      * @param MediaAction $mediaAction
      * @param LocaleRepository $localeAction
-     * @param PriceAction $priceAction
+     * @param PriceRepository $priceAction
      * @param DiscountAction $discountAction
      */
     public function __construct(DietPlan                        $model,
                                 private readonly MediaAction    $mediaAction,
                                 private readonly LocaleRepository   $localeAction,
-                                private readonly PriceAction    $priceAction,
+                                private readonly PriceRepository    $priceAction,
                                 private readonly DiscountAction $discountAction)
     {
         parent::__construct($model);

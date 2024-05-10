@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\PriceAction;
 use App\Http\Resources\DataResource;
+use App\Repository\Eloquent\PriceRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 
 class PricesController extends Controller
 {
     private $action ;
 
-    public function __construct(PriceAction $action) {
+    public function __construct(PriceRepository $action) {
         $this->action = $action;
     }
 
