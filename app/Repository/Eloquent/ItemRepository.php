@@ -85,7 +85,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
     public function destroy($id): ?bool
     {
-        return $this->model->delete($id);
+        return $this->delete($id);
     }
 
 }

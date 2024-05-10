@@ -69,6 +69,6 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
     public function destroy($id): ?bool
     {
         $this->localeRepository->deleteEntityLocales(Price::find($id));
-        return $this->model->delete($id);
+        return $this->delete($id);
     }
 }

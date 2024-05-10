@@ -87,7 +87,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
     public function destroy($id): ?bool
     {
-        return $this->model->delete($id);
+        return $this->delete($id);
     }
 
     /**
