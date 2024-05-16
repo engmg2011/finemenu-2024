@@ -97,4 +97,19 @@ class BaseRepository implements EloquentRepositoryInterface
     {
         return $this->model::orderByDesc('id')->paginate(request('per-page', 15));
     }
+
+    public function validateLocalesRelated(&$model, &$data)
+    {
+        $validData = true;
+        $localeIds = [];
+        foreach ($model->locales as &$locale)
+            $localeIds[] = $locale['id'];
+        foreach ($data['locales'] as $dataLocale){
+            if(isset($dataLocale['id']) && !in_array($dataLocale['id'] , $localeIds)){
+                $validData = false;
+                break;
+            }
+        }
+        return $validData;
+    }
 }

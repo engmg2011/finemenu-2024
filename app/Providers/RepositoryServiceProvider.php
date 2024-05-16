@@ -11,6 +11,7 @@ use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\EventRepository;
+use App\Repository\Eloquent\FloorRepository;
 use App\Repository\Eloquent\HotelRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
@@ -22,6 +23,8 @@ use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\Eloquent\SettingRepository;
 use App\Repository\ContentRepositoryInterface;
+use App\Repository\Eloquent\TableRepository;
+use App\Repository\FloorRepositoryInterface;
 use App\Repository\HotelRepositoryInteface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
@@ -32,6 +35,7 @@ use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
+use App\Repository\TableRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 use App\Repository\EloquentRepositoryInterface;
@@ -66,6 +70,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
         $this->app->bind(DietPlanRepositoryInterface::class, DietPlanRepository::class);
         $this->app->bind(DietPlanSubscriptionRepositoryInterface::class, DietPlanSubscriptionRepository::class);
+        $this->app->bind(FloorRepositoryInterface::class, FloorRepository::class);
+        $this->app->bind(TableRepositoryInterface::class, TableRepository::class);
     }
 
     /**

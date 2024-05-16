@@ -12,6 +12,7 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\LocalesController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
+use App\Http\Controllers\TablesController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
@@ -258,6 +260,23 @@ Route::group(['middleware' => [
         Route::post('/{id}', [DietPlansController::class, 'update']);
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
     });
+
+    Route::group(['prefix' => 'floors'], function () {
+        Route::get('/', [FloorsController::class, 'index']);
+        Route::get('/{id}', [FloorsController::class, 'show']);
+        Route::post('/', [FloorsController::class, 'createModel']);
+        Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
+        Route::post('/{id}', [FloorsController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'tables'], function () {
+        Route::get('/', [TablesController::class, 'index']);
+        Route::get('/{id}', [TablesController::class, 'show']);
+        Route::post('/', [TablesController::class, 'createModel']);
+        Route::post('/{id}/delete', [TablesController::class, 'destroy']);
+        Route::post('/{id}', [TablesController::class, 'update']);
+    });
+
 
 });
 
