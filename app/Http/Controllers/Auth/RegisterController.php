@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Actions\HotelAction;
-use App\Actions\PermissionAction;
 use App\Actions\SubscriptionAction;
 use App\Actions\UserAction;
 use App\Constants\RolesConstants;
@@ -13,6 +12,7 @@ use App\Models\IpTries;
 use App\Models\Package;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -53,7 +53,7 @@ class RegisterController extends Controller
     public function __construct(private RestaurantRepository $restaurantRepository,
                                 private HotelAction          $hotelAction,
                                 private UserAction           $userAction,
-                                private PermissionAction     $permissionAction,
+                                private PermissionRepository $permissionRepository,
                                 private SubscriptionAction   $subscriptionAction)
     {
         $this->middleware('guest');
@@ -176,7 +176,7 @@ class RegisterController extends Controller
         $businessData = ['user_id' => $user->id, 'creator_id' => $user->id,
             'name' => $request->businessName, 'slug' => slug($request->businessName)];
         $restaurant = $this->restaurantRepository->createModel($businessData);
-        $this->permissionAction->setRestaurantOwnerPermissions($user->id, $restaurant->id);
+        $this->permissionRepository->setRestaurantOwnerPermissions($user->id, $restaurant->id);
         /*
         // Create hotel and give permission
         $hotel = $this->hotelAction->createModel($businessData);

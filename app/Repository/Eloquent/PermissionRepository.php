@@ -1,13 +1,21 @@
 <?php
 
-namespace App\Actions;
+namespace App\Repository\Eloquent;
+
 
 use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Models\User;
+use App\Repository\PermissionRepositoryInterface;
 use Spatie\Permission\Models\Permission;
-class PermissionAction
+
+class PermissionRepository extends BaseRepository implements PermissionRepositoryInterface
 {
+
+    public function __construct(Permission $model)
+    {
+        parent::__construct($model);
+    }
 
     public function setPermission($userId, $permissionName)
     {
@@ -16,19 +24,12 @@ class PermissionAction
         $user->givePermissionTo([$myWebPermission]);
     }
 
-
     public function setHotelOwnerPermissions($ownerId, $hotelId)
     {
         $permissionName = PermissionsConstants::Hotels.'.'.RolesConstants::OWNER.'.' . $hotelId;
         $this->setPermission($ownerId, $permissionName);
     }
 
-    /**
-     * @param $ownerId
-     * @param $restaurantId
-     * @return void
-     * For tinker $ac = app(\App\Actions\PermissionAction::class);
-     */
     public function setRestaurantOwnerPermissions($ownerId, $restaurantId)
     {
         $permissionName = PermissionsConstants::Restaurants.'.'.RolesConstants::OWNER.'.' . $restaurantId;

@@ -5,12 +5,16 @@ namespace App\Providers;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
+use App\Repository\ContentRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
+use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Eloquent\BranchRepository;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
+use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\FloorRepository;
@@ -21,12 +25,13 @@ use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\MenuRepository;
 use App\Repository\Eloquent\OrderLineRepository;
 use App\Repository\Eloquent\OrderRepository;
-use App\Repository\Eloquent\DietPlanRepository;
+use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\Eloquent\SettingRepository;
-use App\Repository\ContentRepositoryInterface;
 use App\Repository\Eloquent\TableRepository;
+use App\Repository\Eloquent\UserRepository;
+use App\Repository\EloquentRepositoryInterface;
 use App\Repository\FloorRepositoryInterface;
 use App\Repository\HotelRepositoryInteface;
 use App\Repository\ItemRepositoryInterface;
@@ -35,17 +40,13 @@ use App\Repository\MediaRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
-use App\Repository\DietPlanRepositoryInterface;
+use App\Repository\PermissionRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
 use App\Repository\TableRepositoryInterface;
-use Illuminate\Support\ServiceProvider;
-
-use App\Repository\EloquentRepositoryInterface;
 use App\Repository\UserRepositoryInterface;
-use App\Repository\Eloquent\UserRepository;
-use App\Repository\Eloquent\BaseRepository;
+use Illuminate\Support\ServiceProvider;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -78,6 +79,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TableRepositoryInterface::class, TableRepository::class);
         $this->app->bind(BranchRepositoryInterface::class, BranchRepository::class);
         $this->app->bind(MenuRepositoryInterface::class, MenuRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
     }
 
     /**
