@@ -4,6 +4,7 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PricesController;
@@ -275,6 +277,22 @@ Route::group(['middleware' => [
         Route::post('/', [TablesController::class, 'createModel']);
         Route::post('/{id}/delete', [TablesController::class, 'destroy']);
         Route::post('/{id}', [TablesController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'menus'], function () {
+        Route::get('/', [MenusController::class, 'index']);
+        Route::get('/{id}', [MenusController::class, 'show']);
+        Route::post('/', [MenusController::class, 'createModel']);
+        Route::post('/{id}/delete', [MenusController::class, 'destroy']);
+        Route::post('/{id}', [MenusController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'branches'], function () {
+        Route::get('/', [BranchesController::class, 'index']);
+        Route::get('/{id}', [BranchesController::class, 'show']);
+        Route::post('/', [BranchesController::class, 'createModel']);
+        Route::post('/{id}/delete', [BranchesController::class, 'destroy']);
+        Route::post('/{id}', [BranchesController::class, 'update']);
     });
 
 

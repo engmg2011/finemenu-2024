@@ -75,6 +75,7 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
 
     public function destroy($id): ?bool
     {
+        $this->model->locales->map( fn($locale) => $locale->delete() );
         return $this->delete($id);
     }
 

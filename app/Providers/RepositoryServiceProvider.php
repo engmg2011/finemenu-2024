@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Repository\BranchRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
+use App\Repository\Eloquent\BranchRepository;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
@@ -16,6 +18,7 @@ use App\Repository\Eloquent\HotelRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
+use App\Repository\Eloquent\MenuRepository;
 use App\Repository\Eloquent\OrderLineRepository;
 use App\Repository\Eloquent\OrderRepository;
 use App\Repository\Eloquent\DietPlanRepository;
@@ -29,6 +32,7 @@ use App\Repository\HotelRepositoryInteface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
 use App\Repository\MediaRepositoryInterface;
+use App\Repository\MenuRepositoryInterface;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\Repository\DietPlanRepositoryInterface;
@@ -72,10 +76,13 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DietPlanSubscriptionRepositoryInterface::class, DietPlanSubscriptionRepository::class);
         $this->app->bind(FloorRepositoryInterface::class, FloorRepository::class);
         $this->app->bind(TableRepositoryInterface::class, TableRepository::class);
+        $this->app->bind(BranchRepositoryInterface::class, BranchRepository::class);
+        $this->app->bind(MenuRepositoryInterface::class, MenuRepository::class);
     }
 
     /**
      * Bootstrap services.
+     *
      *
      * @return void
      */

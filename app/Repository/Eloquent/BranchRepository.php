@@ -3,14 +3,14 @@
 namespace App\Repository\Eloquent;
 
 
-use App\Models\Floor;
-use App\Repository\FloorRepositoryInterface;
+use App\Models\Branch;
+use App\Repository\BranchRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class FloorRepository extends BaseRepository implements FloorRepositoryInterface
+class BranchRepository extends BaseRepository implements BranchRepositoryInterface
 {
 
-    public function __construct(Floor $model, private LocaleRepository $localeAction)
+    public function __construct(Branch $model, private LocaleRepository $localeAction)
     {
         parent::__construct($model);
     }
@@ -22,18 +22,18 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     }
 
 
-    public static array $modelRelations = ['locales', 'tables.locales'];
+    public static array $modelRelations = ['locales'];
 
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id', 'sort']);
+        return array_only($data, ['restaurant_id', 'menu_id', 'sort']);
     }
 
     public function relations($model, $data)
     {
         if (isset($data['locales'])) {
-            if(!$this->validateLocalesRelated($model, $data))
+            if (!$this->validateLocalesRelated($model, $data))
                 throw new \Exception('Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
@@ -43,7 +43,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     {
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
-        return $this->model->with(FloorRepository::$modelRelations)->find($entity->id);
+        return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);
     }
 
     public function update($id, array $data): Model
@@ -51,7 +51,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
         $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->relations($model, $data);
-        return $this->model->with(FloorRepository::$modelRelations)->find($model->id);
+        return $this->model->with(BranchRepository::$modelRelations)->find($model->id);
     }
 
     public function sort($data)
@@ -67,7 +67,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 
     public function get(int $id)
     {
-        return $this->model->with(FloorRepository::$modelRelations)->find($id);
+        return $this->model->with(BranchRepository::$modelRelations)->find($id);
     }
 
     public function destroy($id): ?bool
