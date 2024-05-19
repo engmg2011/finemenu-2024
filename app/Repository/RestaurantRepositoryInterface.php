@@ -12,15 +12,13 @@ interface RestaurantRepositoryInterface
 
     public function createModel(array $data): Model;
 
-    public function setModel(&$model, &$data);
+    public function setModelRelations(&$model, &$data);
 
     public function updateModel($id, array $data): Model;
 
     public function list();
 
     public function getModel(int $id);
-
-    public function menu($restaurantId);
 
     public function dietMenu($restaurantId): array;
 }

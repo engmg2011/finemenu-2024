@@ -27,13 +27,13 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id', 'sort', 'user_id']);
+        return array_only($data, ['slug', 'restaurant_id', 'sort', 'user_id']);
     }
 
     public function relations($model, $data)
     {
         if (isset($data['locales'])) {
-            if(!$this->validateLocalesRelated($model, $data))
+            if (!$this->validateLocalesRelated($model, $data))
                 throw new \Exception('Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
@@ -65,15 +65,41 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     }
 
 
+    public function menu($restaurantId)
+    {
+        return Menu::with(['media', 'settings',
+            'categories.locales', 'categories.media', 'categories.children.locales',
+            'categories.children.media', 'categories.items.locales',
+            'categories.items.addons.locales', 'categories.items.addons.children.locales', 'categories.items.discounts.locales',
+            'categories.items.media', 'categories.items.prices.locales',
+            'categories.children.items.locales', 'categories.children.items.media',
+            'categories.children.items.prices.locales',
+            'categories.children.items.addons.locales', 'categories.children.items.discounts.locales'
+        ])->find($restaurantId);
+    }
+
     public function get(int $id)
     {
+
         return $this->model->with(MenuRepository::$modelRelations)->find($id);
     }
 
     public function destroy($id): ?bool
     {
-        $this->model->locales->map( fn($locale) => $locale->delete() );
+        $this->model->locales->map(fn($locale) => $locale->delete());
         return $this->delete($id);
+    }
+
+    public function createMenuId(string $businessName, string|null $email = null): string
+    {
+        $businessName = str_replace(' ', '-', $businessName);
+        $businessName = str_replace('.', '-', $businessName);
+        $businessName = urlencode($businessName);
+        $businessName = strtolower($businessName);
+        $count = $this->model->where('slug', $businessName)->count();
+        if ($count === 0)
+            return $businessName;
+        return slug($businessName);
     }
 
 }

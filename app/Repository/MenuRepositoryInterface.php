@@ -22,4 +22,6 @@ interface MenuRepositoryInterface
     public function get(int $id);
 
     public function destroy($id): ?bool;
+
+    public function createMenuId(string $businessName, string|null $email): string;
 }

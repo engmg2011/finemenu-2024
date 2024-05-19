@@ -73,4 +73,12 @@ class Restaurant extends Model
     public function categories(): HasMany {
         return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
     }
+
+    public function branches(): HasMany{
+        return $this->hasMany(Branch::class);
+    }
+
+    public function menus(): HasMany{
+        return $this->hasMany(Menu::class);
+    }
 }

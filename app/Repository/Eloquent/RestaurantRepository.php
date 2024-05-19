@@ -7,17 +7,26 @@ use App\Actions\MediaAction;
 use App\Models\Category;
 use App\Models\DietPlan;
 use App\Models\Restaurant;
+use App\Repository\BranchRepositoryInterface;
+use App\Repository\MenuRepositoryInterface;
+use App\Repository\PermissionRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Self_;
 
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
+    public static $modelRelations = ['branches.locales','branches.menus.locales',
+        'media', 'settings', 'contents'];
 
-
-    public function __construct(Restaurant                         $model,
-                                private readonly MediaAction       $mediaAction,
-                                private readonly LocaleRepository  $localeAction,
-                                private readonly SettingRepository $settingAction
+    public function __construct(Restaurant                                     $model,
+                                private readonly MediaAction                   $mediaAction,
+                                private readonly LocaleRepository              $localeAction,
+                                private readonly SettingRepository             $settingAction,
+                                private readonly PermissionRepositoryInterface $permissionRepository,
+                                private readonly BranchRepositoryInterface     $branchRepository,
+                                private readonly MenuRepositoryInterface       $menuRepository
     )
     {
         parent::__construct($model);
@@ -31,14 +40,27 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
     public function createModel(array $data): Model
     {
         $model = $this->model->create($this->processRestaurant($data));
-        if (isset($data['locales']))
-            $this->localeAction->createLocale($model, $data['locales']);
-        $this->setModel($model, $data);
+        $this->setModelRelations($model, $data);
+
+        // create menu
+        $data['restaurant_id'] = $model->id;
+        $menu = $this->menuRepository->createModel($data);
+
+        // create branch
+        $data['menu_id'] = $menu->id;
+        $this->branchRepository->createModel($data);
+
+        // give owner permissions
+        $userId = $data['user_id'] ?? auth('api')->id();
+        $this->permissionRepository->setRestaurantOwnerPermissions($userId, $model->id);
+
         return $model;
     }
 
-    public function setModel(&$model, &$data)
+    public function setModelRelations(&$model, &$data)
     {
+        if (isset($data['locales']))
+            $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['settings']))
@@ -49,9 +71,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
     {
         $model = tap($this->model->find($id))
             ->update($this->processRestaurant($data));
-        if (isset($data['locales']))
-            $this->localeAction->setLocales($model, $data['locales']);
-        $this->setModel($model, $data);
+        $this->setModelRelations($model, $data);
         return $model;
     }
 
@@ -65,22 +85,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
 
     public function getModel(int $id)
     {
-        return Restaurant::with(['media', 'settings', 'contents'])->find($id);
+        return Restaurant::with(RestaurantRepository::$modelRelations)->find($id);
     }
 
-    public function menu($restaurantId)
-    {
-        return Restaurant::with([
-            'media', 'settings',
-            'categories.locales', 'categories.media', 'categories.children.locales',
-            'categories.children.media', 'categories.items.locales',
-            'categories.items.addons.locales', 'categories.items.addons.children.locales', 'categories.items.discounts.locales',
-            'categories.items.media', 'categories.items.prices.locales',
-            'categories.children.items.locales', 'categories.children.items.media',
-            'categories.children.items.prices.locales',
-            'categories.children.items.addons.locales', 'categories.children.items.discounts.locales'
-        ])->find($restaurantId);
-    }
 
     public function dietMenu($restaurantId): array
     {
@@ -92,4 +99,17 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
         return compact('restaurant', 'plans', 'categories');
     }
 
+    public function registerNewRestaurantOwner(Request $request, $user)
+    {
+        $menuSlug = $this->menuRepository->createMenuId($request->businessName, $user->email);
+        $businessData = [
+            'user_id' => $user->id,
+            'creator_id' => $user->id,
+            'name' => $request->businessName,
+            'slug' => $menuSlug,
+            "locales" => [["name"=> $request->businessName, "locale" => "en"]]
+        ];
+        // create restaurant & assign owner permission
+        $this->createModel($businessData);
+    }
 }

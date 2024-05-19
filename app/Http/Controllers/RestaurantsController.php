@@ -16,7 +16,7 @@ class RestaurantsController extends Controller
     }
 
     public function menu($restaurantId) {
-        return response()->json($this->repository->menu($restaurantId));
+        return response()->json($this->repository->getModel($restaurantId));
     }
 
     /**

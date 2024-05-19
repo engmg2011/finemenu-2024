@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("restaurant_id");
-            $table->foreign("restaurant_id")->references("id")->on('restaurants')->onDelete("cascade");
-            $table->unsignedBigInteger("menu_id");
-            $table->foreign("menu_id")->references("id")->on('menus')->onDelete("cascade");
+            $table->unsignedBigInteger("restaurant_id")->nullable();
+            $table->foreign("restaurant_id")->references("id")->on('restaurants')->onDelete("set null");
+            $table->unsignedBigInteger("menu_id")->nullable();
+            $table->foreign("menu_id")->references("id")->on('menus')->onDelete("set null");
             $table->unsignedInteger('sort')->default(0);
 
         });

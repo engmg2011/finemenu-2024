@@ -173,10 +173,6 @@ class RegisterController extends Controller
     public function createBusiness(Request $request, $user): void
     {
 
-        $businessData = ['user_id' => $user->id, 'creator_id' => $user->id,
-            'name' => $request->businessName, 'slug' => slug($request->businessName)];
-        $restaurant = $this->restaurantRepository->createModel($businessData);
-        $this->permissionRepository->setRestaurantOwnerPermissions($user->id, $restaurant->id);
         /*
         // Create hotel and give permission
         $hotel = $this->hotelAction->createModel($businessData);
@@ -253,7 +249,7 @@ class RegisterController extends Controller
         $token = $user->createToken('API Token')->accessToken;
 
         // Create restaurant and give permission
-        $this->createBusiness($request, $user);
+        $this->restaurantRepository->registerNewRestaurantOwner($request, $user);
 
         // Create subscription
         // $this->createSubscription($user);

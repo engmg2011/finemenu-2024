@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
+            $table->string('slug')->unique();
             $table->enum('type' , [MenuTypes::NORMAL,  MenuTypes::DIET])
                 ->nullable()->default(MenuTypes::NORMAL);
             $table->unsignedBigInteger("restaurant_id");
