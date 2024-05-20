@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\Localizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Branch extends Model
 {
@@ -14,8 +14,8 @@ class Branch extends Model
     protected $guarded = ['id'];
     public $timestamps = false;
 
-    public function menu(): HasOne
+    public function menu(): BelongsTo
     {
-        return $this->hasOne(Menu::class, 'menu_id');
+        return $this->belongsTo(Menu::class, 'menu_id');
     }
 }

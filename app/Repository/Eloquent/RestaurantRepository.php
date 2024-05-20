@@ -17,7 +17,7 @@ use phpDocumentor\Reflection\Types\Self_;
 
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
-    public static $modelRelations = ['branches.locales','branches.menus.locales',
+    public static $modelRelations = ['branches.locales','branches.menu.locales',
         'media', 'settings', 'contents'];
 
     public function __construct(Restaurant                                     $model,
