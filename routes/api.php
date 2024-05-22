@@ -70,7 +70,7 @@ Route::group(['middleware' => [
     });
 
     Route::group(['prefix' => 'menu'], function () {
-        Route::get("/{id}", [RestaurantsController::class, 'menu']);
+        Route::get("/{id}", [MenusController::class, 'menu']);
     });
 
     Route::group(['prefix' => 'hotels', 'middleware' => [SetRequestModel::class]], function () {

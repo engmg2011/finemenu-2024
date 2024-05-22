@@ -53,7 +53,12 @@ class UploadMenuQueue implements ShouldQueue
         $item_name = $this->fineName(explode('.', $item_name)[0]);
         if (count($splitNames)) {
             $categories = (app(CategoryAction::class))
-                ->createCategoriesFromPath($splitNames, $this->myFile['uploadedFilePath'], $this->user['userId'], $this->user['restaurantId']);
+                ->createCategoriesFromPath($splitNames,
+                    $this->myFile['uploadedFilePath'],
+                    $this->user['userId'],
+                    $this->user['restaurantId'],
+                    $this->user['menuId']
+                );
             $current_categories = $categories->all();
             $savingCategory = end($current_categories);
         } else {
@@ -62,7 +67,9 @@ class UploadMenuQueue implements ShouldQueue
                 "locales" => [["name" => 'Others', 'locale' => $this->user['locale']]],
                 "image" => $this->myFile['uploadedFilePath'],
                 "user_id" => $this->user['userId'],
-                "restaurant_id" => $this->user['restaurantId']]);
+                "restaurant_id" => $this->user['restaurantId'],
+                "menu_id" => $this->user['menuId']
+            ]);
         }
         // TODO :: Pass first user locale
         $item = app(ItemRepository::class)->create([

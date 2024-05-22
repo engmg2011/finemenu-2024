@@ -81,7 +81,7 @@ class UsersController extends Controller
         if(!$userId)
             return response()->json(['message' => 'Not authorized'], 401);
 
-        $user = User::with(['hotels','restaurants'])->find($userId);
+        $user = User::with(['hotels','restaurants.menus.locales','restaurants.branches.locales', 'restaurants.locales'])->find($userId);
         $user['token'] = $user->createToken('authToken')->accessToken;
         return response()->json($user);
     }

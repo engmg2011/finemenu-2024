@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Traits\Localizable;
+use App\Traits\Mediable;
+use App\Traits\Settable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Menu extends Model
 {
-    use HasFactory, Localizable;
+    use HasFactory, Localizable, Mediable, Settable;
 
     protected $guarded = ['id'];
     public $timestamps = false;

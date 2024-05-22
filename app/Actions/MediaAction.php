@@ -4,16 +4,18 @@
 namespace App\Actions;
 
 
+use App\Jobs\UploadMenuQueue;
 use App\Models\Media;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Storage;
 
 class MediaAction
 {
 
-    public function __construct(private MediaRepository $repository, private LocaleRepository $localeAction)
+    public function __construct(private MediaRepository $repository, private LocaleRepository $localeRepository)
     {
     }
 
@@ -33,7 +35,7 @@ class MediaAction
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
-        $this->localeAction->setLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['image']))
             $this->addMedia($model, $data);
         return $model;
@@ -43,7 +45,7 @@ class MediaAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->setLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
 //        if (isset($data['image_id']) && isset($data['image']))
 //            $this->updateMedia($model, $data);
         return $model;
@@ -122,6 +124,42 @@ class MediaAction
                 "localizable_id" => $media->id
             ]);
         return Media::with('locales')->find($media->id);
+    }
+
+    public function postUpload(Request $request)
+    {
+        $user_id = auth('api')->user()->id;
+        request()->validate(['file' => 'required|file']);
+        $file = $request->file('file');
+        $file_type = $file->getMimeType();
+
+        $file_name = rand(1000, 10000) . '_' . $file->getClientOriginalName();
+        $savePath = $user_id . '/';
+        $uploadedFile = $savePath . $file_name;
+        $storagePath = "storage/" . $uploadedFile;
+        if ($request->headers->has('convert-item')) {
+            $fullPath = $request->header('full-path');
+            $myFile = [
+                'fullPath' => $fullPath,
+                'uploadedFilePath' => $storagePath,
+                'fileType' => $file_type
+            ];
+            $user = [
+                'userId' => auth('api')->user()->id,
+                'restaurantId' => request()->header('restaurant-id'),
+                'menuId' => request()->header('menu-id'),
+                'locale' => request()->header('locale')
+            ];
+            UploadMenuQueue::dispatch( $myFile,$user);
+        }
+
+        $this->uploadMedia($file, $file_name, "public/" . $savePath);
+
+        return response()->json([
+            'file' => $storagePath,
+            'item' => $item ?? null,
+            'media' => $media ?? null
+        ]);
     }
 
 }

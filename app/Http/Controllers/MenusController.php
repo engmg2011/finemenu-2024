@@ -46,6 +46,17 @@ class MenusController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return JsonResponse
+     */
+    public function menu($id)
+    {
+        return response()->json($this->repository->menu($id));
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param Request $request

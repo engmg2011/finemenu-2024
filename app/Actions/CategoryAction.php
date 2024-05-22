@@ -13,15 +13,15 @@ class CategoryAction
 {
 
     public function __construct(
-                                protected LocaleRepository $localeRepository,
-                                private CategoryRepository $repository,
-                                private MediaAction $mediaAction)
+        protected LocaleRepository $localeRepository,
+        private CategoryRepository $repository,
+        private MediaAction        $mediaAction)
     {
     }
 
     public function process(array $data)
     {
-        return array_only($data, ['parent_id', 'user_id', 'restaurant_id', 'sort']);
+        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'restaurant_id', 'sort']);
     }
 
     public function create(array $data)
@@ -47,9 +47,9 @@ class CategoryAction
 
     public function updateSort($data)
     {
-        $sort = 1 ;
-        foreach ($data['sortedIds'] as $id ){
-            $this->repository->find($id)->update(['sort'=>$sort]);
+        $sort = 1;
+        foreach ($data['sortedIds'] as $id) {
+            $this->repository->find($id)->update(['sort' => $sort]);
             $sort++;
         }
         return true;
@@ -65,7 +65,7 @@ class CategoryAction
 
     public function mainCategories()
     {
-        return $this->repository->where(['parent_id'=>null])->get();
+        return $this->repository->where(['parent_id' => null])->get();
     }
 
     public function get(int $id)
@@ -79,19 +79,23 @@ class CategoryAction
     }
 
 
-
     /**
      * @param $categories_names
      * @param $image_path
      * @return Collection
      */
-    public function createCategoriesFromPath($categories_names, $image_path, $userId, $restaurantId): Collection
+    public function createCategoriesFromPath($categories_names,
+                                             $image_path, $userId,
+                                             $restaurantId,
+                                             $menuId
+    ): Collection
     {
         $categories = new Collection();
         foreach ($categories_names as $category_name) {
             $lastCatId = $categories->count() ? $categories->last()->id : null;
             $same_category = Category::where('parent_id', $lastCatId)
-                ->where('restaurant_id',$restaurantId)
+                ->where('restaurant_id', $restaurantId)
+                ->where('menu_id', $restaurantId)
                 ->whereHas('locales', function ($q) use ($category_name) {
                     $q->where('name', $category_name);
                 })->limit(1)->get();
@@ -106,6 +110,7 @@ class CategoryAction
                 "image" => $image_path,
                 "user_id" => $userId,
                 "restaurant_id" => $restaurantId,
+                "menu_id" => $menuId,
                 "parent_id" => $lastCatId]);
             $categories->push($created_category);
         }

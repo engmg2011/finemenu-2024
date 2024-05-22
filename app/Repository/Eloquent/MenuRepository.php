@@ -65,7 +65,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     }
 
 
-    public function menu($restaurantId)
+    public function menu($id)
     {
         return Menu::with(['media', 'settings',
             'categories.locales', 'categories.media', 'categories.children.locales',
@@ -75,7 +75,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
             'categories.children.items.locales', 'categories.children.items.media',
             'categories.children.items.prices.locales',
             'categories.children.items.addons.locales', 'categories.children.items.discounts.locales'
-        ])->find($restaurantId);
+        ])->find($id);
     }
 
     public function get(int $id)
