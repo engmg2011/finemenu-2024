@@ -126,40 +126,4 @@ class MediaAction
         return Media::with('locales')->find($media->id);
     }
 
-    public function postUpload(Request $request)
-    {
-        $user_id = auth('api')->user()->id;
-        request()->validate(['file' => 'required|file']);
-        $file = $request->file('file');
-        $file_type = $file->getMimeType();
-
-        $file_name = rand(1000, 10000) . '_' . $file->getClientOriginalName();
-        $savePath = $user_id . '/';
-        $uploadedFile = $savePath . $file_name;
-        $storagePath = "storage/" . $uploadedFile;
-        if ($request->headers->has('convert-item')) {
-            $fullPath = $request->header('full-path');
-            $myFile = [
-                'fullPath' => $fullPath,
-                'uploadedFilePath' => $storagePath,
-                'fileType' => $file_type
-            ];
-            $user = [
-                'userId' => auth('api')->user()->id,
-                'restaurantId' => request()->header('restaurant-id'),
-                'menuId' => request()->header('menu-id'),
-                'locale' => request()->header('locale')
-            ];
-            UploadMenuQueue::dispatch( $myFile,$user);
-        }
-
-        $this->uploadMedia($file, $file_name, "public/" . $savePath);
-
-        return response()->json([
-            'file' => $storagePath,
-            'item' => $item ?? null,
-            'media' => $media ?? null
-        ]);
-    }
-
 }
