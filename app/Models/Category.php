@@ -67,4 +67,9 @@ class Category extends Model
     public function children() {
         return $this->hasMany(Category::class, 'parent_id')->orderBy('sort');
     }
+
+    public function childrenNested()
+    {
+        return $this->children()->with('childrenNested');
+    }
 }

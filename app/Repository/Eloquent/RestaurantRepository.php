@@ -13,11 +13,10 @@ use App\Repository\PermissionRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use phpDocumentor\Reflection\Types\Self_;
 
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
-    public static $modelRelations = ['branches.locales','branches.menu.locales',
+    public static $modelRelations = ['locales','branches.locales','branches.menu.locales',
         'media', 'settings', 'contents'];
 
     public function __construct(Restaurant                                     $model,
@@ -80,14 +79,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
      */
     public function list()
     {
-        return Restaurant::with('media')->orderByDesc('id')->paginate(request('per-page', 15));
+        return Restaurant::with(RestaurantRepository::$modelRelations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function getModel(int $id)
     {
         return Restaurant::with(RestaurantRepository::$modelRelations)->find($id);
     }
-
 
     public function dietMenu($restaurantId): array
     {

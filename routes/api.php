@@ -213,7 +213,7 @@ Route::group(['middleware' => [
     });
 
     Route::group(['prefix' => 'webapp'], function () {
-        Route::get('restaurant/{id}', [WebAppController::class, 'restaurant']);
+        Route::get('menus/{id}', [WebAppController::class, 'nestedMenu']);
         Route::get('diet-restaurant/{id}', [WebAppController::class, 'dietRestaurant']);
     });
 

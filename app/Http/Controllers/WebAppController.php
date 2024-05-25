@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Actions\WebAppAction;
+use App\Models\Menu;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -23,27 +24,13 @@ class WebAppController extends Controller
      * @param $restaurantId
      * @return JsonResponse
      */
-    public function restaurant($restaurantId): JsonResponse
+    public function nestedMenu($menuId): JsonResponse
     {
-        $restaurant = $this->restaurantRepository->getModel($restaurantId);
-        $menuId = $restaurant['branches'][0]['branchId'] ?? null;
-        $response = [];
-        if ($menuId) {
-            $menu = $this->menuRepository->get($menuId);
-            $response['categories'] = [];
-            foreach ($menu->categories as &$mainCategory) {
-                $categoryItems = $this->action->getNestedItems($mainCategory);
-                unset($mainCategory->children);
-                unset($mainCategory->items);
-                foreach ($categoryItems as &$item)
-                    $item->category_id = $mainCategory->id;
-                $mainCategory->items = $categoryItems;
-                $response['categories'][] = $mainCategory;
-            }
-        }
-        $response['settings'] = $menu->settings;
-        $response['media'] = $menu->media;
-        return response()->json($response);
+        $menu= Menu::with([
+            'categories.locales' ,'categories.media' ,'categories.childrenNested.locales','categories.childrenNested.media',
+            'categories.childrenNested.items' ,'categories.childrenNested.items.locales','categories.childrenNested.items.media',
+            'settings', 'media'])->find($menuId);
+        return response()->json($menu);
     }
 
 
