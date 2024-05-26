@@ -6,6 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Actions\MediaAction;
 use App\Models\Category;
 use App\Models\DietPlan;
+use App\Models\Menu;
 use App\Models\Restaurant;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
@@ -31,8 +32,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
         parent::__construct($model);
     }
 
-    public function processRestaurant(array $data): array
+    public function processRestaurant(&$data): array
     {
+        $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
+        if(!isset($data['name']) && isset($data['locales']))
+            $data['name'] = $data['locales'][0]['name'];
+        \Log::debug("name". $data['name']);
+        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('api')->user()->email);
         return array_only($data, ['name', 'user_id', 'passcode', 'type', 'creator_id', 'slug']);
     }
 
@@ -109,5 +115,12 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
         ];
         // create restaurant & assign owner permission
         $this->createModel($businessData);
+    }
+
+    public function destroy($id)
+    {
+        Menu::where('restaurant_id', $id)->delete();
+        $this->model->find($id)->delete();
+
     }
 }

@@ -27,6 +27,8 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function process(array $data)
     {
+        $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
+        $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email);
         return array_only($data, ['slug', 'restaurant_id', 'sort', 'user_id']);
     }
 

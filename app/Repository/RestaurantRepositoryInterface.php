@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface RestaurantRepositoryInterface
 {
-    public function processRestaurant(array $data): array;
+    public function processRestaurant(&$data): array;
 
     public function createModel(array $data): Model;
 
