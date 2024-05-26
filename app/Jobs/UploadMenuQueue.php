@@ -16,6 +16,7 @@ use Illuminate\Queue\SerializesModels;
 class UploadMenuQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    public const OthersName = 'Others';
 
     /**
      * UploadMenuQueue constructor.
@@ -63,13 +64,22 @@ class UploadMenuQueue implements ShouldQueue
             $savingCategory = end($current_categories);
         } else {
             // TODO :: first user locale
-            $savingCategory = app(CategoryAction::class)->create([
-                "locales" => [["name" => 'Others', 'locale' => $this->user['locale']]],
-                "image" => $this->myFile['uploadedFilePath'],
-                "user_id" => $this->user['userId'],
+            $savingCategory = Category::where([
                 "restaurant_id" => $this->user['restaurantId'],
                 "menu_id" => $this->user['menuId']
-            ]);
+            ])->whereHas('locales', function ($q){
+                $q->where('name',self::OthersName);
+            })->first();
+            if(!$savingCategory){
+                $savingCategory = app(CategoryAction::class)->create([
+                    "locales" => [["name" => self::OthersName, 'locale' => $this->user['locale']]],
+                    "image" => $this->myFile['uploadedFilePath'],
+                    "user_id" => $this->user['userId'],
+                    "restaurant_id" => $this->user['restaurantId'],
+                    "menu_id" => $this->user['menuId']
+                ]);
+            }
+
         }
         // TODO :: Pass first user locale
         $item = app(ItemRepository::class)->create([
