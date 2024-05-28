@@ -96,6 +96,7 @@ Route::group(['middleware' => [
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
         Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
+        Route::get('/{id}/floors', [FloorsController::class, 'restaurantFloors']);
     });
 
     Route::group(['prefix' => 'contacts'], function () {

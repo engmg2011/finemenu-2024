@@ -26,10 +26,7 @@ class WebAppController extends Controller
      */
     public function nestedMenu($menuId): JsonResponse
     {
-        $menu= Menu::with([
-            'categories.locales' ,'categories.media' ,'categories.childrenNested.locales','categories.childrenNested.media',
-            'categories.childrenNested.items' ,'categories.childrenNested.items.locales','categories.childrenNested.items.media',
-            'settings', 'media'])->find($menuId);
+        $menu= $this->menuRepository->fullMenu($menuId);
         return response()->json($menu);
     }
 

@@ -24,6 +24,16 @@ class FloorsController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function restaurantFloors($restaurantId)
+    {
+        return DataResource::collection($this->repository->branchFloors($restaurantId));
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request

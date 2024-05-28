@@ -53,7 +53,7 @@ class MenusController extends Controller
      */
     public function menu($id)
     {
-        return response()->json($this->repository->menu($id));
+        return response()->json($this->repository->fullMenu($id));
     }
 
     /**

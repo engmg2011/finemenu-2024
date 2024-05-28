@@ -21,6 +21,14 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function branchFloors($restaurantId)
+    {
+        return $this->model::with(['locales'])
+            ->where('restaurant_id', $restaurantId)
+            ->where('branch_id', $restaurantId)
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
 
     public static array $modelRelations = ['locales', 'tables.locales'];
 

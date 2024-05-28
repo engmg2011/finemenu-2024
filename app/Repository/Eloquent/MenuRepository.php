@@ -21,9 +21,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
-
     public static array $modelRelations = ['locales'];
-
 
     public function process(array $data)
     {
@@ -67,16 +65,24 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     }
 
 
-    public function menu($id)
+    public function fullMenu($id)
     {
-        return Menu::with(['media', 'settings',
-            'categories.locales', 'categories.media', 'categories.children.locales',
-            'categories.children.media', 'categories.items.locales',
-            'categories.items.addons.locales', 'categories.items.addons.children.locales', 'categories.items.discounts.locales',
-            'categories.items.media', 'categories.items.prices.locales',
-            'categories.children.items.locales', 'categories.children.items.media',
-            'categories.children.items.prices.locales',
-            'categories.children.items.addons.locales', 'categories.children.items.discounts.locales'
+        return Menu::with([
+            'settings', 'media', 'locales',
+            'categories.locales' ,'categories.media' ,
+            'categories.items.locales',
+            'categories.items.addons.locales',
+            'categories.items.addons.children.locales',
+            'categories.items.discounts.locales',
+            'categories.items.media',
+            'categories.items.prices.locales',
+            'categories.childrenNested.locales',
+            'categories.childrenNested.media',
+            'categories.childrenNested.items.locales',
+            'categories.childrenNested.items.media',
+            'categories.childrenNested.items.prices.locales',
+            'categories.childrenNested.items.addons.locales',
+            'categories.childrenNested.items.discounts.locales'
         ])->find($id);
     }
 
