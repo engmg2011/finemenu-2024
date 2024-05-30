@@ -35,7 +35,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id', 'sort']);
+        return array_only($data, ['restaurant_id','branch_id', 'sort']);
     }
 
     public function relations($model, $data)

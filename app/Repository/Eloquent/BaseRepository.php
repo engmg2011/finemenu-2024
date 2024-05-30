@@ -98,6 +98,11 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model::orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function listWhere($whereCondition)
+    {
+        return $this->model::where(...$whereCondition)->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
     public function validateLocalesRelated(&$model, &$data)
     {
         $validData = true;

@@ -14,6 +14,7 @@ use App\Repository\PermissionRepositoryInterface;
 use App\Repository\RestaurantRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
@@ -122,5 +123,22 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
         Menu::where('restaurant_id', $id)->delete();
         $this->model->find($id)->delete();
 
+    }
+
+    /**
+     * @param $restaurantId
+     * @return AnonymousResourceCollection
+     */
+    public function restaurantBranches($restaurantId)
+    {
+        return $this->branchRepository->listWhere(['restaurant_id' , $restaurantId]);
+    }
+    /**
+     * @param $restaurantId
+     * @return AnonymousResourceCollection
+     */
+    public function restaurantMenus($restaurantId)
+    {
+        return $this->menuRepository->listWhere(['restaurant_id' , $restaurantId]);
     }
 }

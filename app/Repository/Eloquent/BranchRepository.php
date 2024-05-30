@@ -15,13 +15,6 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         parent::__construct($model);
     }
 
-    public function list()
-    {
-        return $this->model::with(['locales'])
-            ->orderByDesc('id')->paginate(request('per-page', 15));
-    }
-
-
     public static array $modelRelations = ['locales'];
 
 
@@ -39,8 +32,16 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         }
     }
 
+    public function list()
+    {
+        return $this->model::with(['locales'])
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
     public function createModel(array $data): Model
     {
+        if(!isset($data['restaurant_id']))
+            throw new \Exception("Restaurant id required");
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);

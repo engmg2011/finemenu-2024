@@ -91,6 +91,9 @@ Route::group(['middleware' => [
         Route::post('/', [RestaurantsController::class, 'create']);
         Route::post('/{id}', [RestaurantsController::class, 'update']);
         Route::post('/{id}/delete', [RestaurantsController::class, 'destroy']);
+        Route::get('/{id}/menus', [RestaurantsController::class, 'restaurantMenus']);
+        Route::get('/{id}/branches', [RestaurantsController::class, 'restaurantBranches']);
+
         Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
