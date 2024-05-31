@@ -131,7 +131,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
      */
     public function restaurantBranches($restaurantId)
     {
-        return $this->branchRepository->listWhere(['restaurant_id' , $restaurantId]);
+        return $this->branchRepository->listWhere(['restaurant_id' ,$restaurantId] , ['locales']);
     }
     /**
      * @param $restaurantId
@@ -139,6 +139,6 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
      */
     public function restaurantMenus($restaurantId)
     {
-        return $this->menuRepository->listWhere(['restaurant_id' , $restaurantId]);
+        return $this->menuRepository->listWhere(['restaurant_id' , $restaurantId] , ['locales']);
     }
 }

@@ -98,9 +98,12 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model::orderByDesc('id')->paginate(request('per-page', 15));
     }
 
-    public function listWhere($whereCondition)
+    public function listWhere( $whereCondition,  $relations)
     {
-        return $this->model::where(...$whereCondition)->orderByDesc('id')->paginate(request('per-page', 15));
+        return $this->model::orderByDesc('id')
+        ->where( fn($q) => $whereCondition ? $q->where(...$whereCondition) : $q)
+        ->with($relations)
+        ->paginate(request('per-page', 15));
     }
 
     public function validateLocalesRelated(&$model, &$data)
