@@ -106,6 +106,10 @@ Route::group(['middleware' => [
             // Branch floors
             Route::group(['prefix' => '/{branchId}/floors'], function () {
                 Route::get('/', [FloorsController::class, 'branchFloors']);
+                Route::get('/{id}', [FloorsController::class, 'show']);
+                Route::post('/', [FloorsController::class, 'createModel']);
+                Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
+                Route::post('/{id}', [FloorsController::class, 'update']);
 
             });
         });
@@ -116,6 +120,15 @@ Route::group(['middleware' => [
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
         Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
+    });
+
+
+    Route::group(['prefix' => 'floors'], function () {
+        Route::get('/', [FloorsController::class, 'index']);
+        Route::get('/{id}', [FloorsController::class, 'show']);
+        Route::post('/', [FloorsController::class, 'createModel']);
+        Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
+        Route::post('/{id}', [FloorsController::class, 'update']);
     });
 
 
@@ -285,13 +298,6 @@ Route::group(['middleware' => [
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'floors'], function () {
-        Route::get('/', [FloorsController::class, 'index']);
-        Route::get('/{id}', [FloorsController::class, 'show']);
-        Route::post('/', [FloorsController::class, 'createModel']);
-        Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
-        Route::post('/{id}', [FloorsController::class, 'update']);
-    });
 
     Route::group(['prefix' => 'tables'], function () {
         Route::get('/', [TablesController::class, 'index']);

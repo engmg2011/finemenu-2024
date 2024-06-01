@@ -5,8 +5,8 @@ namespace App\Repository\Eloquent;
 
 use App\Models\Floor;
 use App\Repository\FloorRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 {
@@ -16,17 +16,21 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
         parent::__construct($model);
     }
 
-    public function list()
-    {
-        return $this->model::with(['locales'])
-            ->orderByDesc('id')->paginate(request('per-page', 15));
-    }
-
     public static array $modelRelations = ['locales', 'tables.locales'];
 
 
-    public function process(array $data)
+    private function floor($restaurantId, $branchId): Builder
     {
+        return $this->model->where([
+            'restaurant_id' => $restaurantId,
+            'branch_id' => $branchId
+        ]);
+    }
+
+    public function process($restaurantId, $branchId, array $data)
+    {
+        $data['branch_id'] = $branchId;
+        $data['restaurant_id'] = $restaurantId;
         return array_only($data, ['restaurant_id', 'branch_id', 'sort']);
     }
 
@@ -39,47 +43,46 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
         }
     }
 
-    public function createModel(array $data): Model
+    public function createModel($restaurantId, $branchId, array $data): Model
     {
-        $entity = $this->model->create($this->process($data));
+        $entity = $this->model->create($this->process($restaurantId, $branchId, $data));
         $this->relations($entity, $data);
         return $this->model->with(FloorRepository::$modelRelations)->find($entity->id);
     }
 
-    public function update($id, array $data): Model
+    public function updateModel($restaurantId, $branchId, $id, array $data): Model
     {
-        $model = tap($this->model->find($id))
-            ->update($this->process($data));
+        $model = $this->floor($restaurantId, $branchId)->find($id);
+        if(!$model)
+            throw new \Exception("Error: no floor exists with the same id");
+        $model->update($this->process($restaurantId, $branchId, $data));
         $this->relations($model, $data);
         return $this->model->with(FloorRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($data)
+    public function sort($restaurantId, $branchId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
-            $this->model->whereId($id)->update(['sort' => $sort]);
+            $this->floor($restaurantId, $branchId)->whereId($id)->update(['sort' => $sort]);
             $sort++;
         }
         return true;
     }
 
-
-    public function get(int $id)
+    public function get($restaurantId, $branchId, int $id)
     {
-        return $this->model->with(FloorRepository::$modelRelations)->find($id);
+        return $this->floor($restaurantId, $branchId)->with(FloorRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($id): ?bool
+    public function destroy($restaurantId, $branchId, $id): ?bool
     {
-        $this->model->locales->map(fn($locale) => $locale->delete());
-        return $this->delete($id);
+        $this->floor($restaurantId, $branchId)->find($id)?->locales->map(
+            fn($locale) => $locale->delete()
+        );
+        return $this->floor($restaurantId, $branchId)->find($id)?->delete();
     }
 
-    /**
-     * @param $restaurantId
-     * @return AnonymousResourceCollection
-     */
     public function branchFloors($restaurant_id, $branch_id)
     {
         return $this->listWhere(
