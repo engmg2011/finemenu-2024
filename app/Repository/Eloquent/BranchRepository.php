@@ -32,30 +32,24 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         }
     }
 
-    public function list()
+    public function createModel($restaurantId, array $data): Model
     {
-        return $this->model::with(['locales'])
-            ->orderByDesc('id')->paginate(request('per-page', 15));
-    }
-
-    public function createModel(array $data): Model
-    {
-        if(!isset($data['restaurant_id']))
-            throw new \Exception("Restaurant id required");
+        $data['restaurant_id'] = $restaurantId;
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);
     }
 
-    public function update($id, array $data): Model
+    public function updateModel($restaurantId, $id, array $data): Model
     {
-        $model = tap($this->model->find($id))
-            ->update($this->process($data));
+        $data['restaurant_id'] = $restaurantId;
+        $model = $this->model->find($id);
         $this->relations($model, $data);
+        $model->update($this->process($data));
         return $this->model->with(BranchRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($data)
+    public function sort($restaurantId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
@@ -66,15 +60,20 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
     }
 
 
-    public function get(int $id)
+    public function get($restaurantId, int $id)
     {
-        return $this->model->with(BranchRepository::$modelRelations)->find($id);
+        return $this->model->where(['restaurant_id' => $restaurantId])->with(BranchRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($id): ?bool
+    public function destroy($restaurantId, $id): ?bool
     {
-        $this->model->locales->map( fn($locale) => $locale->delete() );
-        return $this->delete($id);
+        $this->model->where(['restaurant_id' => $restaurantId])->find($id)?->locales->map(
+            fn($locale) => $locale->delete()
+        );
+        return $this->model->where([
+            'restaurant_id' => $restaurantId,
+            'id' => $id
+        ])?->delete();
     }
 
 }

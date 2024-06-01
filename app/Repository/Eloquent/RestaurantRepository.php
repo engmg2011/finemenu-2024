@@ -18,7 +18,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
-    public static $modelRelations = ['locales','branches.locales','branches.menu.locales',
+    public static $modelRelations = ['locales', 'branches.locales', 'branches.menu.locales',
         'media', 'settings', 'contents'];
 
     public function __construct(Restaurant                                     $model,
@@ -36,9 +36,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
     public function processRestaurant(&$data): array
     {
         $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
-        if(!isset($data['name']) && isset($data['locales']))
+        if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
-        \Log::debug("name". $data['name']);
+        \Log::debug("name" . $data['name']);
         $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('api')->user()->email);
         return array_only($data, ['name', 'user_id', 'passcode', 'type', 'creator_id', 'slug']);
     }
@@ -112,7 +112,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
             'creator_id' => $user->id,
             'name' => $request->businessName,
             'slug' => $menuSlug,
-            "locales" => [["name"=> $request->businessName, "locale" => "en"]]
+            "locales" => [["name" => $request->businessName, "locale" => "en"]]
         ];
         // create restaurant & assign owner permission
         $this->createModel($businessData);
@@ -129,16 +129,10 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
      * @param $restaurantId
      * @return AnonymousResourceCollection
      */
-    public function restaurantBranches($restaurantId)
-    {
-        return $this->branchRepository->listWhere(['restaurant_id' ,$restaurantId] , ['locales']);
-    }
-    /**
-     * @param $restaurantId
-     * @return AnonymousResourceCollection
-     */
     public function restaurantMenus($restaurantId)
     {
-        return $this->menuRepository->listWhere(['restaurant_id' , $restaurantId] , ['locales']);
+        return $this->menuRepository->listWhere(['restaurant_id', $restaurantId], ['locales']);
     }
+
+
 }

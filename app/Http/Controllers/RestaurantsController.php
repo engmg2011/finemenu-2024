@@ -82,16 +82,11 @@ class RestaurantsController extends Controller
      * @param $restaurantId
      * @return AnonymousResourceCollection
      */
-    public function restaurantBranches($restaurantId)
-    {
-        return DataResource::collection($this->repository->restaurantBranches($restaurantId));
-    }
-    /**
-     * @param $restaurantId
-     * @return AnonymousResourceCollection
-     */
     public function restaurantMenus($restaurantId)
     {
         return DataResource::collection($this->repository->restaurantMenus($restaurantId));
     }
+
+
+
 }

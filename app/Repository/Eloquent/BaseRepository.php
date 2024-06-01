@@ -101,7 +101,7 @@ class BaseRepository implements EloquentRepositoryInterface
     public function listWhere( $whereCondition,  $relations)
     {
         return $this->model::orderByDesc('id')
-        ->where( fn($q) => $whereCondition ? $q->where(...$whereCondition) : $q)
+        ->where( fn($q) => $whereCondition ? $q->where($whereCondition) : $q)
         ->with($relations)
         ->paginate(request('per-page', 15));
     }

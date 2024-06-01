@@ -6,6 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Models\Floor;
 use App\Repository\FloorRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 {
@@ -21,27 +22,18 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
-    public function branchFloors($restaurantId)
-    {
-        return $this->model::with(['locales'])
-            ->where('restaurant_id', $restaurantId)
-            ->where('branch_id', $restaurantId)
-            ->orderByDesc('id')->paginate(request('per-page', 15));
-    }
-
-
     public static array $modelRelations = ['locales', 'tables.locales'];
 
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id','branch_id', 'sort']);
+        return array_only($data, ['restaurant_id', 'branch_id', 'sort']);
     }
 
     public function relations($model, $data)
     {
         if (isset($data['locales'])) {
-            if(!$this->validateLocalesRelated($model, $data))
+            if (!$this->validateLocalesRelated($model, $data))
                 throw new \Exception('Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
@@ -80,8 +72,20 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 
     public function destroy($id): ?bool
     {
-        $this->model->locales->map( fn($locale) => $locale->delete() );
+        $this->model->locales->map(fn($locale) => $locale->delete());
         return $this->delete($id);
+    }
+
+    /**
+     * @param $restaurantId
+     * @return AnonymousResourceCollection
+     */
+    public function branchFloors($restaurant_id, $branch_id)
+    {
+        return $this->listWhere(
+            ['restaurant_id' => $restaurant_id, 'branch_id' => $branch_id],
+            ['locales']
+        );
     }
 
 }
