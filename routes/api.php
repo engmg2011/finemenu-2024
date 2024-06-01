@@ -103,13 +103,22 @@ Route::group(['middleware' => [
             Route::post('/{id}', [BranchesController::class, 'update']);
             Route::post('/sort', [BranchesController::class, 'sort']);
 
-            // Branch floors
+            // Restaurant Branch floors
             Route::group(['prefix' => '/{branchId}/floors'], function () {
-                Route::get('/', [FloorsController::class, 'branchFloors']);
+                Route::get('/', [FloorsController::class, 'index']);
                 Route::get('/{id}', [FloorsController::class, 'show']);
                 Route::post('/', [FloorsController::class, 'createModel']);
                 Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
                 Route::post('/{id}', [FloorsController::class, 'update']);
+
+                // Restaurant Branch floors tables
+                Route::group(['prefix' => '/{floorId}/tables'], function () {
+                    Route::get('/', [TablesController::class, 'index']);
+                    Route::get('/{id}', [TablesController::class, 'show']);
+                    Route::post('/', [TablesController::class, 'createModel']);
+                    Route::post('/{id}/delete', [TablesController::class, 'destroy']);
+                    Route::post('/{id}', [TablesController::class, 'update']);
+                });
 
             });
         });
@@ -122,14 +131,6 @@ Route::group(['middleware' => [
         Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
     });
 
-
-    Route::group(['prefix' => 'floors'], function () {
-        Route::get('/', [FloorsController::class, 'index']);
-        Route::get('/{id}', [FloorsController::class, 'show']);
-        Route::post('/', [FloorsController::class, 'createModel']);
-        Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
-        Route::post('/{id}', [FloorsController::class, 'update']);
-    });
 
 
     Route::group(['prefix' => 'contacts'], function () {
@@ -299,13 +300,6 @@ Route::group(['middleware' => [
     });
 
 
-    Route::group(['prefix' => 'tables'], function () {
-        Route::get('/', [TablesController::class, 'index']);
-        Route::get('/{id}', [TablesController::class, 'show']);
-        Route::post('/', [TablesController::class, 'createModel']);
-        Route::post('/{id}/delete', [TablesController::class, 'destroy']);
-        Route::post('/{id}', [TablesController::class, 'update']);
-    });
 
     Route::group(['prefix' => 'menus'], function () {
         Route::get('/', [MenusController::class, 'index']);

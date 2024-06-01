@@ -6,20 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 interface TableRepositoryInterface
 {
-    /**
-     * @return mixed
-     */
-    public function list();
+    public function process($floorId, array $data);
 
-    public function process(array $data);
+    public function createModel($floorId, array $data): Model;
 
-    public function createModel(array $data): Model;
+    public function updateModel($floorId, $id, array $data): Model;
 
-    public function update($id, array $data): Model;
+    public function sort($floorId, $data);
 
-    public function sort($data);
+    public function get($floorId, int $id);
 
-    public function get(int $id);
-
-    public function destroy($id): ?bool;
+    public function destroy($floorId, $id): ?bool;
 }

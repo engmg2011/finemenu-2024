@@ -6,31 +6,18 @@ use App\Http\Resources\DataResource;
 use App\Repository\FloorRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-
 class FloorsController extends Controller
 {
     public function __construct(private FloorRepositoryInterface $repository)
     {
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return AnonymousResourceCollection
-     */
-    public function index()
+    public function index($restaurantId, $branchId)
     {
-        return DataResource::collection($this->repository->list());
+        return DataResource::collection($this->repository->branchFloors($restaurantId, $branchId));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function createModel(Request $request, $restaurantId, $branchId)
+    public function createModel(Request $request, $restaurantId, $branchId): JsonResponse
     {
         return response()->json($this->repository->createModel($restaurantId, $branchId, $request->all()));
     }
@@ -73,10 +60,4 @@ class FloorsController extends Controller
     {
         return response()->json($this->repository->sort($restaurantId, $branchId, $request->all()));
     }
-
-    public function branchFloors($restaurantId, $branchId)
-    {
-        return DataResource::collection($this->repository->branchFloors($restaurantId, $branchId));
-    }
-
 }

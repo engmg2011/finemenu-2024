@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 
 use App\Models\Table;
 use App\Repository\TableRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class TableRepository extends BaseRepository implements TableRepositoryInterface
@@ -13,6 +14,13 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
     public function __construct(Table $model, private LocaleRepository $localeAction)
     {
         parent::__construct($model);
+    }
+
+    private function table($floorId): Builder
+    {
+        return $this->model->where([
+            'floor_id' => $floorId
+        ]);
     }
 
     public function list()
@@ -25,8 +33,9 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
     public static array $modelRelations = ['locales'];
 
 
-    public function process(array $data)
+    public function process($floorId, array $data)
     {
+        $data['floor_id'] = $floorId;
         return array_only($data, ['floor_id', 'sort']);
     }
 
@@ -34,30 +43,32 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
     {
         // TODO :: Check all locales related to the same model
 
-        if (isset($data['locales']) ){
-            if(!$this->validateLocalesRelated($model, $data))
+        if (isset($data['locales'])) {
+            if (!$this->validateLocalesRelated($model, $data))
                 throw new \Exception('Invalid Locales Data');
 
             $this->localeAction->setLocales($model, $data['locales']);
         }
     }
 
-    public function createModel(array $data): Model
+    public function createModel($floorId, array $data): Model
     {
-        $entity = $this->model->create($this->process($data));
+        $entity = $this->model->create($this->process($floorId, $data));
         $this->relations($entity, $data);
         return $this->model->with(TableRepository::$modelRelations)->find($entity->id);
     }
 
-    public function update($id, array $data): Model
+    public function updateModel($floorId, $id, array $data): Model
     {
-        $model = tap($this->model->find($id))
-            ->update($this->process($data));
+        $model = $this->table($floorId)->find($id);
+        if (!$model)
+            throw new \Exception("Error: no table exists with the same id");
+        $model->update($this->process($floorId, $data));
         $this->relations($model, $data);
         return $this->model->with(TableRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($data)
+    public function sort($floorId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
@@ -68,15 +79,25 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
     }
 
 
-    public function get(int $id)
+    public function get($floorId, int $id)
     {
-        return $this->model->with(TableRepository::$modelRelations)->find($id);
+        return $this->table($floorId)->with(TableRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($id): ?bool
+    public function destroy($floorId, $id): ?bool
     {
-        $this->model->locales->map( fn($locale) => $locale->delete() );
-        return $this->delete($id);
+        $this->table($floorId)->find($id)?->locales->map(
+            fn($locale) => $locale->delete()
+        );
+        return $this->table($floorId)->find($id)?->delete();
+    }
+
+    public function floorTables($floorId)
+    {
+        return $this->listWhere(
+            ['floor_id' => $floorId],
+            ['locales']
+        );
     }
 
 }
