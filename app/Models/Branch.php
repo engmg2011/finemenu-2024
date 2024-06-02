@@ -18,4 +18,9 @@ class Branch extends Model
     {
         return $this->belongsTo(Menu::class, 'menu_id');
     }
+
+    public function floors()
+    {
+        return $this->hasMany(Floor::class, 'branch_id');
+    }
 }
