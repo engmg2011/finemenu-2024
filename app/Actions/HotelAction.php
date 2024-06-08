@@ -50,7 +50,9 @@ class HotelAction
      */
     public function list()
     {
-        return Hotel::with('media')->orderByDesc('id')->paginate(request('per-page', 15));
+        return Hotel::with('media')
+            ->where('user_id', auth('api')->id())
+            ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function getModel(int $id)

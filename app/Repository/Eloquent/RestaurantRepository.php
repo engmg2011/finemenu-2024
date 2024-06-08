@@ -50,11 +50,11 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
 
         // create menu
         $data['restaurant_id'] = $model->id;
-        $menu = $this->menuRepository->createModel($data);
+        $menu = $this->menuRepository->createModel($model->id, $data);
 
         // create branch
         $data['menu_id'] = $menu->id;
-        $this->branchRepository->createModel($data);
+        $this->branchRepository->createModel($model->id, $data);
 
         // give owner permissions
         $userId = $data['user_id'] ?? auth('api')->id();
@@ -86,7 +86,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
      */
     public function list()
     {
-        return Restaurant::with(RestaurantRepository::$modelRelations)->orderByDesc('id')->paginate(request('per-page', 15));
+        return Restaurant::with(RestaurantRepository::$modelRelations)
+            ->where('user_id', auth('api')->id())
+            ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function getModel(int $id)
