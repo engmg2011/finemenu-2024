@@ -44,14 +44,22 @@ use Illuminate\Support\Carbon;
 class Media extends Model
 {
     use Localizable;
+
     protected $guarded = ['id'];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function mediable() {
+    public function mediable()
+    {
         return $this->morphTo();
+    }
+
+    public function getSrcAttribute($src)
+    {
+        return strpos($src, "http:") === 0 ? $src :  url($src);
     }
 
 

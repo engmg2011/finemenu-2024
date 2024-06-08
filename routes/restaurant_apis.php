@@ -24,7 +24,6 @@ Route::group(['middleware' => [
         Route::post('/', [RestaurantsController::class, 'create']);
         Route::post('/{id}', [RestaurantsController::class, 'update']);
         Route::post('/{id}/delete', [RestaurantsController::class, 'destroy']);
-        Route::get('/{id}/menus', [RestaurantsController::class, 'restaurantMenus']);
 
         Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{modelId}/settings/set', [SettingsController::class, 'setSetting']);
@@ -34,6 +33,14 @@ Route::group(['middleware' => [
 
         Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
 
+        Route::group(['prefix' => '/{restaurantId}/menus'], function () {
+            Route::get('/', [MenusController::class, 'index']);
+            Route::get('/{id}', [MenusController::class, 'show']);
+            Route::post('/', [MenusController::class, 'createModel']);
+            Route::post('/{id}/delete', [MenusController::class, 'destroy']);
+            Route::post('/{id}', [MenusController::class, 'update']);
+        });
+
         // Restaurant branches
         Route::group(['prefix' => '/{restaurantId}/branches'], function () {
             Route::get('/', [BranchesController::class, 'index']);
@@ -42,6 +49,7 @@ Route::group(['middleware' => [
             Route::post('/{id}/delete', [BranchesController::class, 'destroy']);
             Route::post('/{id}', [BranchesController::class, 'update']);
             Route::post('/sort', [BranchesController::class, 'sort']);
+
 
             // Restaurant Branch floors
             Route::group(['prefix' => '/{branchId}/floors'], function () {
@@ -63,15 +71,6 @@ Route::group(['middleware' => [
             });
         });
 
-
-
-        Route::group(['prefix' => 'menus'], function () {
-            Route::get('/', [MenusController::class, 'index']);
-            Route::get('/{id}', [MenusController::class, 'show']);
-            Route::post('/', [MenusController::class, 'createModel']);
-            Route::post('/{id}/delete', [MenusController::class, 'destroy']);
-            Route::post('/{id}', [MenusController::class, 'update']);
-        });
 
 
     });

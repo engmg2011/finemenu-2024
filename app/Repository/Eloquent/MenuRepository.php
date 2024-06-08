@@ -15,15 +15,16 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         parent::__construct($model);
     }
 
-    public function list()
+    public function listModel($restaurantId)
     {
         return $this->model::with(['locales'])
+            ->where('restaurant_id', $restaurantId)
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public static array $modelRelations = ['locales'];
 
-    public function process(array $data)
+    public function process($restaurantId, array $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
         if(!isset($data['name']) && isset($data['locales']))
@@ -41,14 +42,14 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         }
     }
 
-    public function createModel(array $data): Model
+    public function createModel($restaurantId, array $data): Model
     {
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         return $this->model->with(MenuRepository::$modelRelations)->find($entity->id);
     }
 
-    public function update($id, array $data): Model
+    public function updateModel($restaurantId, $id, array $data): Model
     {
         $model = tap($this->model->find($id))
             ->update($this->process($data));
@@ -56,7 +57,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         return $this->model->with(MenuRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($data)
+    public function sort($restaurantId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
@@ -88,13 +89,13 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         ])->find($id);
     }
 
-    public function get(int $id)
+    public function get($restaurantId, int $id)
     {
 
         return $this->model->with(MenuRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($id): ?bool
+    public function destroy($restaurantId, $id): ?bool
     {
         $this->model->locales->map(fn($locale) => $locale->delete());
         return $this->delete($id);

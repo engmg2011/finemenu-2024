@@ -9,19 +9,19 @@ interface MenuRepositoryInterface
     /**
      * @return mixed
      */
-    public function list();
+    public function listModel($restaurantId);
 
-    public function process(array $data);
+    public function process($restaurantId, array $data);
 
-    public function createModel(array $data): Model;
+    public function createModel($restaurantId, array $data): Model;
 
-    public function update($id, array $data): Model;
+    public function updateModel($restaurantId, $id, array $data): Model;
 
-    public function sort($data);
+    public function sort($restaurantId, $data);
 
-    public function get(int $id);
+    public function get($restaurantId, int $id);
 
-    public function destroy($id): ?bool;
+    public function destroy($restaurantId, $id): ?bool;
 
     public function createMenuId(string $businessName, string|null $email): string;
 }

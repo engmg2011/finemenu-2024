@@ -125,14 +125,5 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
 
     }
 
-    /**
-     * @param $restaurantId
-     * @return AnonymousResourceCollection
-     */
-    public function restaurantMenus($restaurantId)
-    {
-        return $this->menuRepository->listWhere(['restaurant_id', $restaurantId], ['locales']);
-    }
-
 
 }

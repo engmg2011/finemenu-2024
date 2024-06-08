@@ -78,15 +78,6 @@ class RestaurantsController extends Controller
         $this->repository->destroy($id);
     }
 
-    /**
-     * @param $restaurantId
-     * @return AnonymousResourceCollection
-     */
-    public function restaurantMenus($restaurantId)
-    {
-        return DataResource::collection($this->repository->restaurantMenus($restaurantId));
-    }
-
 
 
 }

@@ -38,7 +38,7 @@ class HotelsController extends Controller
     {
         return \response()->json($this->action->createModel($request->all() + [
                 "name" => $request->name,
-                "user_id" => $request->user_id,
+                "user_id" => $request->user_id ?? auth('api')->user()->id,
                 "creator_id" => auth('api')->user()->id]));
     }
 
