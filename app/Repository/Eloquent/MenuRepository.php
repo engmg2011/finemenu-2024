@@ -44,7 +44,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function createModel($restaurantId, array $data): Model
     {
-        $entity = $this->model->create($this->process($data));
+        $entity = $this->model->create($this->process($restaurantId, $data));
         $this->relations($entity, $data);
         return $this->model->with(MenuRepository::$modelRelations)->find($entity->id);
     }
@@ -52,7 +52,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     public function updateModel($restaurantId, $id, array $data): Model
     {
         $model = tap($this->model->find($id))
-            ->update($this->process($data));
+            ->update($this->process($restaurantId, $data));
         $this->relations($model, $data);
         return $this->model->with(MenuRepository::$modelRelations)->find($model->id);
     }
