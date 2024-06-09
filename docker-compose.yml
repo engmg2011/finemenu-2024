@@ -28,6 +28,7 @@ services:
         depends_on:
             - mysql
             - redis
+        restart: unless-stopped
 
     dashboard:
         build:
@@ -43,6 +44,7 @@ services:
             - backend
         networks:
             - sail
+        restart: unless-stopped
 
     mysql:
         env_file:
@@ -50,7 +52,7 @@ services:
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
-        restart: always
+        restart: unless-stopped
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
@@ -83,7 +85,7 @@ services:
             PMA_ARBITRARY: 1
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-        restart: always
+        restart: unless-stopped
         ports:
             - 8085:80
         networks:
@@ -106,6 +108,8 @@ services:
                 ping
             retries: 3
             timeout: 5s
+        restart: unless-stopped
+
 networks:
     sail:
         driver: bridge
