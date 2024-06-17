@@ -27,8 +27,8 @@ Route::group(['middleware' => [
 
         Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{modelId}/settings/set', [SettingsController::class, 'setSetting']);
-        Route::post('/{modelId}/settings', [SettingsController::class, 'createSetting']);
-        Route::post('/{modelId}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+//        Route::post('/{modelId}/settings', [SettingsController::class, 'createSetting']);
+//        Route::post('/{modelId}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{modelId}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
 
         Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);

@@ -134,4 +134,20 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         return array_keys($shifts);
     }
 
+    public function setSettings($relationModel, array $data)
+    {
+
+        $settings = $data['settings'];
+        $settingModel = $this->model->where('settable_type', get_class($relationModel))
+            ->where('settable_id', $relationModel->id)->first()  ;
+
+        foreach ($settings as &$setting){
+            $keySetting = $settingModel->where('key', $setting['key'])->first();
+            if($keySetting)
+                $keySetting->update(['data' => $setting['data']]);
+            else
+                $this->createSetting($relationModel, $setting);
+        }
+        return $relationModel->settings;
+    }
 }

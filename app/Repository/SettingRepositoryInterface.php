@@ -12,4 +12,5 @@ interface SettingRepositoryInterface
     public function updateSetting($relationModel, $data): Model;
     public function listSettings($model): mixed;
     public function getWorkingDays($restaurant_id);
+    public function setSettings($relationModel, array $data);
 }

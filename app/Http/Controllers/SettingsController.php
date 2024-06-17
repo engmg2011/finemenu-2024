@@ -7,11 +7,11 @@ use App\Repository\SettingRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use \Exception;
+use Exception;
 
 class SettingsController extends Controller
 {
-    public function __construct( private SettingRepositoryInterface $repository)
+    public function __construct(private SettingRepositoryInterface $repository)
     {
     }
 
@@ -73,9 +73,20 @@ FROM
     {
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
-        if(!$model)
+        if (!$model)
             throw new Exception("no data found");
         return \response()->json($this->repository->createSetting($model, $request->all()));
+    }
+
+    public function setSetting(Request $request, int $modelId): JsonResponse
+    {
+        $modelName = $request->get('model');
+        $model = app($modelName)->find($modelId);
+        if (!$model)
+            throw new Exception("no data found");
+        return \response()->json(
+            $this->repository->setSettings($model, $request->all())
+        );
     }
 
     /**
@@ -87,7 +98,7 @@ FROM
     {
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
-        if(!$model)
+        if (!$model)
             throw new \Exception("no data found");
         return \response()->json($this->repository->listSettings($model));
     }
@@ -115,7 +126,7 @@ FROM
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         $request->request->add(['id' => $settingId]);
-        if(!$model)
+        if (!$model)
             throw new Exception("no data found");
         return \response()->json($this->repository->updateSetting($model, $request->all()));
     }
@@ -142,7 +153,7 @@ FROM
     {
         $modelName = \request()->get('model');
         $relationModel = app($modelName)->find($modelId);
-        if(!$relationModel)
+        if (!$relationModel)
             throw new Exception("no data found");
         \request()->request->add(['id' => $settingId]);
         return \response()->json($this->repository->deleteSetting($relationModel, \request()->all()));
