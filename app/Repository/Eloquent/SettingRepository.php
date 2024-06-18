@@ -26,10 +26,10 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
      * UserRepository constructor.
      * @param Setting $model
      */
-    public function __construct(Setting                         $model,
-                                private readonly MediaAction    $mediaAction,
-                                private readonly LocaleRepository   $localeAction,
-                                private readonly DiscountAction $discountAction
+    public function __construct(Setting                           $model,
+                                private readonly MediaAction      $mediaAction,
+                                private readonly LocaleRepository $localeAction,
+                                private readonly DiscountAction   $discountAction
     )
     {
         parent::__construct($model);
@@ -64,17 +64,9 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
      * @param $data
      * @return Model
      */
-    public function createSetting($relationModel, $data): Model
+    public function createSetting($relationModel, $data)
     {
         $this->setSettable($relationModel, $data);
-        $currentSetting = $this->model->where(
-            ['key' => $data['key']] +
-            array_only($data, ['settable_id', 'settable_type'])
-        )->first();
-        if ($currentSetting){
-            $data['id'] = $currentSetting->id;
-            return $this->updateSetting($relationModel, $data);
-        }
         $this->relationsProcess($relationModel, $data);
         return $this->model->create($this->process($data));
     }
@@ -112,42 +104,40 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         return isset($data['id']) ? $this->update($model, $data) : $this->create($model, $data);
     }
 
-    public function listSettings($model): mixed
+    public function listSettings($relationModel): mixed
     {
         $data = [];
-        $data['settable_id'] = $model->id;
-        $data['settable_type'] = get_class($model);
+        $data['settable_id'] = $relationModel->id;
+        $data['settable_type'] = get_class($relationModel);
         return $this->model::where($data)->get();
     }
 
-    private function getShifts($restaurant_id){
+    private function getShifts($restaurant_id)
+    {
         $restaurant = Restaurant::find($restaurant_id);
         return $restaurant->settings
             ->where('key', SettingConstants::Keys['SHIFTS'])
             ->first()?->data;
     }
 
-    public function getWorkingDays($restaurant_id){
+    public function getWorkingDays($restaurant_id)
+    {
         $shifts = $this->getShifts($restaurant_id);
-        if(is_null($shifts))
+        if (is_null($shifts))
             return SettingConstants::WORK_DAYS;
         return array_keys($shifts);
     }
 
     public function setSettings($relationModel, array $data)
     {
-
         $settings = $data['settings'];
-        $settingModel = $this->model->where('settable_type', get_class($relationModel))
-            ->where('settable_id', $relationModel->id)->first()  ;
-
-        foreach ($settings as &$setting){
-            $keySetting = $settingModel->where('key', $setting['key'])->first();
-            if($keySetting)
+        foreach ($settings as  $setting) {
+            $keySetting = $relationModel->settings?->where('key', $setting['key'])->first();
+            if ($keySetting)
                 $keySetting->update(['data' => $setting['data']]);
             else
                 $this->createSetting($relationModel, $setting);
         }
-        return $relationModel->settings;
+        return $this->listSettings($relationModel);
     }
 }

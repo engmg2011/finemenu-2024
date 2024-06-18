@@ -106,7 +106,7 @@ class MediaController extends Controller
         $this->action->uploadMedia($file, $file_name, "public/" . $savePath);
 
         return response()->json([
-            'file' => $storagePath,
+            'file' => url($storagePath),
             'item' => $item ?? null,
             'media' => $media ?? null
         ]);
