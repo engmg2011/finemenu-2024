@@ -150,6 +150,7 @@ Route::group(['middleware' => [
         Route::post('/', [MediaController::class, 'create']);
         Route::post('upload', [MediaController::class, 'postUpload']);
         Route::post('/{id}', [MediaController::class, 'update']);
+        Route::post('/{id}/delete', [MediaController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'prices'], function () {
