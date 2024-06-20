@@ -59,4 +59,9 @@ class HotelAction
     {
         return Hotel::with('locales','media')->find($id);
     }
+
+    public function destroy(int $id)
+    {
+        return Hotel::find($id)->delete();
+    }
 }

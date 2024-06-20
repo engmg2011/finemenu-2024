@@ -76,6 +76,7 @@ Route::group(['middleware' => [
     Route::group(['prefix' => 'hotels', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [HotelsController::class, 'index']);
         Route::get('/{id}', [HotelsController::class, 'show']);
+        Route::post('/{id}/delete', [HotelsController::class, 'destroy']);
         Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
         Route::post('/{id}', [HotelsController::class, 'update'])
             ->middleware('role:' . RolesConstants::ADMIN . '|permission:hotels.owner.{id}');
@@ -90,6 +91,7 @@ Route::group(['middleware' => [
         Route::get('/{id}', [ContactController::class, 'show']);
         Route::post('/', [ContactController::class, 'create']);
         Route::post('/{id}', [ContactController::class, 'update']);
+        Route::post('/{id}/delete', [ContactController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
