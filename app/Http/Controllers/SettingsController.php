@@ -40,8 +40,9 @@ class SettingsController extends Controller
         return \response()->json($this->repository->createSetting($model, $request->all()));
     }
 
-    public function setSetting(Request $request, int $modelId): JsonResponse
+    public function setSetting(Request $request): JsonResponse
     {
+        $modelId = $request->route('modelId');
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)
@@ -56,8 +57,9 @@ class SettingsController extends Controller
      * @param $modelId
      * @return JsonResponse
      */
-    public function listSettings(Request $request, $modelId): JsonResponse
+    public function listSettings(Request $request): JsonResponse
     {
+        $modelId = $request->route('modelId');
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)

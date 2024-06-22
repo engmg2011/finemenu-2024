@@ -80,7 +80,7 @@ Route::group(['middleware' => [
         Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
         Route::post('/{id}', [HotelsController::class, 'update'])
             ->middleware('role:' . RolesConstants::ADMIN . '|permission:hotels.owner.{id}');
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -101,7 +101,7 @@ Route::group(['middleware' => [
         Route::post('/{id}/delete', [CategoriesController::class, 'destroy']);
         Route::post('/sort', [CategoriesController::class, 'updateSort']);
         Route::post('/{id}', [CategoriesController::class, 'update']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -114,7 +114,7 @@ Route::group(['middleware' => [
         Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
         Route::post('/sort', [ItemsController::class, 'sort']);
         Route::post('/{id}', [ItemsController::class, 'update']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -183,7 +183,7 @@ Route::group(['middleware' => [
         Route::post('/', [UsersController::class, 'create']);
         Route::post('/{id}', [UsersController::class, 'update']);
         Route::get('/{id}/items', [UsersController::class, 'userItems']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
