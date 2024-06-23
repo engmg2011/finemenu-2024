@@ -36,6 +36,7 @@ class Setting extends Model
 {
     protected $guarded = ['id'];
     protected $casts = ['data' => 'json'];
+    protected $hidden = ['created_at', 'updated_at', 'user_id' , 'settable_type'];
 
     public function user()
     {

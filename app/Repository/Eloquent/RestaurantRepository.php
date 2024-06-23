@@ -67,9 +67,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
     {
         if (isset($data['locales']))
             $this->localeAction->setLocales($model, $data['locales']);
-        if (isset($data['media']))
+        if (isset($data['media']) && count($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
-        if (isset($data['settings']))
+        if (isset($data['settings']) && count($data['settings']))
             $this->settingAction->set($model, $data['settings']);
     }
 

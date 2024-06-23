@@ -7,11 +7,11 @@ use App\Repository\SettingRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use \Exception;
+use Exception;
 
 class SettingsController extends Controller
 {
-    public function __construct( private SettingRepositoryInterface $repository)
+    public function __construct(private SettingRepositoryInterface $repository)
     {
     }
 
@@ -31,51 +31,25 @@ class SettingsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    /*
-     * [
-    {
-        "day": "Sat",
-        "shifts": [
-            {
-                "to": "01:00",
-                "from": "00:00"
-            }
-        ]
-    },
-    {
-        "day": "Sun",
-        "shifts": [
-            {
-                "to": "01:00",
-                "from": "00:00"
-            }
-        ]
-    }
-]
-SELECT settings.id , JSON_EXTRACT(settings.data ,"$[*].day") day,
-	JSON_EXTRACT(settings.data ,"$[0].shifts[0].from") sfrom,
-	JSON_EXTRACT(settings.data ,"$[0].shifts[0].to") sto
-	FROM `settings` WHERE settings.key like "shifts"
- AND '10:30' BETWEEN TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].from'))) AND TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].to')));
-
-    //////
-
-SELECT
-    CASE
-        WHEN CURRENT_TIME() BETWEEN TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].from'))) AND TIME(JSON_UNQUOTE(JSON_EXTRACT(`data`, '$[0].shifts[0].to'))) THEN 'Open'
-        ELSE 'Closed'
-    END AS status
-FROM
-    settings  WHERE settings.key like "shifts";
-
-     */
     public function createSetting(Request $request, int $modelId): JsonResponse
     {
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
-        if(!$model)
+        if (!$model)
             throw new Exception("no data found");
         return \response()->json($this->repository->createSetting($model, $request->all()));
+    }
+
+    public function setSetting(Request $request): JsonResponse
+    {
+        $modelId = $request->route('modelId');
+        $modelName = $request->get('model');
+        $model = app($modelName)->find($modelId);
+        if (!$model)
+            throw new Exception("no data found");
+        return \response()->json(
+            $this->repository->setSettings($model, $request->all())
+        );
     }
 
     /**
@@ -83,11 +57,12 @@ FROM
      * @param $modelId
      * @return JsonResponse
      */
-    public function listSettings(Request $request, $modelId): JsonResponse
+    public function listSettings(Request $request): JsonResponse
     {
+        $modelId = $request->route('modelId');
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
-        if(!$model)
+        if (!$model)
             throw new \Exception("no data found");
         return \response()->json($this->repository->listSettings($model));
     }
@@ -115,7 +90,7 @@ FROM
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         $request->request->add(['id' => $settingId]);
-        if(!$model)
+        if (!$model)
             throw new Exception("no data found");
         return \response()->json($this->repository->updateSetting($model, $request->all()));
     }
@@ -142,7 +117,7 @@ FROM
     {
         $modelName = \request()->get('model');
         $relationModel = app($modelName)->find($modelId);
-        if(!$relationModel)
+        if (!$relationModel)
             throw new Exception("no data found");
         \request()->request->add(['id' => $settingId]);
         return \response()->json($this->repository->deleteSetting($relationModel, \request()->all()));

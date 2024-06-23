@@ -76,10 +76,11 @@ Route::group(['middleware' => [
     Route::group(['prefix' => 'hotels', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [HotelsController::class, 'index']);
         Route::get('/{id}', [HotelsController::class, 'show']);
+        Route::post('/{id}/delete', [HotelsController::class, 'destroy']);
         Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
         Route::post('/{id}', [HotelsController::class, 'update'])
             ->middleware('role:' . RolesConstants::ADMIN . '|permission:hotels.owner.{id}');
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -90,6 +91,7 @@ Route::group(['middleware' => [
         Route::get('/{id}', [ContactController::class, 'show']);
         Route::post('/', [ContactController::class, 'create']);
         Route::post('/{id}', [ContactController::class, 'update']);
+        Route::post('/{id}/delete', [ContactController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
@@ -99,7 +101,7 @@ Route::group(['middleware' => [
         Route::post('/{id}/delete', [CategoriesController::class, 'destroy']);
         Route::post('/sort', [CategoriesController::class, 'updateSort']);
         Route::post('/{id}', [CategoriesController::class, 'update']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -112,7 +114,7 @@ Route::group(['middleware' => [
         Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
         Route::post('/sort', [ItemsController::class, 'sort']);
         Route::post('/{id}', [ItemsController::class, 'update']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
@@ -150,6 +152,7 @@ Route::group(['middleware' => [
         Route::post('/', [MediaController::class, 'create']);
         Route::post('upload', [MediaController::class, 'postUpload']);
         Route::post('/{id}', [MediaController::class, 'update']);
+        Route::post('/{id}/delete', [MediaController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'prices'], function () {
@@ -180,7 +183,7 @@ Route::group(['middleware' => [
         Route::post('/', [UsersController::class, 'create']);
         Route::post('/{id}', [UsersController::class, 'update']);
         Route::get('/{id}/items', [UsersController::class, 'userItems']);
-        Route::get('/{id}/settings', [SettingsController::class, 'listSettings']);
+        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
         Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);

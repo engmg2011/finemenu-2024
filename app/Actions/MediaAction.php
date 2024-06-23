@@ -126,4 +126,8 @@ class MediaAction
         return Media::with('locales')->find($media->id);
     }
 
+    public function delete(int $id){
+        return app(MediaRepository::class)->delete($id);
+    }
+
 }

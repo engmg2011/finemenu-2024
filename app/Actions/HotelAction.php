@@ -38,7 +38,7 @@ class HotelAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->processHotel($data));
-        if (isset($model['locales']))
+        if (isset($data['locales']))
             $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
@@ -50,13 +50,18 @@ class HotelAction
      */
     public function list()
     {
-        return Hotel::with('media')
+        return Hotel::with('locales','media')
             ->where('user_id', auth('api')->id())
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function getModel(int $id)
     {
-        return Hotel::with('media')->find($id);
+        return Hotel::with('locales','media')->find($id);
+    }
+
+    public function destroy(int $id)
+    {
+        return Hotel::find($id)->delete();
     }
 }

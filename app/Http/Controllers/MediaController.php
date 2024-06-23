@@ -66,11 +66,11 @@ class MediaController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        //
+        return \response()->json($this->action->delete($id));
     }
 
 
@@ -87,6 +87,7 @@ class MediaController extends Controller
         $storagePath = "storage/" . $uploadedFile;
         if ($this->request->headers->has('convert-item')) {
             $fullPath = $this->request->header('full-path');
+
 
             $myFile = [
                 'fullPath' => $fullPath,
@@ -106,7 +107,7 @@ class MediaController extends Controller
         $this->action->uploadMedia($file, $file_name, "public/" . $savePath);
 
         return response()->json([
-            'file' => $storagePath,
+            'file' => url($storagePath),
             'item' => $item ?? null,
             'media' => $media ?? null
         ]);
