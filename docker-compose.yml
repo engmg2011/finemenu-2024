@@ -1,4 +1,4 @@
-#version: "3.4"
+#version: "3.8"
 services:
     backend:
         env_file:
@@ -23,6 +23,7 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html/backend'
+            - './storage:/var/www/html/storage'
         networks:
             - sail
         depends_on:
@@ -34,10 +35,8 @@ services:
         build:
             context: ../dashboard
             dockerfile: Dockerfile
-        #        command: npm run dev
         ports:
             - '80:80'
-        #            - '80:3000'
         volumes:
             - '../dashboard:/var/www/html/dashboard'
         depends_on:
@@ -109,6 +108,35 @@ services:
             retries: 3
             timeout: 5s
         restart: unless-stopped
+#
+#    imgproxy:
+#        image: darthsim/imgproxy
+#        ports:
+#            - "9999:8080"
+#        environment:
+#            IMGPROXY_KEY: 0189f3c50ac42edd5a2dc5a83092eade7b1b41148b0997860c22acf2a09d61ee
+#            IMGPROXY_SALT: cf755c9ebac65e2ce6df62037773bb60a39b3895cb299dcb46aee6bc78937c88
+#            IMGPROXY_LOCAL_FILESYSTEM_ROOT: /var/www/html/storage/app/public
+#        volumes:
+#            - ./storage/app/public:/var/www/html/storage/app/public
+#        restart: unless-stopped
+#        networks:
+#            - sail
+
+    thumbor:
+        image: apsl/thumbor
+        ports:
+            - "9999:8000"
+        volumes:
+            - ./thumbor.conf:/etc/thumbor.conf
+#            - ./th.py:/th.py
+            - ./storage/app/public:/var/www/html/storage/app/public
+            - ./logs/thumbor:/var/log/thumbor
+        environment:
+            - THUMBOR_CONFIG=/etc/thumbor.conf
+        restart: unless-stopped
+        networks:
+            - sail
 
 networks:
     sail:

@@ -43,3 +43,25 @@ Route::get('orders-sender', function (){
 //    event(new MyEvent('hello world'));
 
 });
+
+
+function imgproxyUrl ($path){
+    $key = env('IMGPROXY_KEY');
+    $salt = env('IMGPROXY_SALT');
+    $url = url($path , [],true);
+
+    // Generate the imgproxy URL signature
+    $path = '/resize/800/0/plain/' . $url;
+    $hex_key = pack('H*', $key);
+    $hex_salt = pack('H*', $salt);
+
+    $signature = hash_hmac('sha256', $hex_salt . $path, $hex_key, true);
+    $encoded_signature = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
+
+    return env('IMGPROXY_URL') . '/' . $encoded_signature . $path;
+};
+
+Route::get('image',function (){
+    return "<img src='" . imgproxyUrl('storage/1.jpg') ."' alt=\"Image\">";
+}
+);
