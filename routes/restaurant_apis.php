@@ -28,7 +28,7 @@ Route::group(['middleware' => [
         Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{modelId}/settings/set', [SettingsController::class, 'setSetting']);
 
-        Route::group(['prefix' => '{restaurantId}/branches', 'middleware' => [SetRequestModel::class]], function () {
+        Route::group(['prefix' => '{restaurantId}/branches'], function () {
             Route::get('{modelId}/settings', [SettingsController::class, 'listSettings']);
             Route::post('{modelId}/settings/set', [SettingsController::class, 'setSetting']);
         });
