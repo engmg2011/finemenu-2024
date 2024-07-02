@@ -19,7 +19,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class RestaurantRepository extends BaseRepository implements RestaurantRepositoryInterface
 {
     public static $modelRelations = ['locales', 'branches.locales', 'branches.menu.locales',
-        'media', 'settings', 'contents'];
+        'media', 'settings', 'contents', 'branches.settings', 'branches.menus.settings'];
 
     public function __construct(Restaurant                                     $model,
                                 private readonly MediaAction                   $mediaAction,
