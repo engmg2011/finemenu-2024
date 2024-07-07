@@ -54,7 +54,8 @@ class UploadMenuQueue implements ShouldQueue
         $item_name = $this->fineName(explode('.', $item_name)[0]);
         if (count($splitNames)) {
             $categories = (app(CategoryAction::class))
-                ->createCategoriesFromPath($splitNames,
+                ->createCategoriesFromPath(
+                    $splitNames,
                     $this->myFile['uploadedFilePath'],
                     $this->user['userId'],
                     $this->user['restaurantId'],

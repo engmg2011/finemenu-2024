@@ -87,8 +87,6 @@ class MediaController extends Controller
         $storagePath = "storage/" . $uploadedFile;
         if ($this->request->headers->has('convert-item')) {
             $fullPath = $this->request->header('full-path');
-
-
             $myFile = [
                 'fullPath' => $fullPath,
                 'uploadedFilePath' => $storagePath,

@@ -39,7 +39,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
         if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
         \Log::debug("name" . $data['name']);
-        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('api')->user()->email);
+        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
         return array_only($data, ['name', 'user_id', 'passcode', 'type', 'creator_id', 'slug']);
     }
 
@@ -113,6 +113,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
             'user_id' => $user->id,
             'creator_id' => $user->id,
             'name' => $request->businessName,
+            'email' => $request->email,
             'slug' => $menuSlug,
             "locales" => [["name" => $request->businessName, "locale" => "en"]]
         ];

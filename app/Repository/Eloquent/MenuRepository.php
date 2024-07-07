@@ -27,9 +27,9 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     public function process($restaurantId, array $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
-        if(!isset($data['name']) && isset($data['locales']))
+        if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
-        $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email);
+        $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
         return array_only($data, ['slug', 'name', 'restaurant_id', 'sort', 'user_id']);
     }
 
@@ -72,7 +72,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     {
         return Menu::with([
             'settings', 'media', 'locales',
-            'categories.locales' ,'categories.media' ,
+            'categories.locales', 'categories.media',
             'categories.items.locales',
             'categories.items.addons.locales',
             'categories.items.addons.children.locales',

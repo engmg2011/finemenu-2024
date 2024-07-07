@@ -31,19 +31,19 @@ services:
             - redis
         restart: unless-stopped
 
-    dashboard:
-        build:
-            context: ../dashboard
-            dockerfile: Dockerfile
-        ports:
-            - '80:80'
-        volumes:
-            - '../dashboard:/var/www/html/dashboard'
-        depends_on:
-            - backend
-        networks:
-            - sail
-        restart: unless-stopped
+#    dashboard:
+#        build:
+#            context: ../dashboard
+#            dockerfile: Dockerfile
+#        ports:
+#            - '80:80'
+#        volumes:
+#            - '../dashboard:/var/www/html/dashboard'
+#        depends_on:
+#            - backend
+#        networks:
+#            - sail
+#        restart: unless-stopped
 
     mysql:
         env_file:

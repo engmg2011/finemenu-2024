@@ -65,7 +65,7 @@ class Category extends Model
     }
 
     public function children() {
-        return $this->hasMany(Category::class, 'parent_id')->orderBy('sort');
+        return $this->hasMany(Category::class, 'parent_id')->with('locales', 'media')->orderBy('sort');
     }
 
     public function childrenNested()

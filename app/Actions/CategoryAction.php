@@ -85,7 +85,8 @@ class CategoryAction
      * @return Collection
      */
     public function createCategoriesFromPath($categories_names,
-                                             $image_path, $userId,
+                                             $image_path,
+                                             $userId,
                                              $restaurantId,
                                              $menuId
     ): Collection
@@ -95,7 +96,7 @@ class CategoryAction
             $lastCatId = $categories->count() ? $categories->last()->id : null;
             $same_category = Category::where('parent_id', $lastCatId)
                 ->where('restaurant_id', $restaurantId)
-                ->where('menu_id', $restaurantId)
+                ->where('menu_id', $menuId)
                 ->whereHas('locales', function ($q) use ($category_name) {
                     $q->where('name', $category_name);
                 })->limit(1)->get();
