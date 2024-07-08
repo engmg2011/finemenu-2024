@@ -20,7 +20,7 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id', 'menu_id', 'sort']);
+        return array_only($data, ['restaurant_id', 'menu_id', 'sort', 'slug']);
     }
 
     public function relations($model, $data)

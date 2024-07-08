@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 
 class UsersController extends Controller
 {
@@ -115,4 +114,5 @@ class UsersController extends Controller
     public function menu($restaurantId) {
         return response()->json($this->action->menu($restaurantId));
     }
+
 }

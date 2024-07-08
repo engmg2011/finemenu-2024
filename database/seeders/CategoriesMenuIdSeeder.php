@@ -6,7 +6,6 @@ use App\Models\Restaurant;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Seeder;
-use mysql_xdevapi\Exception;
 
 // sail artisan db:seed --class=CategoriesMenuIdSeeder;
 class CategoriesMenuIdSeeder extends Seeder
@@ -25,7 +24,7 @@ class CategoriesMenuIdSeeder extends Seeder
         foreach (Restaurant::with('user')->get() as &$restaurant) {
             $menuSlug = $this->menuRepository->createMenuId($restaurant->name, $restaurant->user->email);
             if(!$menuSlug)
-                throw new Exception("error restID ". $restaurant->id);
+                throw new \Exception("error restID ". $restaurant->id);
             $data = [
                 'slug' => $menuSlug,
                 'restaurant_id' => $restaurant->id,
