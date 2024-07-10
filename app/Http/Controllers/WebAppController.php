@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Actions\WebAppAction;
-use App\Models\Menu;
+use App\Models\Branch;
 use App\Repository\Eloquent\RestaurantRepository;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -26,10 +26,25 @@ class WebAppController extends Controller
      */
     public function nestedMenu($menuId): JsonResponse
     {
-        $menu= $this->menuRepository->fullMenu($menuId);
+        $menu = $this->menuRepository->fullMenu($menuId);
         return response()->json($menu);
     }
 
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param $restaurantId
+     * @return JsonResponse
+     */
+    public function branchMenu($branchSlug): JsonResponse
+    {
+        $branch = Branch::with(['locales', 'settings', 'media',
+            'restaurant.locales', 'restaurant.media',
+            'restaurant.settings' ])->where('slug', $branchSlug)->firstOrFail();
+        $menu = $this->menuRepository->fullMenu($branch->menu_id);
+        return response()->json(compact('branch', 'menu'));
+    }
 
     /**
      * Display a listing of the resource.

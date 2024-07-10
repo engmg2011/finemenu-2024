@@ -26,13 +26,12 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\UsersController;
-use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
+|--------------------------------------------------------------:------------
 | API Routes
 |--------------------------------------------------------------------------
 |
@@ -200,10 +199,6 @@ Route::group(['middleware' => [
         Route::post('/{id}', [DiscountsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'webapp'], function () {
-        Route::get('menus/{id}', [WebAppController::class, 'nestedMenu']);
-        Route::get('diet-restaurant/{id}', [WebAppController::class, 'dietRestaurant']);
-    });
 
     Route::group(['prefix' => 'kitchen'], function () {
         Route::get('orders', [OrdersController::class, 'kitchenOrders']);
