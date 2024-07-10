@@ -59,7 +59,9 @@ class Media extends Model
 
     public function getSrcAttribute($src)
     {
-        return strpos($src, "http:") === 0 ? $src :  url($src);
+        return ( strpos($src, "http:") === 0 ||  strpos($src, "https:") === 0 ) ?
+            str_replace("http:", "https:", $src)
+            : url($src);
     }
 
 
