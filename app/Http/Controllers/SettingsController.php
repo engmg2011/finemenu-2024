@@ -42,7 +42,7 @@ class SettingsController extends Controller
 
     public function setSetting(Request $request): JsonResponse
     {
-        $modelId = $request->route('modelId');
+        $modelId = $request->route('branchId');
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)
@@ -59,7 +59,7 @@ class SettingsController extends Controller
      */
     public function listSettings(Request $request): JsonResponse
     {
-        $modelId = $request->route('modelId');
+        $modelId = $request->route('branchId');
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)

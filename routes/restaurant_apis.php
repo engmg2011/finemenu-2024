@@ -8,7 +8,6 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
-use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +39,6 @@ Route::group(['middleware' => [
                 Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
 
             });
-
 
 
         });
@@ -85,34 +83,19 @@ Route::group(['middleware' => [
                 });
 
             });
-        });
 
-
-
-    });
-
-});
-
-
-
-
-// TODO :: put admin only roles
-    Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
-
-        Route::group(['prefix' => '{restaurantId}/branches'], function () {
-
-            Route::group(['prefix' => '{modelId}'], function () {
+            Route::group(['prefix' => '{branchId}', 'middleware' => [SetRequestModel::class]], function () {
                 Route::get('settings', [SettingsController::class, 'listSettings']);
                 Route::post('settings/set', [SettingsController::class, 'setSetting']);
 
-                Route::get('reference-qr', [BranchesController::class , 'referenceQr']);
-                Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
-                Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
-
+                Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
+//                Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
+//                Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
             });
-
 
         });
 
+
+    });
 
 });
