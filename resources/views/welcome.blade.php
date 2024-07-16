@@ -119,11 +119,11 @@
                     </div>
                 </div>
 
-                <form action="{{ url('/api/webapp/branches/gamal_68') }}" method="get">
+                <form action="{{ url('/api/webapp/branches/salon_53') }}" method="get">
                     @csrf
                     <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 
-                    <button type="submit">Send</button>
+                    <button type="submit">open</button>
                 </form>
 
 
