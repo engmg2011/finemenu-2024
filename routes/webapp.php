@@ -6,9 +6,8 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\WebAppController;
 
 // Routes for api/webapp
-Route::group(['prefix' => 'webapp', 'middleware' => [
-    'auth:api',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+Route::group(['prefix' => 'webapp',
+    'middleware' => ['recaptcha']
 ], function () {
 
 
