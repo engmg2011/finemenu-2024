@@ -90,6 +90,15 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    /**
+     * @return mixed
+     */
+    public function allList()
+    {
+        return Restaurant::with(RestaurantRepository::$modelRelations)
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
     public function getModel(int $id)
     {
         return Restaurant::with(RestaurantRepository::$modelRelations)->find($id);

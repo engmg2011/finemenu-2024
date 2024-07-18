@@ -11,7 +11,7 @@ use App\Http\Middleware\SetRequestModel;
 
 // Routes for api/webapp
 Route::group(['prefix' => 'webapp',
-    'middleware' => ['recaptcha']
+//    'middleware' => ['recaptcha']
 ], function () {
 
 
@@ -22,7 +22,7 @@ Route::group(['prefix' => 'webapp',
 
 
     Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
-        Route::get('/', [RestaurantsController::class, 'index']);
+        Route::get('/', [RestaurantsController::class, 'allList']);
 
         // Restaurant Branch floors
         Route::group(['prefix' => '/{restaurantId}/branches/{branchId}/floors'], function () {

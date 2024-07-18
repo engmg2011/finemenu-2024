@@ -83,7 +83,7 @@ class BranchesController extends Controller
 
 
     public function referenceQr(){
-        $branchId = \request()->route('branchId');
+        $branchId = \request()->route('modelId');
         $resolution = \request('resolution', '');
         $resolutionValue = $resolution === 'hd' ? 1024 : 250;
         $branch = Branch::find($branchId);

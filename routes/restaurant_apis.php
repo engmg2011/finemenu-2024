@@ -28,20 +28,6 @@ Route::group(['middleware' => [
         Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
         Route::post('/{modelId}/settings/set', [SettingsController::class, 'setSetting']);
 
-        Route::group(['prefix' => '{restaurantId}/branches'], function () {
-
-            Route::group(['prefix' => '{modelId}'], function () {
-                Route::get('settings', [SettingsController::class, 'listSettings']);
-                Route::post('settings/set', [SettingsController::class, 'setSetting']);
-
-                Route::get('reference-qr', 'UserController@referenceQr');
-                Route::post('reference-qr', 'UserController@PreviewQR');
-                Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
-
-            });
-
-
-        });
 
         Route::get('/{modelId}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
 
@@ -84,18 +70,28 @@ Route::group(['middleware' => [
 
             });
 
-            Route::group(['prefix' => '{branchId}', 'middleware' => [SetRequestModel::class]], function () {
-                Route::get('settings', [SettingsController::class, 'listSettings']);
-                Route::post('settings/set', [SettingsController::class, 'setSetting']);
-
-                Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
-//                Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
-//                Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
-            });
 
         });
 
 
     });
+
+});
+
+// TODO :: put admin only roles
+Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
+
+    Route::group(['prefix' => '{restaurantId}/branches/{modelId}'], function () {
+
+            Route::get('settings', [SettingsController::class, 'listSettings']);
+            Route::post('settings/set', [SettingsController::class, 'setSetting']);
+
+            Route::get('reference-qr', [BranchesController::class , 'referenceQr']);
+            Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
+            Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
+
+
+    });
+
 
 });

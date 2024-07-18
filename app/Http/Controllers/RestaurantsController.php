@@ -30,6 +30,16 @@ class RestaurantsController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function allList()
+    {
+        return DataResource::collection($this->repository->allList());
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
