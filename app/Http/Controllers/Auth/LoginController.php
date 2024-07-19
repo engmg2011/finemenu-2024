@@ -67,7 +67,7 @@ class LoginController extends Controller
         if($validator->fails())
             return response()->json(["message" => "Error occurred" , 'errors' => $validator->errors()] , 403);
 
-        $user = User::where(array_only($data, ['email' , 'phone']))->with('restaurants','settings')->first();
+        $user = User::where(array_only($data, ['email' , 'phone']))->with('settings')->first();
 
         if( !( $user && Hash::check( $data['password'] ,$user->password) ))
             return response()->json(["message" => "Invalid user credentials"] , 403);

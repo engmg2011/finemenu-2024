@@ -248,8 +248,10 @@ class RegisterController extends Controller
         $user->assignRole(RolesConstants::OWNER);
         $token = $user->createToken('API Token')->accessToken;
 
-        // Create restaurant and give permission
-        $this->restaurantRepository->registerNewRestaurantOwner($request, $user);
+        if(isset($data['businessName'])){
+            // Create restaurant and give permission
+            $this->restaurantRepository->registerNewRestaurantOwner($request, $user);
+        }
 
         // Create subscription
         // $this->createSubscription($user);
