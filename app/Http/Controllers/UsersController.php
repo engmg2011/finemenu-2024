@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
@@ -41,7 +42,7 @@ class UsersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
     public function show($id)
@@ -54,18 +55,31 @@ class UsersController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->action->update($id,$request->all()));
+        $data = $request->all();
+        // unset not enabled to update
+        unset($data['email']);
+        unset($data['phone']);
+
+        $validator = Validator::make($data, [
+            'email' => ['string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+            'name' => ['string', 'max:255'],
+            'password' => 'confirmed|min:8',
+        ]);
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+        return \response()->json($this->action->updateModel($id, $request->all()));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
     public function destroy($id)
@@ -77,7 +91,7 @@ class UsersController extends Controller
     public function info(Request $request): JsonResponse
     {
         $userId = $request->user()->id;
-        if(!$userId)
+        if (!$userId)
             return response()->json(['message' => 'Not authorized'], 401);
 
         $user = User::with([
@@ -99,19 +113,20 @@ class UsersController extends Controller
     public function userItems($userId): JsonResponse
     {
         $categories = Category::where('user_id', $userId)
-            ->with(['items.locales','items.media','items.prices.locales','items.addons', 'items.discounts'])
-            ->orderBy('sort','asc')
+            ->with(['items.locales', 'items.media', 'items.prices.locales', 'items.addons', 'items.discounts'])
+            ->orderBy('sort', 'asc')
             ->paginate(50);
         $items = [];
-        foreach ($categories as $category){
-            foreach ($category->items as $item){
+        foreach ($categories as $category) {
+            foreach ($category->items as $item) {
                 $items[] = $item;
             }
         }
         return \response()->json($items);
     }
 
-    public function menu($restaurantId) {
+    public function menu($restaurantId)
+    {
         return response()->json($this->action->menu($restaurantId));
     }
 

@@ -50,6 +50,8 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('register', [RegisterController::class, 'register']);
     Route::post('send-code', [RegisterController::class, 'sendCode']);
     Route::post('validate-code', [RegisterController::class, 'validateCode']);
+    Route::post('forgot-password', [RegisterController::class, 'forgotPassword']);
+    Route::post('reset-password', [RegisterController::class, 'resetPassword']);
 });
 
 

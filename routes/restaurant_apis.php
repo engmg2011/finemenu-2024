@@ -87,8 +87,8 @@ Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class
             Route::post('settings/set', [SettingsController::class, 'setSetting']);
 
             Route::get('reference-qr', [BranchesController::class , 'referenceQr']);
-            Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
-            Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
+//            Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
+//            Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
 
 
     });

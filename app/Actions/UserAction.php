@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\User;
 use App\Repository\Eloquent\UserRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class UserAction
 {
@@ -39,5 +40,16 @@ class UserAction
     {
         return User::orderByDesc('id')->paginate(request('per-page', 15));
     }
+
+
+    public function updateModel($id, array $data): Model
+    {
+        if(isset($data['password']))
+            $data['password'] = bcrypt($data['password']);
+        $model = tap($this->repository->find($id))
+            ->update($this->processUser($data));
+        return $model;
+    }
+
 
 }

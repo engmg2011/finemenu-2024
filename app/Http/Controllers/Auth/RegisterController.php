@@ -65,16 +65,35 @@ class RegisterController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data , array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
+    protected function validator(array $data, array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
     {
         return Validator::make($data, $extraValidation + [
-            'email' => ['string', 'email', 'max:255', 'unique:users'],
-            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+                'email' => ['string', 'email', 'max:255', 'unique:users'],
+                'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+                'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+            ], [
+            'phone_required' => "phone or email required"
+        ]);
+    }
+
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function resetValidator(array $data, array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
+    {
+        return Validator::make($data, $extraValidation + [
+            'email' => ['string', 'email', 'max:255'],
+            'phone' => ['string', 'min:8', 'max:15'],
             'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
         ], [
             'phone_required' => "phone or email required"
         ]);
     }
+
 
     /**
      * Create a new user instance after a valid registration.
@@ -124,7 +143,7 @@ class RegisterController extends Controller
             ->where('created_at', '>', Carbon::now()->subHour())
             ->first();
         if (is_null($codeData)) {
-            $codeData = InitRegister::create( $searchArray +
+            $codeData = InitRegister::create($searchArray +
                 [
                     'tries_count' => 0,
                     'code' => $randomCode,
@@ -152,6 +171,23 @@ class RegisterController extends Controller
     {
         $data = $request->all();
         $validator = $this->validator($data);
+
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        if (!$this->IpCanRegister())
+            return response()->json(['message' => 'Too many tries, try again later.'], 403);
+
+        if (!$this->sendCodeProcess($data))
+            return response()->json(['message' => 'Too many code tries, try again later.'], 403);
+
+        return response()->json(["message" => "Code sent, Please enter the code you have received"]);
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $data = $request->all();
+        $validator = $this->resetValidator($data);
 
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
@@ -197,10 +233,10 @@ class RegisterController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function validateCode(Request $request): JsonResponse
+    public function validateCode(Request $request, $reset = false): JsonResponse
     {
         $data = $request->all();
-        $validator = $this->validator($data , [ 'code' => ['required'] ]);
+        $validator = $reset ? $this->resetValidator($data, ['code' => ['required']]) : $this->validator($data, ['code' => ['required']]);
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
@@ -208,9 +244,24 @@ class RegisterController extends Controller
         $isValidCode = InitRegister::where($searchArray)
             ->where('created_at', '>', Carbon::now()->subHour())
             ->where('code', $data['code'])->first();
-        if( !$isValidCode )
+        if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 403);
+        if ($reset) {
+            $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
+            $token = $user->createToken('authToken')->accessToken;
+            $user['token'] = $token;
+            return response()->json($user);
+        }
         return response()->json(['message' => 'success']);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        return $this->validateCode($request, true);
     }
 
     /**
@@ -236,7 +287,7 @@ class RegisterController extends Controller
             ->where('created_at', '>', Carbon::now()->subHour())
             ->where('code', $data['code'])->first();
 
-        if( !$isValidCode )
+        if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 403);
 
         $data['password'] = bcrypt($request->password);
@@ -248,7 +299,7 @@ class RegisterController extends Controller
         $user->assignRole(RolesConstants::OWNER);
         $token = $user->createToken('API Token')->accessToken;
 
-        if(isset($data['businessName'])){
+        if (isset($data['businessName'])) {
             // Create restaurant and give permission
             $this->restaurantRepository->registerNewRestaurantOwner($request, $user);
         }
