@@ -4,21 +4,31 @@
 namespace App\Actions;
 
 
+use App\Constants\UserTypes;
+use App\Models\Branch;
+use App\Models\LoginSession;
 use App\Models\User;
 use App\Repository\Eloquent\UserRepository;
+use App\Services\QrService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserAction
 {
 
-    public function __construct(private UserRepository $repository) {
+    public function __construct(private UserRepository $repository)
+    {
     }
 
-    public function processUser(Array $data) {
-        return array_only( $data , ['name', 'email', 'phone','type', 'currency', 'password', 'email_verified_at']);
+    public function processUser(array $data)
+    {
+        return array_only($data, ['name', 'email', 'phone', 'type', 'currency', 'password', 'email_verified_at']);
     }
 
-    public function create(Array $data) {
+    public function create(array $data)
+    {
         return $this->repository->create($this->processUser($data));
     }
 
@@ -44,12 +54,88 @@ class UserAction
 
     public function updateModel($id, array $data): Model
     {
-        if(isset($data['password']))
+        if (isset($data['password']))
             $data['password'] = bcrypt($data['password']);
         $model = tap($this->repository->find($id))
             ->update($this->processUser($data));
         return $model;
     }
 
+
+    public function createLoginQr($restaurantId, $branchId)
+    {
+        // Generate a login token (for demonstration, use a random string)
+        $token = bin2hex(random_bytes(16));
+
+        LoginSession::create(['login_session' => $token,
+            'valid_until' => Carbon::now()->addMinutes(15)]);
+
+        // Generate the QR code with the login token
+        $content = route('login.qr', ['token' => $token,
+                'modelId' => $branchId,
+                'type' => UserTypes::SUPERVISOR,
+            ] + compact('restaurantId'));
+
+        return (new QrService())->generateBase64QrCode($content);
+    }
+
+    public function generateRandomString($length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    public function getBranchSubUser($branchId, $userType): User
+    {
+        $userSlug = Branch::find($branchId)->slug . '-' . $userType;
+        $userEmail = $userSlug . '@menu-ai.net';
+        return User::firstOrCreate(['email' => $userEmail],
+            [
+                'name' => $userSlug,
+                'email' => $userEmail,
+                'type' => $userType,
+                'password' => $this->generateRandomString()
+            ]);
+    }
+
+
+    public function loginByQr(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+            'type' => 'required|string'
+        ]);
+        if ($validator->fails())
+            return response()->json(['message' => 'Invalid QR code'], 401);
+
+        $branchId = \request()->route('modelId');
+        $token = $request->input('token');
+        $type = $request->input('type');
+        $loginSession = LoginSession::where('login_session', $token)
+            ->where('valid_until', '<', Carbon::now())->first();
+        // Validate the token (you can add your own validation logic here)
+        if ($loginSession) {
+            // create kitchen user if no one exists
+            if (in_array($type, [UserTypes::KITCHEN, UserTypes::CASHIER,
+                UserTypes::DRIVER, UserTypes::SUPERVISOR])) {
+                $subUser = $this->getBranchSubUser($branchId, $type);
+                $token = $subUser->createToken('authToken')->accessToken;
+                $subUser['token'] = $token;
+                return response()->json($subUser);
+            }
+
+            // if no device name sent : create device for this user and save device name
+            // if device name sent : unAuthorize the old device with the device name
+            // save ip, last login, last sync, OS, ....
+
+
+        }
+        return response()->json(['message' => 'Invalid QR Login code'], 401);
+    }
 
 }

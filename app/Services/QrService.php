@@ -14,9 +14,7 @@ use BaconQrCode\Writer;
 class QrService
 {
 
-    public function generateBase64QrCode(Branch $branch, string $content,
-                                         int    $resolution = 500, float $logoSize = 0.3,
-                                         string $logoPath = null)
+    public function generateBase64QrCode(string $content)
     {
 
         // Create a renderer with SVG backend and style
@@ -32,7 +30,7 @@ class QrService
         // Write the QR code to a file
         $qrCode = $writer->writeString($content);
 
-        return base64_encode($qrCode);
+        return 'data:image/svg+xml;base64,' . base64_encode($qrCode);
 
     }
 
@@ -118,4 +116,8 @@ class QrService
             ->size($resolution)->errorCorrection('H')
             ->generate();
     }
+
+
+
+
 }

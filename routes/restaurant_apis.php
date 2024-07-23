@@ -8,6 +8,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
+use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
@@ -83,10 +84,14 @@ Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class
 
     Route::group(['prefix' => '{restaurantId}/branches/{modelId}'], function () {
 
-            Route::get('settings', [SettingsController::class, 'listSettings']);
-            Route::post('settings/set', [SettingsController::class, 'setSetting']);
+        Route::get('settings', [SettingsController::class, 'listSettings']);
+        Route::post('settings/set', [SettingsController::class, 'setSetting']);
 
-            Route::get('reference-qr', [BranchesController::class , 'referenceQr']);
+        Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
+        Route::get('create-login-qr', [UsersController::class, 'createLoginQr']);
+        Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
+
+
 //            Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
 //            Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
 

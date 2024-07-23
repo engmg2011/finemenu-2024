@@ -100,8 +100,7 @@ class BranchesController extends Controller
             return response()->make($qrImage);
         }
 
-        $base64 = (new QrService())->generateBase64QrCode($branch, $content, $resolutionValue);
-        return 'data:image/svg+xml;base64,' . $base64;
+       return (new QrService())->generateBase64QrCode($content);
     }
 
     public function PreviewQR($branchId) {
@@ -121,4 +120,6 @@ class BranchesController extends Controller
             File::delete($filePath);
         return base64_encode($qrImage);
     }
+
+
 }

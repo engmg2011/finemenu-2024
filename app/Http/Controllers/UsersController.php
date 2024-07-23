@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Actions\UserAction;
+use App\Constants\UserTypes;
 use App\Http\Resources\DataResource;
 use App\Models\Category;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -128,6 +130,19 @@ class UsersController extends Controller
     public function menu($restaurantId)
     {
         return response()->json($this->action->menu($restaurantId));
+    }
+
+
+    public function createLoginQr()
+    {
+        $restaurantId = \request()->route('restaurantId');
+        $branchId = \request()->route('modelId');
+        return $this->action->createLoginQr($restaurantId, $branchId);
+    }
+
+    public function loginByQr(Request $request)
+    {
+        return $this->action->loginByQr($request);
     }
 
 }

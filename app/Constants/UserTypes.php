@@ -2,7 +2,7 @@
 
 namespace App\Constants;
 
-class RolesConstants
+class UserTypes
 {
     const ADMIN = 'admin';
     const OWNER = 'owner';
@@ -12,4 +12,3 @@ class RolesConstants
     const DRIVER = 'driver';
     const GUEST = 'guest';
 }
-
