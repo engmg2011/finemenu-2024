@@ -126,6 +126,7 @@ class UserAction
                 $subUser = $this->getBranchSubUser($branchId, $type);
                 $token = $subUser->createToken('authToken')->accessToken;
                 $subUser['token'] = $token;
+                $subUser['branch_slug'] = Branch::find($branchId)->slug;
                 return response()->json($subUser);
             }
 
