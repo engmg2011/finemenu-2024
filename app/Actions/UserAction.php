@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Constants\UserTypes;
 use App\Models\Branch;
+use App\Models\Device;
 use App\Models\LoginSession;
 use App\Models\User;
 use App\Repository\Eloquent\UserRepository;
@@ -103,12 +104,46 @@ class UserAction
             ]);
     }
 
+    /**
+     * // Create a device for sub user
+     * // if no device name sent : create device for this user and save device name
+     * // if device name sent : unAuthorize the old device with the same device name
+     * // save ip, last login, last sync, OS, ....
+     * @param Request $request
+     * @param $subUser
+     * @param $token
+     * @return User
+     */
+    public function subUserDevice(Request $request, $subUser , $authToken ){
+
+        $branchId = \request()->route('modelId');
+        $type = $request->input('type');
+
+        $deviceName = $request->input('device_name');
+        if (!$deviceName)
+            $deviceName = $subUser['branch_slug'];
+
+        Device::updateOrCreate(['device_name' => $deviceName],[
+            'token_id' => $authToken->token->id,
+            'user_id' => $subUser->id,
+            'branch_id' => $branchId,
+            'type' => $type,
+            'device_name' => $deviceName,
+            'os' => request()->header('User-Agent'),
+            'player_id' => request()->input('player_id'),
+            'version' => request()->header('App-Version'),
+            'info' => request()->header('App-Info'),
+            'last_active' => Carbon::now()
+        ]);
+
+    }
 
     public function loginByQr(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'token' => 'required|string',
-            'type' => 'required|string'
+            'type' => 'required|string',
+            'device_name' => 'nullable|string',
         ]);
         if ($validator->fails())
             return response()->json(['message' => 'Invalid QR code'], 401);
@@ -120,21 +155,17 @@ class UserAction
             ->where('valid_until', '<', Carbon::now())->first();
         // Validate the token (you can add your own validation logic here)
         if ($loginSession) {
-            // create kitchen user if no one exists
+            // get subUser or create  if no one exists
+            // only one subUser with the same type under every owner
             if (in_array($type, [UserTypes::KITCHEN, UserTypes::CASHIER,
                 UserTypes::DRIVER, UserTypes::SUPERVISOR])) {
                 $subUser = $this->getBranchSubUser($branchId, $type);
-                $token = $subUser->createToken('authToken')->accessToken;
-                $subUser['token'] = $token;
+                $authToken = $subUser->createToken('authToken');
+                $subUser['token'] = $authToken->accessToken;
                 $subUser['branch_slug'] = Branch::find($branchId)->slug;
+                $this->subUserDevice($request, $subUser, $authToken);
                 return response()->json($subUser);
             }
-
-            // if no device name sent : create device for this user and save device name
-            // if device name sent : unAuthorize the old device with the device name
-            // save ip, last login, last sync, OS, ....
-
-
         }
         return response()->json(['message' => 'Invalid QR Login code'], 401);
     }

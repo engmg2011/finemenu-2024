@@ -51,11 +51,11 @@ class LoginController extends Controller
      */
     protected function validator(array $data): \Illuminate\Contracts\Validation\Validator
     {
-        return Validator::make($data,  [
-                'email' => ['string', 'email', 'max:255'],
-                'phone' => ['string', 'min:8', 'max:15'],
-                'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
-            ], [
+        return Validator::make($data, [
+            'email' => ['string', 'email', 'max:255'],
+            'phone' => ['string', 'min:8', 'max:15'],
+            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+        ], [
             'phone_required' => "phone or email required"
         ]);
     }
@@ -64,13 +64,17 @@ class LoginController extends Controller
     {
         $data = $request->all();
         $validator = $this->validator($data);
-        if($validator->fails())
-            return response()->json(["message" => "Error occurred" , 'errors' => $validator->errors()] , 403);
+        if ($validator->fails())
+            return response()->json(["message" => "Error occurred", 'errors' => $validator->errors()], 403);
 
-        $user = User::where(array_only($data, ['email' , 'phone']))->with('settings')->first();
-
-        if( !( $user && Hash::check( $data['password'] ,$user->password) ))
-            return response()->json(["message" => "Invalid user credentials"] , 403);
+        $user = User::where(array_only($data, ['email', 'phone']))
+            ->with('restaurants.locales',
+                    'restaurants.media',
+                    'restaurants.branches.locales',
+                    'restaurants.branches.media',
+                    'settings')->first();
+        if (!($user && Hash::check($data['password'], $user->password)))
+            return response()->json(["message" => "Invalid user credentials"], 403);
 
         $token = $user->createToken('authToken')->accessToken;
         $user['token'] = $token;
