@@ -112,18 +112,18 @@ class UserAction
      * @param Request $request
      * @param $subUser
      * @param $token
-     * @return User
+     * @return Device
      */
-    public function subUserDevice(Request $request, $subUser , $authToken ){
-
+    public function subUserDevice(Request $request, $subUser, $authToken, $branchSlug): Device
+    {
         $branchId = \request()->route('modelId');
         $type = $request->input('type');
 
         $deviceName = $request->input('device_name');
         if (!$deviceName)
-            $deviceName = $subUser['branch_slug'];
+            $deviceName = $branchSlug.'-'.random_int(1000, 9999);
 
-        Device::updateOrCreate(['device_name' => $deviceName],[
+        return Device::updateOrCreate(['device_name' => $deviceName], [
             'token_id' => $authToken->token->id,
             'user_id' => $subUser->id,
             'branch_id' => $branchId,
@@ -162,9 +162,14 @@ class UserAction
                 $subUser = $this->getBranchSubUser($branchId, $type);
                 $authToken = $subUser->createToken('authToken');
                 $subUser['token'] = $authToken->accessToken;
-                $subUser['branch_slug'] = Branch::find($branchId)->slug;
-                $this->subUserDevice($request, $subUser, $authToken);
-                return response()->json($subUser);
+                $branchSlug = Branch::find($branchId)->slug;
+                $device = $this->subUserDevice($request, $subUser, $authToken, $branchSlug);
+                return response()->json([
+                    'user' => $subUser,
+                    'device' => $device,
+                    'branch_slug' => $branchSlug,
+                    'message' => 'Logged in successfully',
+                ]);
             }
         }
         return response()->json(['message' => 'Invalid QR Login code'], 401);
