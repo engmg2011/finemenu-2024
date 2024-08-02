@@ -50,22 +50,33 @@ use Illuminate\Support\Carbon;
 class Category extends Model
 {
     use HasFactory, Localizable, Mediable, Discountable, Settable;
+
     protected $guarded = ['id'];
 
-    public function items() {
+    public function items()
+    {
         return $this->hasMany(Item::class)->orderBy('sort');
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function restaurant() {
+    public function restaurant()
+    {
         return $this->belongsTo(Restaurant::class);
     }
 
-    public function children() {
-        return $this->hasMany(Category::class, 'parent_id')->with('locales', 'media')->orderBy('sort');
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id')
+            ->with(['locales', 'media', 'items.locales',
+                'items.addons.locales',
+                'items.addons.locales',
+                'items.discounts.locales',
+                'items.media',
+                'items.prices.locales']);
     }
 
     public function childrenNested()

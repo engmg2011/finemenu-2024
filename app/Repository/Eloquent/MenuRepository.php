@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -70,23 +71,17 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function fullMenu($id)
     {
-        return Menu::with([
-            'settings', 'media', 'locales',
-            'categories.locales', 'categories.media',
+        return Menu::with(['settings', 'media', 'locales',
+            'categories.childrenNested',
+            'categories.locales',
+            'categories.media',
             'categories.items.locales',
             'categories.items.addons.locales',
-            'categories.items.addons.children.locales',
+            'categories.items.addons.locales',
             'categories.items.discounts.locales',
             'categories.items.media',
-            'categories.items.prices.locales',
-            'categories.childrenNested.locales',
-            'categories.childrenNested.media',
-            'categories.childrenNested.items.locales',
-            'categories.childrenNested.items.media',
-            'categories.childrenNested.items.prices.locales',
-            'categories.childrenNested.items.addons.locales',
-            'categories.childrenNested.items.discounts.locales'
-        ])->find($id);
+            'categories.items.prices.locales'
+            ])->find($id);
     }
 
     public function get($restaurantId, int $id)
