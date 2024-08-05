@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Device;
 use App\Models\LoginSession;
 use App\Models\User;
+use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Services\QrService;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 class UserAction
 {
 
-    public function __construct(private UserRepository $repository)
+    public function __construct(private UserRepository $repository, private PermissionRepository $permissionRepository)
     {
     }
 
@@ -93,15 +94,19 @@ class UserAction
 
     public function getBranchSubUser($branchId, $userType): User
     {
-        $userSlug = Branch::find($branchId)->slug . '-' . $userType;
+        $branch = Branch::find($branchId);
+        $userSlug = $branch->slug . '-' . $userType;
         $userEmail = $userSlug . '@menu-ai.net';
-        return User::firstOrCreate(['email' => $userEmail],
+        $subUser = User::firstOrCreate(['email' => $userEmail],
             [
                 'name' => $userSlug,
                 'email' => $userEmail,
                 'type' => $userType,
                 'password' => $this->generateRandomString()
             ]);
+        // TODO :: set as user type permissions
+        $this->permissionRepository->setRestaurantOwnerPermissions($subUser->id, $branch->restaurant_id);
+        return $subUser;
     }
 
     /**
