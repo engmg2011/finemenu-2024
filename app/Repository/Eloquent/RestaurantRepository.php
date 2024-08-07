@@ -4,6 +4,8 @@ namespace App\Repository\Eloquent;
 
 
 use App\Actions\MediaAction;
+use App\Constants\PermissionsConstants;
+use App\Constants\RolesConstants;
 use App\Models\Category;
 use App\Models\DietPlan;
 use App\Models\Menu;
@@ -57,7 +59,11 @@ class RestaurantRepository extends BaseRepository implements RestaurantRepositor
 
         // give owner permissions
         $userId = $data['user_id'] ?? auth('api')->id();
-        $this->permissionRepository->setRestaurantOwnerPermissions($userId, $model->id);
+        $this->permissionRepository->setPermission(
+            $userId,
+            PermissionsConstants::Restaurants,
+            RolesConstants::OWNER,
+            $model->id);
 
         return $model;
     }

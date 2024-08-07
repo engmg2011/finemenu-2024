@@ -160,12 +160,6 @@ Route::group(['middleware' => [
         Route::post('/{id}', [PricesController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'orders'], function () {
-        Route::get('/', [OrdersController::class, 'index']);
-        Route::get('/{id}', [OrdersController::class, 'show']);
-        Route::post('/', [OrdersController::class, 'create']);
-        Route::post('/{id}', [OrdersController::class, 'update']);
-    });
 
     Route::group(['prefix' => 'settings'], function () {
         Route::get('/', [SettingsController::class, 'index']);
@@ -174,7 +168,7 @@ Route::group(['middleware' => [
         Route::post('/{id}', [SettingsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'users', 'middleware' => [SetRequestModel::class]], function () {
+    Route::group(['prefix' => 'users',  ], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::get('/info', [UsersController::class, 'info']);
         Route::get('/{id}', [UsersController::class, 'show']);
@@ -202,10 +196,6 @@ Route::group(['middleware' => [
     });
 
 
-    Route::group(['prefix' => 'kitchen'], function () {
-        Route::get('orders', [OrdersController::class, 'kitchenOrders']);
-        Route::get('restaurant/{id}', [RestaurantsController::class, 'show']);
-    });
 
     Route::group(['prefix' => 'packages'], function () {
         Route::get('/', [PackagesController::class, 'index']);

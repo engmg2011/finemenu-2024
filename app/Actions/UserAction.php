@@ -4,6 +4,7 @@
 namespace App\Actions;
 
 
+use App\Constants\PermissionsConstants;
 use App\Constants\UserTypes;
 use App\Models\Branch;
 use App\Models\Device;
@@ -104,8 +105,12 @@ class UserAction
                 'type' => $userType,
                 'password' => $this->generateRandomString()
             ]);
-        // TODO :: set as user type permissions
-        $this->permissionRepository->setRestaurantOwnerPermissions($subUser->id, $branch->restaurant_id);
+        $subUser->assignRole($userType);
+        $this->permissionRepository->setPermission(
+            $subUser->id,
+            PermissionsConstants::Restaurants,
+            $userType,
+            $branch->restaurant_id);
         return $subUser;
     }
 

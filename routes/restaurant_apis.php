@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 // TODO :: put admin only roles
 Route::group(['middleware' => [
     'auth:api',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER. '|' . RolesConstants::KITCHEN. '|' .
+    RolesConstants::SUPERVISOR. '|' . RolesConstants::CASHIER. '|' . RolesConstants::DRIVER ]
 ], function () {
 
     Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
@@ -32,7 +33,6 @@ Route::group(['middleware' => [
 
         Route::get('/{modelId}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
 
-        Route::get('/{id}/orders', [OrdersController::class, 'restaurantOrders']);
 
         Route::group(['prefix' => '/{restaurantId}/menus'], function () {
             Route::get('/', [MenusController::class, 'index']);
@@ -45,32 +45,47 @@ Route::group(['middleware' => [
         // Restaurant branches
         Route::group(['prefix' => '/{restaurantId}/branches'], function () {
             Route::get('/', [BranchesController::class, 'index']);
-            Route::get('/{id}', [BranchesController::class, 'show']);
             Route::post('/', [BranchesController::class, 'createModel']);
-            Route::post('/{id}/delete', [BranchesController::class, 'destroy']);
-            Route::post('/{id}', [BranchesController::class, 'update']);
             Route::post('/sort', [BranchesController::class, 'sort']);
 
+            Route::group(['prefix' => '/{branchId}'], function () {
+                Route::get('', [BranchesController::class, 'show']);
+                Route::post('', [BranchesController::class, 'update']);
+                Route::post('/delete', [BranchesController::class, 'destroy']);
+                Route::get('/orders', [OrdersController::class, 'restaurantOrders']);
 
-            // Restaurant Branch floors
-            Route::group(['prefix' => '/{branchId}/floors'], function () {
-                Route::get('/', [FloorsController::class, 'index']);
-                Route::get('/{id}', [FloorsController::class, 'show']);
-                Route::post('/', [FloorsController::class, 'createModel']);
-                Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
-                Route::post('/{id}', [FloorsController::class, 'update']);
+//            Route::group(['prefix' => 'orders'], function () {
+//                Route::get('/', [OrdersController::class, 'index']);
+//                Route::get('/{id}', [OrdersController::class, 'show']);
+//                Route::post('/', [OrdersController::class, 'create']);
+//                Route::post('/{id}', [OrdersController::class, 'update']);
+//            });
 
-                // Restaurant Branch floors tables
-                Route::group(['prefix' => '/{floorId}/tables'], function () {
-                    Route::get('/', [TablesController::class, 'index']);
-                    Route::get('/{id}', [TablesController::class, 'show']);
-                    Route::post('/', [TablesController::class, 'createModel']);
-                    Route::post('/{id}/delete', [TablesController::class, 'destroy']);
-                    Route::post('/{id}', [TablesController::class, 'update']);
+                // Restaurant Branch floors
+                Route::group(['prefix' => '/floors'], function () {
+                    Route::get('/', [FloorsController::class, 'index']);
+                    Route::get('/{id}', [FloorsController::class, 'show']);
+                    Route::post('/', [FloorsController::class, 'createModel']);
+                    Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
+                    Route::post('/{id}', [FloorsController::class, 'update']);
+
+                    // Restaurant Branch floors tables
+                    Route::group(['prefix' => '/{floorId}/tables'], function () {
+                        Route::get('/', [TablesController::class, 'index']);
+                        Route::get('/{id}', [TablesController::class, 'show']);
+                        Route::post('/', [TablesController::class, 'createModel']);
+                        Route::post('/{id}/delete', [TablesController::class, 'destroy']);
+                        Route::post('/{id}', [TablesController::class, 'update']);
+                    });
+
                 });
 
             });
 
+            Route::group(['prefix' => 'kitchen'], function () {
+                Route::get('orders', [OrdersController::class, 'kitchenOrders']);
+                Route::get('restaurant/{id}', [RestaurantsController::class, 'show']);
+            });
 
         });
 
