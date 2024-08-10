@@ -2,8 +2,6 @@
 
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
@@ -17,17 +15,13 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
-use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PricesController;
 use App\Http\Controllers\PusherAuthController;
-use App\Http\Controllers\RestaurantsController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
-use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,27 +34,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-//Auth::routes();
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('login', [LoginController::class, 'login']);
-    Route::post('register', [RegisterController::class, 'register']);
-    Route::post('send-code', [RegisterController::class, 'sendCode']);
-    Route::post('validate-code', [RegisterController::class, 'validateCode']);
-    Route::post('forgot-password', [RegisterController::class, 'forgotPassword']);
-    Route::post('reset-password', [RegisterController::class, 'resetPassword']);
-});
-
 
 // TODO :: put admin only roles
-Route::group(['middleware' => [
-                    'auth:api',
-                    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
-            ], function () {
-
+Route::group(['middleware' => [ 'auth:api',
+        'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+    ], function () {
 
     Route::group(['prefix' => 'locales'], function () {
         Route::post("", [LocalesController::class, 'createModel']);
@@ -168,18 +146,6 @@ Route::group(['middleware' => [
         Route::post('/{id}', [SettingsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'users',  ], function () {
-        Route::get('/', [UsersController::class, 'index']);
-        Route::get('/info', [UsersController::class, 'info']);
-        Route::get('/{id}', [UsersController::class, 'show']);
-        Route::post('/', [UsersController::class, 'create']);
-        Route::post('/{id}', [UsersController::class, 'update']);
-        Route::get('/{id}/items', [UsersController::class, 'userItems']);
-        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-    });
 
     Route::group(['prefix' => 'addons'], function () {
         Route::get('/', [AddonsController::class, 'index']);
@@ -194,7 +160,6 @@ Route::group(['middleware' => [
         Route::post('/', [DiscountsController::class, 'create']);
         Route::post('/{id}', [DiscountsController::class, 'update']);
     });
-
 
 
     Route::group(['prefix' => 'packages'], function () {
@@ -238,9 +203,8 @@ Route::group(['middleware' => [
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
     });
 
-
 });
 
-Route::group(['middleware' => [ 'auth:api']], function () {
+Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 });
