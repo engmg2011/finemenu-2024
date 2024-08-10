@@ -9,6 +9,7 @@ use App\Constants\UserTypes;
 use App\Models\Branch;
 use App\Models\Device;
 use App\Models\LoginSession;
+use App\Models\Restaurant;
 use App\Models\User;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\UserRepository;
@@ -131,7 +132,7 @@ class UserAction
 
         $deviceName = $request->input('device_name');
         if (!$deviceName)
-            $deviceName = $branchSlug.'-'.random_int(1000, 9999);
+            $deviceName = $branchSlug . '-' . random_int(1000, 9999);
 
         return Device::updateOrCreate(['device_name' => $deviceName], [
             'token_id' => $authToken->token->id,
@@ -155,6 +156,7 @@ class UserAction
             'type' => 'required|string',
             'device_name' => 'nullable|string',
         ]);
+
         if ($validator->fails())
             return response()->json(['message' => 'Invalid QR code'], 401);
 
@@ -172,14 +174,18 @@ class UserAction
                 $subUser = $this->getBranchSubUser($branchId, $type);
                 $authToken = $subUser->createToken('authToken');
                 $subUser['token'] = $authToken->accessToken;
-                $branchSlug = Branch::find($branchId)->slug;
+                $branch = Branch::find($branchId);
+                $branchSlug = $branch->slug;
+                $restaurant = Restaurant::with('locales',
+                    'media',
+                    'branches.locales',
+                    'branches.media')->find($branch->restaurant_id);
                 $device = $this->subUserDevice($request, $subUser, $authToken, $branchSlug);
-                return response()->json([
-                    'user' => $subUser,
-                    'device' => $device,
-                    'branch_slug' => $branchSlug,
-                    'message' => 'Logged in successfully',
-                ]);
+                return response()->json(compact('device', 'restaurant') + [
+                        'user' => $subUser,
+                        'branch_slug' => $branchSlug,
+                        'message' => 'Logged in successfully',
+                    ]);
             }
         }
         return response()->json(['message' => 'Invalid QR Login code'], 401);

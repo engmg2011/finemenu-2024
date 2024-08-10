@@ -8,12 +8,16 @@ use App\Repository\UserRepositoryInterface;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    /**
-     * UserRepository constructor.
-     * @param User $model
-     */
+    const LoginUserRelations = ['restaurants.locales',
+        'restaurants.media',
+        'restaurants.branches.locales',
+        'restaurants.branches.media',
+        'settings'];
+
     public function __construct(User $model) {
         parent::__construct($model);
     }
+
+
 
 }

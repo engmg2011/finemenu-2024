@@ -94,7 +94,7 @@ Route::group(['middleware' => [
 
 });
 
-// TODO :: put admin only roles
+// TODO :: put admin only roles (Restaurant owner)
 Route::group(['prefix' => 'restaurants', 'middleware' => [SetRequestModel::class]], function () {
 
     Route::group(['prefix' => '{restaurantId}/branches/{modelId}'], function () {
