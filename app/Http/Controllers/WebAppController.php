@@ -41,7 +41,7 @@ class WebAppController extends Controller
     {
         $branch = Branch::with(['locales', 'settings', 'media',
             'restaurant.locales', 'restaurant.media',
-            'restaurant.settings' ])->where('slug', $branchSlug)->firstOrFail();
+            'restaurant.settings'])->where('slug', $branchSlug)->firstOrFail();
         $menu = $this->menuRepository->fullMenu($branch->menu_id);
         return response()->json(compact('branch', 'menu'));
     }
@@ -58,5 +58,14 @@ class WebAppController extends Controller
         return response()->json($menu);
     }
 
+    public function version(): JsonResponse
+    {
+        return response()->json([
+            "latest-version" => env("WEB_APP_LATEST_VERSION"),
+            "should-update" => env("WEB_APP_SHOULD_UPDATE"),
+            "must-update" => env("WEB_APP_MUST_UPDATE"),
+            "min-acceptable-version" => env("WEB_APP_MIN_ACCEPTABLE_VERSION"),
+        ]);
+    }
 
 }

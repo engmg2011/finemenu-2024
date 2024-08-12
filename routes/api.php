@@ -21,6 +21,7 @@ use App\Http\Controllers\PusherAuthController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
+use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
@@ -209,11 +210,4 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 });
 
-Route::get('ordering-app-version', function () {
-    return response()->json([
-        "latest-version" => '1.0.3',
-        "should-update" => true,
-        "must-update" => false,
-        "min-acceptable-version" => '1.0.1',
-    ]);
-});
+Route::get('ordering-app-version', [WebAppController::class , 'version']);
