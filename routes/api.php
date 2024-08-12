@@ -36,9 +36,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 // TODO :: put admin only roles
-Route::group(['middleware' => [ 'auth:api',
-        'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
-    ], function () {
+Route::group(['middleware' => ['auth:api',
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+], function () {
 
     Route::group(['prefix' => 'locales'], function () {
         Route::post("", [LocalesController::class, 'createModel']);
@@ -207,4 +207,13 @@ Route::group(['middleware' => [ 'auth:api',
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
+});
+
+Route::get('ordering-app-version', function () {
+    return response()->json([
+        "latest-version" => '1.0.3',
+        "should-update" => true,
+        "must-update" => false,
+        "min-acceptable-version" => '1.0.1',
+    ]);
 });
