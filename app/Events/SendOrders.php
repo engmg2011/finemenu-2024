@@ -18,11 +18,11 @@ class SendOrders implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(public int $restaurant_id)
+    public function __construct(public int $business_id)
     {
         $orderRepository = app(OrderRepository::class);
         request()->request->add(['per-page'=>1000]);
-        $this->orders = json_decode(json_encode($orderRepository->kitchenOrders($restaurant_id)))->data ;
+        $this->orders = json_decode(json_encode($orderRepository->kitchenOrders($business_id)))->data ;
     }
 
     /**
@@ -37,6 +37,6 @@ class SendOrders implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'restaurant-'.$this->restaurant_id.'-orders';
+        return 'business-'.$this->business_id.'-orders';
     }
 }

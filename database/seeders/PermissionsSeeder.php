@@ -29,17 +29,6 @@ class PermissionsSeeder extends Seeder
         Role::findOrCreate(RolesConstants::GUEST);
         Role::findOrCreate(RolesConstants::DRIVER);
 
-        // * => create , update, delete
-        /*Permission::findOrCreate('restaurants.*.1');
-        User::find(1)->givePermissionTo('restaurants.*.1');
-        User::find(1)->assignRole(Roles::ADMIN);*/
-
-
-        /**
-         * Create user role
-         * User can manage any assigned data to him
-         */
-
         /**
          * Create customer role
          * Customer can
@@ -47,6 +36,7 @@ class PermissionsSeeder extends Seeder
          * - Make orders
          * - See his orders history
          */
+        Role::findOrCreate(RolesConstants::CUSTOMER);
 
     }
 }

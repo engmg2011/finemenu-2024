@@ -6,7 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
 use App\Constants\SettingConstants;
-use App\Models\Restaurant;
+use App\Models\Business;
 use App\Models\Setting;
 use App\Repository\SettingRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -60,7 +60,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     }
 
     /**
-     * @param $relationModel : Like restaurant which will be set
+     * @param $relationModel : Like business which will be set
      * @param $data
      * @return Model
      */
@@ -72,7 +72,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     }
 
     /**
-     * @param $relationModel : Like restaurant which will be set
+     * @param $relationModel : Like business which will be set
      * @param $data
      * @return Model
      */
@@ -85,7 +85,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     }
 
     /**
-     * @param $relationModel : Like restaurant which will be set
+     * @param $relationModel : Like business which will be set
      * @param $deleteData
      */
     public function deleteSetting($relationModel, $data)
@@ -112,17 +112,17 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         return $this->model::where($data)->get();
     }
 
-    private function getShifts($restaurant_id)
+    private function getShifts($business_id)
     {
-        $restaurant = Restaurant::find($restaurant_id);
-        return $restaurant->settings
+        $business = Business::find($business_id);
+        return $business->settings
             ->where('key', SettingConstants::Keys['SHIFTS'])
             ->first()?->data;
     }
 
-    public function getWorkingDays($restaurant_id)
+    public function getWorkingDays($business_id)
     {
-        $shifts = $this->getShifts($restaurant_id);
+        $shifts = $this->getShifts($business_id);
         if (is_null($shifts))
             return SettingConstants::WORK_DAYS;
         return array_keys($shifts);

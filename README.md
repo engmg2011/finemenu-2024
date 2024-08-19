@@ -5,7 +5,7 @@
 ## FineMenu system 
 ### Dr.Healthy
 
-It’s the FineMenu version for the Diet & healthy restaurants, It is a SAAS project B2B to support Diet & Healthy restaurant owners to manage their business.
+It’s the FineMenu version for the Diet & healthy business, It is a SAAS project B2B to support Diet & Healthy business owners to manage their business.
 
 - More about [FineMenu system](https://finemenu.atlassian.net/wiki/spaces/~5570588686200f90b9447190d8bd2141fe9d01/pages/131197/FineMenu+Project+Planning).
 - More about [Dr Healthy](https://finemenu.atlassian.net/wiki/spaces/~5570588686200f90b9447190d8bd2141fe9d01/pages/1048577/Dr+Healthy).

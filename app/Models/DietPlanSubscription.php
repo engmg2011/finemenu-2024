@@ -40,6 +40,15 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Subscription whereUpdatedAt($value)
  * @method static Builder|Subscription whereUserId($value)
  * @property-read DietPlan|null $plan
+ * @property int|null $diet_plan_id
+ * @property int $business_id
+ * @property string $payment_status
+ * @property array $selected_meals
+ * @property-read \App\Models\DietPlan|null $dietPlan
+ * @method static Builder|DietPlanSubscription whereBusinessId($value)
+ * @method static Builder|DietPlanSubscription whereDietPlanId($value)
+ * @method static Builder|DietPlanSubscription wherePaymentStatus($value)
+ * @method static Builder|DietPlanSubscription whereSelectedMeals($value)
  * @mixin Eloquent
  */
 class DietPlanSubscription extends Model

@@ -22,10 +22,10 @@ class BranchesController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function index($restaurantId)
+    public function index($businessId)
     {
         return DataResource::collection($this->repository->listWhere(
-            ['restaurant_id' => $restaurantId],
+            ['business_id' => $businessId],
             ['locales'])
         );
     }
@@ -36,9 +36,9 @@ class BranchesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function createModel(Request $request, $restaurantId)
+    public function createModel(Request $request, $businessId)
     {
-        return response()->json($this->repository->createModel($restaurantId, $request->all()));
+        return response()->json($this->repository->createModel($businessId, $request->all()));
     }
 
     /**
@@ -47,22 +47,22 @@ class BranchesController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show($restaurantId, $id)
+    public function show($businessId, $id)
     {
-        return response()->json($this->repository->get($restaurantId, $id));
+        return response()->json($this->repository->get($businessId, $id));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param $restaurantId
+     * @param $businessId
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $restaurantId, $id)
+    public function update(Request $request, $businessId, $id)
     {
-        return response()->json($this->repository->updateModel($restaurantId, $id, $request->all()));
+        return response()->json($this->repository->updateModel($businessId, $id, $request->all()));
     }
 
     /**
@@ -71,14 +71,14 @@ class BranchesController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy($restaurantId, $id)
+    public function destroy($businessId, $id)
     {
-        return response()->json($this->repository->destroy($restaurantId, $id));
+        return response()->json($this->repository->destroy($businessId, $id));
     }
 
-    public function sort(Request $request,$restaurantId)
+    public function sort(Request $request,$businessId)
     {
-        return response()->json($this->repository->sort($restaurantId, $request->all()));
+        return response()->json($this->repository->sort($businessId, $request->all()));
     }
 
 
@@ -114,7 +114,7 @@ class BranchesController extends Controller
             $filePath = sys_get_temp_dir().'/'.$name;
             $file->move(sys_get_temp_dir(), $name);
         }
-        $content = url('/web-app/restaurants/'.$branch->slug);
+        $content = url('/web-app/business/'.$branch->slug);
         $qrImage = (new QrService())->generateBranchQrCode($branch, $content, 250, 0.3, $filePath);
         if(!is_null($filePath))
             File::delete($filePath);

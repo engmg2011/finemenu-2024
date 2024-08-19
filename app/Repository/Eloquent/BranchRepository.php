@@ -20,7 +20,7 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
 
     public function process(array $data)
     {
-        return array_only($data, ['restaurant_id', 'menu_id', 'sort', 'slug']);
+        return array_only($data, ['business_id', 'menu_id', 'sort', 'slug']);
     }
 
     public function relations($model, $data)
@@ -32,24 +32,24 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         }
     }
 
-    public function createModel($restaurantId, array $data): Model
+    public function createModel($businessId, array $data): Model
     {
-        $data['restaurant_id'] = $restaurantId;
+        $data['business_id'] = $businessId;
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);
     }
 
-    public function updateModel($restaurantId, $id, array $data): Model
+    public function updateModel($businessId, $id, array $data): Model
     {
-        $data['restaurant_id'] = $restaurantId;
+        $data['business_id'] = $businessId;
         $model = $this->model->find($id);
         $this->relations($model, $data);
         $model->update($this->process($data));
         return $this->model->with(BranchRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($restaurantId, $data)
+    public function sort($businessId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
@@ -60,18 +60,18 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
     }
 
 
-    public function get($restaurantId, int $id)
+    public function get($businessId, int $id)
     {
-        return $this->model->where(['restaurant_id' => $restaurantId])->with(BranchRepository::$modelRelations)->find($id);
+        return $this->model->where(['business_id' => $businessId])->with(BranchRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($restaurantId, $id): ?bool
+    public function destroy($businessId, $id): ?bool
     {
-        $this->model->where(['restaurant_id' => $restaurantId])->find($id)?->locales->map(
+        $this->model->where(['business_id' => $businessId])->find($id)?->locales->map(
             fn($locale) => $locale->delete()
         );
         return $this->model->where([
-            'restaurant_id' => $restaurantId,
+            'business_id' => $businessId,
             'id' => $id
         ])?->delete();
     }

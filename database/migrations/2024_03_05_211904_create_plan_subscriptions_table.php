@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreign("creator_id")->references("id")->on('users')->onDelete("SET NULL");
             $table->unsignedBigInteger("user_id")->nullable();
             $table->foreign("user_id")->references("id")->on('users')->onDelete("SET NULL");
-            $table->unsignedBigInteger("restaurant_id");
-            $table->foreign("restaurant_id")->references("id")->on('restaurants')->onDelete("cascade");
+            $table->unsignedBigInteger("business_id");
+            $table->foreign("business_id")->references("id")->on('business')->onDelete("cascade");
             $table->enum('status',['paused','active'])->default('active');
             $table->enum('payment_status',['pending','paid'])->default('pending');
             $table->json('selected_meals');

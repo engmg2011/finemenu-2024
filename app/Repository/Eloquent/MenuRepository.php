@@ -16,22 +16,22 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         parent::__construct($model);
     }
 
-    public function listModel($restaurantId)
+    public function listModel($businessId)
     {
         return $this->model::with(['locales'])
-            ->where('restaurant_id', $restaurantId)
+            ->where('business_id', $businessId)
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public static array $modelRelations = ['locales'];
 
-    public function process($restaurantId, array $data)
+    public function process($businessId, array $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
         if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
         $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
-        return array_only($data, ['slug', 'name', 'restaurant_id', 'sort', 'user_id']);
+        return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id']);
     }
 
     public function relations($model, $data)
@@ -43,22 +43,22 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         }
     }
 
-    public function createModel($restaurantId, array $data): Model
+    public function createModel($businessId, array $data): Model
     {
-        $entity = $this->model->create($this->process($restaurantId, $data));
+        $entity = $this->model->create($this->process($businessId, $data));
         $this->relations($entity, $data);
         return $this->model->with(MenuRepository::$modelRelations)->find($entity->id);
     }
 
-    public function updateModel($restaurantId, $id, array $data): Model
+    public function updateModel($businessId, $id, array $data): Model
     {
         $model = tap($this->model->find($id))
-            ->update($this->process($restaurantId, $data));
+            ->update($this->process($businessId, $data));
         $this->relations($model, $data);
         return $this->model->with(MenuRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($restaurantId, $data)
+    public function sort($businessId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
@@ -84,13 +84,12 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
             ])->find($id);
     }
 
-    public function get($restaurantId, int $id)
+    public function get($businessId, int $id)
     {
-
         return $this->model->with(MenuRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($restaurantId, $id): ?bool
+    public function destroy($businessId, $id): ?bool
     {
         $this->model->locales->map(fn($locale) => $locale->delete());
         return $this->delete($id);

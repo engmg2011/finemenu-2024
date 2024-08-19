@@ -15,10 +15,10 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
-            $table->enum('type' , [MenuTypes::NORMAL,  MenuTypes::DIET])
+            $table->enum('type' , [MenuTypes::NORMAL,  MenuTypes::SUBSCRIPTION])
                 ->nullable()->default(MenuTypes::NORMAL);
-            $table->unsignedBigInteger("restaurant_id");
-            $table->foreign("restaurant_id")->references("id")->on('restaurants')->onDelete("cascade");
+            $table->unsignedBigInteger("business_id");
+            $table->foreign("business_id")->references("id")->on('business')->onDelete("cascade");
             $table->unsignedBigInteger("user_id");
             $table->foreign("user_id")->references("id")->on('users')->onDelete("cascade");
             $table->unsignedInteger('sort')->default(0);

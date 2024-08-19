@@ -97,11 +97,10 @@ class UsersController extends Controller
             return response()->json(['message' => 'Not authorized'], 401);
 
         $user = User::with([
-            'restaurants.locales',
-            'restaurants.menus.locales',
-            'restaurants.branches.locales',
-            'restaurants.branches.floors.locales',
-            'hotels.locales',
+            'business.locales',
+            'business.menus.locales',
+            'business.branches.locales',
+            'business.branches.floors.locales'
         ])->find($userId);
         $user['token'] = $user->createToken('authToken')->accessToken;
         return response()->json($user);
@@ -127,17 +126,17 @@ class UsersController extends Controller
         return \response()->json($items);
     }
 
-    public function menu($restaurantId)
+    public function menu($businessId)
     {
-        return response()->json($this->action->menu($restaurantId));
+        return response()->json($this->action->menu($businessId));
     }
 
 
     public function createLoginQr()
     {
-        $restaurantId = \request()->route('restaurantId');
+        $businessId = \request()->route('businessId');
         $branchId = \request()->route('modelId');
-        return $this->action->createLoginQr($restaurantId, $branchId);
+        return $this->action->createLoginQr($businessId, $branchId);
     }
 
     public function loginByQr(Request $request)

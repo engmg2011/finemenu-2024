@@ -33,7 +33,7 @@ class NewOrder implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('restaurant-'.$this->order->orderable_id.'-orders'),
+            new PrivateChannel('business-'.$this->order->orderable_id.'-orders'),
         ];
     }
 

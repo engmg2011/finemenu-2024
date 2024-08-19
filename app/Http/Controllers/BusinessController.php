@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
-use App\Repository\RestaurantRepositoryInterface;
+use App\Repository\BusinessRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
-class RestaurantsController extends Controller
+class BusinessController extends Controller
 {
-    public function __construct(private RestaurantRepositoryInterface $repository)
+    public function __construct(private BusinessRepositoryInterface $repository)
     {
     }
 
-    public function menu($restaurantId) {
-        return response()->json($this->repository->getModel($restaurantId));
+    public function menu($businessId) {
+        return response()->json($this->repository->getModel($businessId));
     }
 
     /**

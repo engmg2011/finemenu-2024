@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\RolesConstants;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\SettingsController;
@@ -12,6 +13,8 @@ use App\Http\Middleware\SetRequestModel;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('users/info', [UsersController::class, 'info'])->middleware('auth:api');
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [LoginController::class, 'login']);
@@ -35,15 +38,12 @@ Route::group(['prefix' => 'users/{modelId}',
         Route::get('/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
 });
 
-/*
 Route::group(['middleware' => [
     'auth:api',
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
 ], function () {
-
     Route::group(['prefix' => 'users',], function () {
         Route::get('/', [UsersController::class, 'index']);
-        Route::get('/info', [UsersController::class, 'info']);
         Route::post('/', [UsersController::class, 'create']);
     });
-});*/
+});

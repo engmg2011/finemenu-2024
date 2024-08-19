@@ -20,6 +20,7 @@ class CreateItemsTable extends Migration
             $table->foreign("category_id")->references("id")->on('categories')->onDelete("cascade");
             $table->unsignedBigInteger("user_id");
             $table->foreign("user_id")->references("id")->on('users')->onDelete("cascade");
+            $table->integer('sort')->nullable();
         });
     }
 

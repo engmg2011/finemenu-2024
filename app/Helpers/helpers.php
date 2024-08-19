@@ -7,7 +7,7 @@
  */
 
 use App\Models\Menu;
-use App\Models\Restaurant;
+use App\Models\Business;
 
 if(!function_exists('array_only')){
     function array_only (Array $array , Array $keys): Array {
@@ -19,11 +19,11 @@ if(!function_exists('array_only')){
 
 if(!function_exists('slug')){
     function slug (string $name): string {
-        $restaurant = Menu::where('slug',$name)->first();
-        if($restaurant){
+        $business = Menu::where('slug',$name)->first();
+        if($business){
             $name = $name.'_'. rand(10,100);
-            $restaurant = Menu::where('slug',$name)->first();
-            if($restaurant)
+            $business = Menu::where('slug',$name)->first();
+            if($business)
                 $name = $name.'_'. rand(10,100);
         }
         return $name;

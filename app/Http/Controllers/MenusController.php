@@ -19,9 +19,9 @@ class MenusController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function index($restaurantId)
+    public function index($businessId)
     {
-        return DataResource::collection($this->repository->listModel($restaurantId));
+        return DataResource::collection($this->repository->listModel($businessId));
     }
 
     /**
@@ -30,9 +30,9 @@ class MenusController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function createModel(Request $request, $restaurantId)
+    public function createModel(Request $request, $businessId)
     {
-        return response()->json($this->repository->createModel($restaurantId, $request->all()));
+        return response()->json($this->repository->createModel($businessId, $request->all()));
     }
 
     /**
@@ -41,9 +41,9 @@ class MenusController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show($restaurantId, $id)
+    public function show($businessId, $id)
     {
-        return response()->json($this->repository->get($restaurantId, $id));
+        return response()->json($this->repository->get($businessId, $id));
     }
 
     /**
@@ -64,9 +64,9 @@ class MenusController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $restaurantId, $id)
+    public function update(Request $request, $businessId, $id)
     {
-        return response()->json($this->repository->updateModel($restaurantId, $id, $request->all()));
+        return response()->json($this->repository->updateModel($businessId, $id, $request->all()));
     }
 
     /**
@@ -75,13 +75,13 @@ class MenusController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy($restaurantId, $id)
+    public function destroy($businessId, $id)
     {
-        return response()->json($this->repository->destroy($restaurantId, $id));
+        return response()->json($this->repository->destroy($businessId, $id));
     }
 
-    public function sort(Request $request, $restaurantId)
+    public function sort(Request $request, $businessId)
     {
-        return response()->json($this->repository->sort($restaurantId, $request->all()));
+        return response()->json($this->repository->sort($businessId, $request->all()));
     }
 }

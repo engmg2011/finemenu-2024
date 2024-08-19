@@ -211,3 +211,4 @@ Route::group(['middleware' => ['auth:api']], function () {
 });
 
 Route::get('ordering-app-version', [WebAppController::class , 'version']);
+Route::get('business-types', [WebAppController::class , 'businessTypes']);

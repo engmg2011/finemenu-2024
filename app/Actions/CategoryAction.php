@@ -4,6 +4,7 @@ namespace App\Actions;
 
 
 use App\Models\Category;
+use App\Models\Menu;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ class CategoryAction
 
     public function process(array $data)
     {
-        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'restaurant_id', 'sort']);
+        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort']);
     }
 
     public function create(array $data)
@@ -87,15 +88,14 @@ class CategoryAction
     public function createCategoriesFromPath($categories_names,
                                              $image_path,
                                              $userId,
-                                             $restaurantId,
                                              $menuId
     ): Collection
     {
+        $menu = Menu::find($menuId);
         $categories = new Collection();
         foreach ($categories_names as $category_name) {
             $lastCatId = $categories->count() ? $categories->last()->id : null;
             $same_category = Category::where('parent_id', $lastCatId)
-                ->where('restaurant_id', $restaurantId)
                 ->where('menu_id', $menuId)
                 ->whereHas('locales', function ($q) use ($category_name) {
                     $q->where('name', $category_name);
@@ -110,7 +110,7 @@ class CategoryAction
                 "locales" => [["name" => $category_name, 'locale' => 'en']],
                 "image" => $image_path,
                 "user_id" => $userId,
-                "restaurant_id" => $restaurantId,
+                "business_id" => $menu->business_id,
                 "menu_id" => $menuId,
                 "parent_id" => $lastCatId]);
             $categories->push($created_category);

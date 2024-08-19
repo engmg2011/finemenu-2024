@@ -11,7 +11,7 @@ use App\Constants\RolesConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
 use App\Models\Order;
-use App\Models\Restaurant;
+use App\Models\Business;
 use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\OrderRepositoryInterface;
@@ -40,10 +40,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->with(OrderRepository::Relations)->find($id);
     }
 
-    public function restaurantOrders($restaurantId){
+    public function businessOrders($businessId){
         return $this->model->where([
-            'orderable_type' => Restaurant::class,
-            'orderable_id' => $restaurantId
+            'orderable_type' => Business::class,
+            'orderable_id' => $businessId
         ])->with(OrderRepository::Relations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
@@ -116,22 +116,22 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
      */
     public function list($conditions = null)
     {
-        $restaurantId = request()->header('restaurant-id');
+        $businessId = request()->header('business-id');
         return Order::with(OrderRepository::Relations)
             ->orderByDesc('id')
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
-            ->where(fn($q) => $restaurantId ?
-                $q->where(['orderable_id' => $restaurantId, 'orderable_type' => '\\App\\Models\\Restaurant']) : $q)
+            ->where(fn($q) => $businessId ?
+                $q->where(['orderable_id' => $businessId, 'orderable_type' => '\\App\\Models\\Business']) : $q)
             ->orderByDesc('id')
             ->paginate(request('per-page', 15));
     }
 
-    public function kitchenOrders($restaurantId = null)
+    public function kitchenOrders($businessId = null)
     {
-        $restaurantId = $restaurantId ?? request()->header('restaurant-id');
+        $businessId = $businessId ?? request()->header('business-id');
         return Order::with(OrderRepository::Relations)
-            ->where(fn($q) => $restaurantId ?
-                $q->where(['orderable_id' => $restaurantId, 'orderable_type' =>  Restaurant::class]) : $q)
+            ->where(fn($q) => $businessId ?
+                $q->where(['orderable_id' => $businessId, 'orderable_type' =>  Business::class]) : $q)
             ->where('status', '!=', OrderStatus::Delivered)
             ->orderByDesc('id')
             ->paginate(10);
@@ -149,8 +149,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function getOrderPermittedRules(&$order): array
     {
-        $orderableType = $order->orderable_type === Restaurant::class ?
-            PermissionsConstants::Restaurants : PermissionsConstants::Hotels;
+        $orderableType = $order->orderable_type === Business::class ?
+            PermissionsConstants::Business : PermissionsConstants::Hotels;
         return [
             $orderableType . '.' . RolesConstants::OWNER . '.' . $order->orderable()->id,
             $orderableType . '.' . RolesConstants::KITCHEN . '.' . $order->orderable()->id,

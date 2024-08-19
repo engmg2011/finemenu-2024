@@ -17,7 +17,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     /**
      * @param $userId : id for the user
-     * @param $businessName : like PermissionsConstants::Restaurants
+     * @param $businessName : like PermissionsConstants::Business
      * @param $role : like RolesConstants::OWNER
      * @param $businessId : int
      */
@@ -30,7 +30,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     }
 
     /**
-     * @param $businessName : like PermissionsConstants::Restaurants
+     * @param $businessName : like PermissionsConstants::Business
      * @param $role : like RolesConstants::OWNER
      * @param $id : int
      * @return string

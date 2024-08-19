@@ -6,6 +6,7 @@ use App\Actions\CategoryAction;
 use App\Actions\ItemAction;
 use App\Actions\MediaAction;
 use App\Models\Category;
+use App\Models\Menu;
 use App\Repository\Eloquent\ItemRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -52,21 +53,21 @@ class UploadMenuQueue implements ShouldQueue
         $splitNames = explode('/', $this->myFile['fullPath']);
         $item_name = array_pop($splitNames);
         $item_name = $this->fineName(explode('.', $item_name)[0]);
+        $menu = Menu::find($this->user['menuId']);
         if (count($splitNames)) {
             $categories = (app(CategoryAction::class))
                 ->createCategoriesFromPath(
                     $splitNames,
                     $this->myFile['uploadedFilePath'],
                     $this->user['userId'],
-                    $this->user['restaurantId'],
                     $this->user['menuId']
                 );
             $current_categories = $categories->all();
             $savingCategory = end($current_categories);
         } else {
             // TODO :: first user locale
+
             $savingCategory = Category::where([
-                "restaurant_id" => $this->user['restaurantId'],
                 "menu_id" => $this->user['menuId']
             ])->whereHas('locales', function ($q){
                 $q->where('name',self::OthersName);
@@ -76,7 +77,7 @@ class UploadMenuQueue implements ShouldQueue
                     "locales" => [["name" => self::OthersName, 'locale' => $this->user['locale']]],
                     "image" => $this->myFile['uploadedFilePath'],
                     "user_id" => $this->user['userId'],
-                    "restaurant_id" => $this->user['restaurantId'],
+                    "business_id" => $menu->business_id,
                     "menu_id" => $this->user['menuId']
                 ]);
             }
@@ -86,7 +87,8 @@ class UploadMenuQueue implements ShouldQueue
         $item = app(ItemRepository::class)->create([
             'locales' => [['name' => $item_name, 'locale' => $this->user['locale']]],
             'category_id' => ($savingCategory->id),
-            'user_id' => $this->user['userId']
+            'user_id' => $this->user['userId'],
+            "business_id" => $menu->business_id
         ]);
         $categoryImages = Category::with('media')->find($savingCategory->id)->media;
         if (count($categoryImages) === 0) {

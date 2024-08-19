@@ -51,12 +51,12 @@ class OrdersController extends Controller
     }
 
     /**
-     * @param $restaurantId
+     * @param $businessId
      * @return AnonymousResourceCollection
      */
-    public function restaurantOrders($restaurantId)
+    public function businessOrders($businessId)
     {
-        return DataResource::collection($this->orderRepository->restaurantOrders($restaurantId));
+        return DataResource::collection($this->orderRepository->businessOrders($businessId));
     }
     /**
      * Update the specified resource in storage.

@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $restaurant_id
+ * @property int $business_id
  * @property int|null $parent_id
  * @property int $user_id
  * @property int|null $sort
@@ -33,7 +33,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $locales_count
  * @property-read Collection<int, Media> $media
  * @property-read int|null $media_count
- * @property-read Restaurant $restaurant
+ * @property-read Business $business
  * @property-read User $user
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
@@ -41,10 +41,14 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Category whereCreatedAt($value)
  * @method static Builder|Category whereId($value)
  * @method static Builder|Category whereParentId($value)
- * @method static Builder|Category whereRestaurantId($value)
+ * @method static Builder|Category whereBusinessId($value)
  * @method static Builder|Category whereSort($value)
  * @method static Builder|Category whereUpdatedAt($value)
  * @method static Builder|Category whereUserId($value)
+ * @property int|null $menu_id
+ * @property-read Collection<int, \App\Models\Setting> $settings
+ * @property-read int|null $settings_count
+ * @method static Builder|Category whereMenuId($value)
  * @mixin Eloquent
  */
 class Category extends Model
@@ -63,9 +67,9 @@ class Category extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function restaurant()
+    public function business()
     {
-        return $this->belongsTo(Restaurant::class);
+        return $this->belongsTo(Business::class);
     }
 
     public function children()

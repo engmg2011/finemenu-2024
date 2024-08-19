@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('floors', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("restaurant_id");
-            $table->foreign("restaurant_id")->references("id")->on('restaurants')->onDelete("cascade");
+            $table->unsignedBigInteger("business_id");
+            $table->foreign("business_id")->references("id")->on('business')->onDelete("cascade");
             $table->unsignedBigInteger("branch_id");
             $table->foreign("branch_id")->references("id")->on('branches')->onDelete("cascade");
             $table->unsignedInteger('sort')->default(0);

@@ -18,7 +18,7 @@ interface OrderRepositoryInterface
 
     public function list($conditions = null);
 
-    public function kitchenOrders($restaurantId = null);
+    public function kitchenOrders($businessId = null);
 
     public function cashierOrders();
 

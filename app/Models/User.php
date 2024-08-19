@@ -45,7 +45,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $contacts_count
  * @property-read Collection<int, Device> $devices
  * @property-read int|null $devices_count
- * @property-read Collection<int, Hotel> $hotels
  * @property-read int|null $hotels_count
  * @property-read Collection<int, Item> $items
  * @property-read int|null $items_count
@@ -55,8 +54,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Permission> $permissions
  * @property-read int|null $permissions_count
- * @property-read Collection<int, Restaurant> $restaurants
- * @property-read int|null $restaurants_count
+ * @property-read Collection<int, Business> $business
+ * @property-read int|null $business_count
  * @property-read Collection<int, Role> $roles
  * @property-read int|null $roles_count
  * @property-read Collection<int, Service> $services
@@ -119,12 +118,8 @@ class User extends Authenticatable
         return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
     }
 
-    public function restaurants(): HasMany {
-        return $this->hasMany(Restaurant::class);
-    }
-
-    public function hotels(): HasMany {
-        return $this->hasMany(Hotel::class);
+    public function business(): HasMany {
+        return $this->hasMany(Business::class);
     }
 
     public function services(): HasMany {

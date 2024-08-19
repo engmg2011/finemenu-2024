@@ -11,5 +11,6 @@ class RolesConstants
     const CASHIER = 'cashier';
     const DRIVER = 'driver';
     const GUEST = 'guest';
+    const CUSTOMER = 'customer';
 }
 

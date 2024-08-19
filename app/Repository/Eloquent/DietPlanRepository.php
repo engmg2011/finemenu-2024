@@ -34,7 +34,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
     public function processPlan(array $data): array
     {
         $data['user_id'] = auth('api')->user()->id;
-        return array_only($data, ['restaurant_id', 'category_id', 'user_id', 'item_ids']);
+        return array_only($data, ['business_id', 'category_id', 'user_id', 'item_ids']);
     }
 
     /**

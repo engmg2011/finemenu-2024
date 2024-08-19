@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Restaurant;
+use App\Models\Business;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Seeder;
@@ -21,15 +21,15 @@ class CategoriesMenuIdSeeder extends Seeder
     public function run(): void
     {
 
-        foreach (Restaurant::with('user')->get() as &$restaurant) {
-            $menuSlug = $this->menuRepository->createMenuId($restaurant->name, $restaurant->user->email);
+        foreach (Business::with('user')->get() as &$business) {
+            $menuSlug = $this->menuRepository->createMenuId($business->name, $business->user->email);
             if(!$menuSlug)
-                throw new \Exception("error restID ". $restaurant->id);
+                throw new \Exception("error restID ". $business->id);
             $data = [
                 'slug' => $menuSlug,
-                'restaurant_id' => $restaurant->id,
-                'user_id' => $restaurant->user_id,
-                'locales' => [['name' => $restaurant->name, 'locale' => 'en']]
+                'business_id' => $business->id,
+                'user_id' => $business->user_id,
+                'locales' => [['name' => $business->name, 'locale' => 'en']]
             ];
             $menu = $this->menuRepository->createModel($data);
             $data['menu_id'] = $menu->id;

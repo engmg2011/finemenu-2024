@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Restaurant
+ * App\Models\Business
  *
  * @property int $id
  * @property Carbon|null $created_at
@@ -46,35 +46,44 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Setting> $settings
  * @property-read int|null $settings_count
  * @property-read User $user
- * @method static Builder|Restaurant newModelQuery()
- * @method static Builder|Restaurant newQuery()
- * @method static Builder|Restaurant query()
- * @method static Builder|Restaurant whereCreatedAt($value)
- * @method static Builder|Restaurant whereCreatorId($value)
- * @method static Builder|Restaurant whereId($value)
- * @method static Builder|Restaurant whereName($value)
- * @method static Builder|Restaurant wherePasscode($value)
- * @method static Builder|Restaurant whereSlug($value)
- * @method static Builder|Restaurant whereUpdatedAt($value)
- * @method static Builder|Restaurant whereUserId($value)
+ * @method static Builder|Business newModelQuery()
+ * @method static Builder|Business newQuery()
+ * @method static Builder|Business query()
+ * @method static Builder|Business whereCreatedAt($value)
+ * @method static Builder|Business whereCreatorId($value)
+ * @method static Builder|Business whereId($value)
+ * @method static Builder|Business whereName($value)
+ * @method static Builder|Business wherePasscode($value)
+ * @method static Builder|Business whereSlug($value)
+ * @method static Builder|Business whereUpdatedAt($value)
+ * @method static Builder|Business whereUserId($value)
  * @property string|null $type
- * @method static Builder|Restaurant whereType($value)
+ * @method static Builder|Business whereType($value)
+ * @property-read Collection<int, \App\Models\Branch> $branches
+ * @property-read int|null $branches_count
+ * @property-read Collection<int, \App\Models\Menu> $menus
+ * @property-read int|null $menus_count
  * @mixin Eloquent
  */
-class Restaurant extends Model
+class Business extends Model
 {
     use Localizable, Settable, Contactable, Orderable, Mediable, Discountable, Contentable;
-    protected $guarded = ['id'];
 
-    public function user() {
+    protected $guarded = ['id'];
+    protected $table = "business";
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function categories(): HasMany {
-        return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class)->where('parent_id', null)->orderBy('sort');
     }
 
-    public function branches(): HasMany{
+    public function branches(): HasMany
+    {
         return $this->hasMany(Branch::class);
     }
 

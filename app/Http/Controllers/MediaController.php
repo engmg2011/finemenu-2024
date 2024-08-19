@@ -94,7 +94,6 @@ class MediaController extends Controller
             ];
             $user = [
                 'userId' => auth('api')->user()->id,
-                'restaurantId' => request()->header('restaurant-id'),
                 'menuId' => request()->header('menu-id'),
                 'locale' => request()->header('locale')
             ];

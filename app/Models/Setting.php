@@ -30,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Setting whereSettableType($value)
  * @method static Builder|Setting whereUpdatedAt($value)
  * @method static Builder|Setting whereUserId($value)
+ * @property string $key
+ * @method static Builder|Setting whereKey($value)
  * @mixin Eloquent
  */
 class Setting extends Model

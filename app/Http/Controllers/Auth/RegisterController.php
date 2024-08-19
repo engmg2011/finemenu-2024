@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Actions\HotelAction;
 use App\Actions\SubscriptionAction;
 use App\Actions\UserAction;
 use App\Constants\RolesConstants;
@@ -12,8 +11,8 @@ use App\Models\IpTries;
 use App\Models\Package;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\PermissionRepository;
-use App\Repository\Eloquent\RestaurantRepository;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
@@ -50,8 +49,7 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct(private RestaurantRepository $restaurantRepository,
-                                private HotelAction          $hotelAction,
+    public function __construct(private BusinessRepository   $businessRepository,
                                 private UserAction           $userAction,
                                 private PermissionRepository $permissionRepository,
                                 private SubscriptionAction   $subscriptionAction)
@@ -86,10 +84,10 @@ class RegisterController extends Controller
     protected function resetValidator(array $data, array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
     {
         return Validator::make($data, $extraValidation + [
-            'email' => ['string', 'email', 'max:255'],
-            'phone' => ['string', 'min:8', 'max:15'],
-            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
-        ], [
+                'email' => ['string', 'email', 'max:255'],
+                'phone' => ['string', 'min:8', 'max:15'],
+                'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+            ], [
             'phone_required' => "phone or email required"
         ]);
     }
@@ -201,33 +199,6 @@ class RegisterController extends Controller
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
 
-    /**
-     * @param Request $request
-     * @param $user
-     * @return void
-     */
-    public function createBusiness(Request $request, $user): void
-    {
-
-        /*
-        // Create hotel and give permission
-        $hotel = $this->hotelAction->createModel($businessData);
-        $this->permissionAction->setHotelOwnerPermissions($user->id, $hotel->id);*/
-
-    }
-
-    /**
-     * @param $user
-     * @return void
-     */
-    public function createSubscription($user): void
-    {
-        // Create subscription and assign trial package
-        $package = Package::where('slug', 'trial')->first();
-        $expiry = (new Carbon())->addDays($package->days)->format('Y-m-d H:i:s');
-        $this->subscriptionAction->create(['creator_id' => $user->id, 'user_id' => $user->id,
-            'package_id' => $package->id, 'from' => Carbon::now(), 'to' => $expiry]);
-    }
 
     /**
      * @param Request $request
@@ -299,9 +270,8 @@ class RegisterController extends Controller
         $user->assignRole(RolesConstants::OWNER);
         $token = $user->createToken('API Token')->accessToken;
 
-        if (isset($data['businessName'])) {
-            // Create restaurant and give permission
-            $this->restaurantRepository->registerNewRestaurantOwner($request, $user);
+        if (isset($data['businessName']) && isset($data['businessType'])) {
+            $this->businessRepository->registerNewOwner($request, $user);
         }
 
         // Create subscription

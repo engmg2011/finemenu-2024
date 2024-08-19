@@ -9,7 +9,8 @@ use App\Constants\UserTypes;
 use App\Models\Branch;
 use App\Models\Device;
 use App\Models\LoginSession;
-use App\Models\Restaurant;
+use App\Models\Business;
+use App\Models\Salon;
 use App\Models\User;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\UserRepository;
@@ -66,7 +67,7 @@ class UserAction
     }
 
 
-    public function createLoginQr($restaurantId, $branchId)
+    public function createLoginQr($businessId, $branchId)
     {
         // Generate a login token (for demonstration, use a random string)
         $token = bin2hex(random_bytes(16));
@@ -78,7 +79,7 @@ class UserAction
         $content = route('login.qr', ['token' => $token,
                 'modelId' => $branchId,
                 'type' => UserTypes::SUPERVISOR,
-            ] + compact('restaurantId'));
+            ] + compact('businessId'));
 
         return (new QrService())->generateBase64QrCode($content);
     }
@@ -109,9 +110,9 @@ class UserAction
         $subUser->assignRole($userType);
         $this->permissionRepository->setPermission(
             $subUser->id,
-            PermissionsConstants::Restaurants,
+            PermissionsConstants::Business,
             $userType,
-            $branch->restaurant_id);
+            $branch->business_id);
         return $subUser;
     }
 
@@ -176,12 +177,13 @@ class UserAction
                 $subUser['token'] = $authToken->accessToken;
                 $branch = Branch::find($branchId);
                 $branchSlug = $branch->slug;
-                $restaurant = Restaurant::with('locales',
+                $business = Business::with('locales',
                     'media',
                     'branches.locales',
-                    'branches.media')->find($branch->restaurant_id);
+                    'branches.media')->find($branch->business_id);
+
                 $device = $this->subUserDevice($request, $subUser, $authToken, $branchSlug);
-                return response()->json(compact('device', 'restaurant') + [
+                return response()->json(compact('device', 'business') + [
                         'user' => $subUser,
                         'branch_slug' => $branchSlug,
                         'message' => 'Logged in successfully',

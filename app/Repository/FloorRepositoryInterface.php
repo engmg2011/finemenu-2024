@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 interface FloorRepositoryInterface
 {
-    public function process($restaurantId, $branchId, array $data);
+    public function process($businessId, $branchId, array $data);
 
-    public function createModel($restaurantId, $branchId, array $data): Model;
+    public function createModel($businessId, $branchId, array $data): Model;
 
-    public function updateModel($restaurantId, $branchId, $id, array $data): Model;
+    public function updateModel($businessId, $branchId, $id, array $data): Model;
 
-    public function sort($restaurantId, $branchId, $data);
+    public function sort($businessId, $branchId, $data);
 
-    public function get($restaurantId, $branchId, int $id);
+    public function get($businessId, $branchId, int $id);
 
-    public function destroy($restaurantId, $branchId, $id): ?bool;
+    public function destroy($businessId, $branchId, $id): ?bool;
 }

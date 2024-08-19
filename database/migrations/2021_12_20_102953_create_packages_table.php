@@ -16,7 +16,7 @@ class CreatePackagesTable extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('days');
-            $table->enum('type', ['restaurant', 'hotel', 'qr']);
+            $table->enum('type', ['business', 'hotel', 'qr']);
             $table->char('slug');
             $table->timestamps();
         });

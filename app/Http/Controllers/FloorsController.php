@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Repository\FloorRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,14 +13,14 @@ class FloorsController extends Controller
     {
     }
 
-    public function index($restaurantId, $branchId)
+    public function index($businessId, $branchId)
     {
-        return DataResource::collection($this->repository->branchFloors($restaurantId, $branchId));
+        return DataResource::collection($this->repository->branchFloors($businessId, $branchId));
     }
 
-    public function createModel(Request $request, $restaurantId, $branchId): JsonResponse
+    public function createModel(Request $request, $businessId, $branchId): JsonResponse
     {
-        return response()->json($this->repository->createModel($restaurantId, $branchId, $request->all()));
+        return response()->json($this->repository->createModel($businessId, $branchId, $request->all()));
     }
 
     /**
@@ -28,9 +29,9 @@ class FloorsController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show($restaurantId, $branchId, $id)
+    public function show($businessId, $branchId, $id)
     {
-        return response()->json($this->repository->get($restaurantId, $branchId,$id));
+        return response()->json($this->repository->get($businessId, $branchId,$id));
     }
 
     /**
@@ -40,9 +41,9 @@ class FloorsController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $restaurantId, $branchId, $id)
+    public function update(Request $request, $businessId, $branchId, $id)
     {
-        return response()->json($this->repository->updateModel($restaurantId, $branchId, $id, $request->all()));
+        return response()->json($this->repository->updateModel($businessId, $branchId, $id, $request->all()));
     }
 
     /**
@@ -51,13 +52,13 @@ class FloorsController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function destroy($restaurantId, $branchId, $id)
+    public function destroy($businessId, $branchId, $id)
     {
-        return response()->json($this->repository->destroy($restaurantId, $branchId, $id));
+        return response()->json($this->repository->destroy($businessId, $branchId, $id));
     }
 
-    public function sort(Request $request, $restaurantId, $branchId)
+    public function sort(Request $request, $businessId, $branchId)
     {
-        return response()->json($this->repository->sort($restaurantId, $branchId, $request->all()));
+        return response()->json($this->repository->sort($businessId, $branchId, $request->all()));
     }
 }

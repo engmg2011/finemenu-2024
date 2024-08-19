@@ -19,7 +19,7 @@ class DatabaseTables
     const password_resets = "password_resets";
     const personal_access_tokens = "personal_access_tokens";
     const prices = "prices";
-    const restaurants = "restaurants";
+    const business = "business";
     const services = "services";
     const settings = "settings";
     const users = "users";

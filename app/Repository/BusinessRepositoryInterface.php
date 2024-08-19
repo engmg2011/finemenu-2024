@@ -6,9 +6,9 @@ namespace App\Repository;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface RestaurantRepositoryInterface
+interface BusinessRepositoryInterface
 {
-    public function processRestaurant(&$data): array;
+    public function process(&$data): array;
 
     public function createModel(array $data): Model;
 

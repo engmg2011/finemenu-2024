@@ -17,10 +17,10 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('restaurant-12-orders', function ($user, $id) {
+Broadcast::channel('business-12-orders', function ($user, $id) {
     return false;
 });
 
-Broadcast::channel('private-restaurant-2-orders', function ($user, $id) {
+Broadcast::channel('private-business-2-orders', function ($user, $id) {
     return true;
 });*/

@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 
-use App\Actions\WebAppAction;
+use App\Constants\BusinessTypes;
 use App\Models\Branch;
-use App\Repository\Eloquent\RestaurantRepository;
+use App\Repository\BusinessRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class WebAppController extends Controller
 {
-    public function __construct(private readonly WebAppAction            $action,
-                                private readonly RestaurantRepository    $restaurantRepository,
+    public function __construct(private readonly BusinessRepositoryInterface    $businessRepository,
                                 private readonly MenuRepositoryInterface $menuRepository)
     {
 
@@ -21,7 +20,7 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $restaurantId
+     * @param $businessId
      * @return JsonResponse
      */
     public function nestedMenu($menuId): JsonResponse
@@ -34,14 +33,14 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $restaurantId
+     * @param $businessId
      * @return JsonResponse
      */
     public function branchMenu($branchSlug): JsonResponse
     {
         $branch = Branch::with(['locales', 'settings', 'media',
-            'restaurant.locales', 'restaurant.media',
-            'restaurant.settings'])->where('slug', $branchSlug)->firstOrFail();
+            'business.locales', 'business.media',
+            'business.settings'])->where('slug', $branchSlug)->firstOrFail();
         $menu = $this->menuRepository->fullMenu($branch->menu_id);
         return response()->json(compact('branch', 'menu'));
     }
@@ -49,12 +48,12 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $restaurantId
+     * @param $businessId
      * @return JsonResponse
      */
-    public function dietRestaurant($restaurantId): JsonResponse
+    public function dietBusiness($businessId): JsonResponse
     {
-        $menu = $this->restaurantRepository->dietMenu($restaurantId);
+        $menu = $this->businessRepository->dietMenu($businessId);
         return response()->json($menu);
     }
 
@@ -66,6 +65,10 @@ class WebAppController extends Controller
             "must-update" => env("WEB_APP_MUST_UPDATE"),
             "min-acceptable-version" => env("WEB_APP_MIN_ACCEPTABLE_VERSION"),
         ]);
+    }
+
+    public function businessTypes(): JsonResponse {
+        return response()->json(BusinessTypes::all());
     }
 
 }

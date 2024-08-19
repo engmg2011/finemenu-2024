@@ -19,7 +19,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
      * Validate meals with Plan
      *
      * diet_plan_id => id of plan to subscribe
-     * * Get the restaurant, and it's weekend for validating the dates
+     * * Get the business, and it's weekend for validating the dates
      * data['selected_meals'] => [day:mealId] like
      * [  { "day":"22-04-2024", "meal_id": 16 }, ... ]
      */
@@ -38,7 +38,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $data['creator_id'] = auth('api')->user()->id;
         $data['user_id'] = request()->get('user_id') ?? auth('api')->user()->id;
 
-        return array_only($data, ['creator_id', 'user_id', 'restaurant_id',
+        return array_only($data, ['creator_id', 'user_id', 'business_id',
             'status', 'selected_meals', 'diet_plan_id', 'note']);
     }
 
@@ -142,7 +142,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $selected_meals = $data['selected_meals'];
 
         $selectedDays = [];
-        $workDays = $this->settingRepository->getWorkingDays($data['restaurant_id']);
+        $workDays = $this->settingRepository->getWorkingDays($data['business_id']);
         if (!is_null($selected_meals) && !is_null($workDays)) {
             foreach ($selected_meals as $selectedMeal) {
                 $dayName = Carbon::parse($selectedMeal['day'])->format('D');
@@ -183,8 +183,8 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
             foreach ($selectedMeals as &$selectedMeal) {
                 $this->orderRepository->create([
                     "note" => $data['note'],
-                    "orderable_type" => "App\\Models\\Restaurant",
-                    "orderable_id" => $data['restaurant_id'],
+                    "orderable_type" => "App\\Models\\Business",
+                    "orderable_id" => $data['business_id'],
                     "scheduled_at" => Carbon::parse($selectedMeal['day']),
                     "status" => 1,
                     "paid" => true,

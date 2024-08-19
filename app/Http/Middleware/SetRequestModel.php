@@ -4,9 +4,8 @@ namespace App\Http\Middleware;
 
 use App\Models\Branch;
 use App\Models\Category;
-use App\Models\Hotel;
 use App\Models\Item;
-use App\Models\Restaurant;
+use App\Models\Business;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -21,7 +20,7 @@ class SetRequestModel
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        if($request->segment(2) === 'restaurants' && $request->segment(4) === 'branches' && $request->segment(6) === 'settings' ){
+        if($request->segment(4) === 'branches' && $request->segment(6) === 'settings' ){
             \request()->merge(['model' => Branch::class]);
             return $next($request);
         }
@@ -33,11 +32,8 @@ class SetRequestModel
             case 'categories':
                 \request()->merge(['model' => Category::class]);
                 break;
-            case 'restaurants':
-                \request()->merge(['model' => Restaurant::class]);
-                break;
-            case 'hotels':
-                \request()->merge(['model' => Hotel::class]);
+            case 'business':
+                \request()->merge(['model' => Business::class]);
                 break;
             case 'users':
                 \request()->merge(['model' => User::class]);

@@ -19,19 +19,19 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     public static array $modelRelations = ['locales', 'tables.locales'];
 
 
-    private function floor($restaurantId, $branchId): Builder
+    private function floor($businessId, $branchId): Builder
     {
         return $this->model->where([
-            'restaurant_id' => $restaurantId,
+            'business_id' => $businessId,
             'branch_id' => $branchId
         ]);
     }
 
-    public function process($restaurantId, $branchId, array $data)
+    public function process($businessId, $branchId, array $data)
     {
         $data['branch_id'] = $branchId;
-        $data['restaurant_id'] = $restaurantId;
-        return array_only($data, ['restaurant_id', 'branch_id', 'sort']);
+        $data['business_id'] = $businessId;
+        return array_only($data, ['business_id', 'branch_id', 'sort']);
     }
 
     public function relations($model, $data)
@@ -43,50 +43,50 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
         }
     }
 
-    public function createModel($restaurantId, $branchId, array $data): Model
+    public function createModel($businessId, $branchId, array $data): Model
     {
-        $entity = $this->model->create($this->process($restaurantId, $branchId, $data));
+        $entity = $this->model->create($this->process($businessId, $branchId, $data));
         $this->relations($entity, $data);
         return $this->model->with(FloorRepository::$modelRelations)->find($entity->id);
     }
 
-    public function updateModel($restaurantId, $branchId, $id, array $data): Model
+    public function updateModel($businessId, $branchId, $id, array $data): Model
     {
-        $model = $this->floor($restaurantId, $branchId)->find($id);
+        $model = $this->floor($businessId, $branchId)->find($id);
         if(!$model)
             throw new \Exception("Error: no floor exists with the same id");
-        $model->update($this->process($restaurantId, $branchId, $data));
+        $model->update($this->process($businessId, $branchId, $data));
         $this->relations($model, $data);
         return $this->model->with(FloorRepository::$modelRelations)->find($model->id);
     }
 
-    public function sort($restaurantId, $branchId, $data)
+    public function sort($businessId, $branchId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
-            $this->floor($restaurantId, $branchId)->whereId($id)->update(['sort' => $sort]);
+            $this->floor($businessId, $branchId)->whereId($id)->update(['sort' => $sort]);
             $sort++;
         }
         return true;
     }
 
-    public function get($restaurantId, $branchId, int $id)
+    public function get($businessId, $branchId, int $id)
     {
-        return $this->floor($restaurantId, $branchId)->with(FloorRepository::$modelRelations)->find($id);
+        return $this->floor($businessId, $branchId)->with(FloorRepository::$modelRelations)->find($id);
     }
 
-    public function destroy($restaurantId, $branchId, $id): ?bool
+    public function destroy($businessId, $branchId, $id): ?bool
     {
-        $this->floor($restaurantId, $branchId)->find($id)?->locales->map(
+        $this->floor($businessId, $branchId)->find($id)?->locales->map(
             fn($locale) => $locale->delete()
         );
-        return $this->floor($restaurantId, $branchId)->find($id)?->delete();
+        return $this->floor($businessId, $branchId)->find($id)?->delete();
     }
 
-    public function branchFloors($restaurant_id, $branch_id)
+    public function branchFloors( $business_id, $branch_id)
     {
         return $this->listWhere(
-            ['restaurant_id' => $restaurant_id, 'branch_id' => $branch_id],
+            ['business_id' => $business_id, 'branch_id' => $branch_id],
             ['locales']
         );
     }

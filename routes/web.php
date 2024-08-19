@@ -39,9 +39,9 @@ Route::get('/save-qrcode', [QrCodeController::class, 'save']);
 Route::get('/send', [HomeController::class, 'send'])->name('home.send');*/
 
 Route::get('orders-sender', function () {
-    $restaurant_id = request()->get('restaurantId');
+    $business_id = request()->get('businessId');
     event(new \App\Events\NewOrder(78));
-//    event(new \App\Events\SendOrders($restaurant_id));
+//    event(new \App\Events\SendOrders($business_id));
 //    event(new MyEvent('hello world'));
 
 });

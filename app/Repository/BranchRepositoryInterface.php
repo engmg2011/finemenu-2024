@@ -9,13 +9,13 @@ interface BranchRepositoryInterface
 
     public function process(array $data);
 
-    public function createModel($restaurantId, array $data): Model;
+    public function createModel($businessId, array $data): Model;
 
-    public function updateModel($restaurantId, $id, array $data): Model;
+    public function updateModel($businessId, $id, array $data): Model;
 
-    public function sort($restaurantId, $data);
+    public function sort($businessId, $data);
 
-    public function get($restaurantId, int $id);
+    public function get($businessId, int $id);
 
-    public function destroy($restaurantId, $id): ?bool;
+    public function destroy($businessId, $id): ?bool;
 }

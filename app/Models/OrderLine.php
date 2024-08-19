@@ -45,6 +45,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OrderLine whereOrderId($value)
  * @method static Builder|OrderLine whereUpdatedAt($value)
  * @method static Builder|OrderLine whereUserId($value)
+ * @property-read Collection<int, \App\Models\Locales> $locales
+ * @property-read int|null $locales_count
  * @mixin Eloquent
  */
 class OrderLine extends Model
