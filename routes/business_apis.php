@@ -52,14 +52,14 @@ Route::group(['middleware' => [
                 Route::get('', [BranchesController::class, 'show']);
                 Route::post('', [BranchesController::class, 'update']);
                 Route::post('/delete', [BranchesController::class, 'destroy']);
-                Route::get('/orders', [OrdersController::class, 'businessOrders']);
 
-//            Route::group(['prefix' => 'orders'], function () {
-//                Route::get('/', [OrdersController::class, 'index']);
-//                Route::get('/{id}', [OrdersController::class, 'show']);
-//                Route::post('/', [OrdersController::class, 'create']);
-//                Route::post('/{id}', [OrdersController::class, 'update']);
-//            });
+                Route::group(['prefix' => 'orders'], function () {
+                    Route::get('/orders', [OrdersController::class, 'businessOrders']);
+    //                Route::get('/', [OrdersController::class, 'index']);
+                    Route::get('/{id}', [OrdersController::class, 'show']);
+                    Route::post('/', [OrdersController::class, 'create']);
+                    Route::post('/{id}', [OrdersController::class, 'update']);
+                });
 
                 // Business Branch floors
                 Route::group(['prefix' => '/floors'], function () {
