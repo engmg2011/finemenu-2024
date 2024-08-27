@@ -31,7 +31,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
         $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
-        return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id']);
+        return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id', 'type']);
     }
 
     public function relations($model, $data)

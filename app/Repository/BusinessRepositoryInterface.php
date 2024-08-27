@@ -4,6 +4,7 @@
 namespace App\Repository;
 
 
+use App\Models\Menu;
 use Illuminate\Database\Eloquent\Model;
 
 interface BusinessRepositoryInterface
@@ -20,5 +21,5 @@ interface BusinessRepositoryInterface
 
     public function getModel(int $id);
 
-    public function dietMenu($restaurantId): array;
+    public function dietMenu($menu, $branch): array;
 }

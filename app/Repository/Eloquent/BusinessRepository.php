@@ -95,14 +95,15 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         return Business::with(BusinessRepository::$modelRelations)->find($id);
     }
 
-    public function dietMenu($restaurantId): array
+    public function dietMenu($menu, $branch): array
     {
-        $restaurant = Business::with(['locales', 'media', 'settings'])->find($restaurantId);
-        $plans = DietPlan::with(['locales', 'prices', 'prices.locales', 'media', 'discounts'])->where('business_id', $restaurantId)->get();
+        $business = Business::with(['locales', 'media', 'settings'])->find($menu->business_id);
+        $plans = DietPlan::with(['locales', 'prices', 'prices.locales', 'media', 'discounts'])
+            ->find($menu->id);
         $categories = Category::whereNull('parent_id')
             ->with(['locales', 'media', 'children.locales', 'children.children.locales'])
-            ->where('business_id', $restaurantId)->get();
-        return compact('restaurant', 'plans', 'categories');
+            ->where('menu_id', $menu->id)->get();
+        return compact('business', 'branch', 'plans', 'categories');
     }
 
     public function registerNewOwner(Request $request, $user)

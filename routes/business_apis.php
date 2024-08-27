@@ -54,7 +54,7 @@ Route::group(['middleware' => [
                 Route::post('/delete', [BranchesController::class, 'destroy']);
 
                 Route::group(['prefix' => 'orders'], function () {
-                    Route::get('/orders', [OrdersController::class, 'businessOrders']);
+                    Route::get('/', [OrdersController::class, 'businessOrders']);
     //                Route::get('/', [OrdersController::class, 'index']);
                     Route::get('/{id}', [OrdersController::class, 'show']);
                     Route::post('/', [OrdersController::class, 'create']);

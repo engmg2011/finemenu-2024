@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 
 use App\Constants\BusinessTypes;
+use App\Constants\MenuTypes;
 use App\Models\Branch;
+use App\Models\Menu;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -41,6 +43,9 @@ class WebAppController extends Controller
         $branch = Branch::with(['locales', 'settings', 'media',
             'business.locales', 'business.media',
             'business.settings'])->where('slug', $branchSlug)->firstOrFail();
+        $branchMenu = Menu::find($branch->menu_id);
+        if($branchMenu->type === MenuTypes::SUBSCRIPTION)
+            return response()->json($this->businessRepository->dietMenu($branchMenu, $branch));
         $menu = $this->menuRepository->fullMenu($branch->menu_id);
         return response()->json(compact('branch', 'menu'));
     }
