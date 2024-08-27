@@ -104,7 +104,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         event(new UpdateOrder($model->id));
 
         if (isset($data['status'] ) && $data['status'] === OrderStatus::Ready) {
-            User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
+//            User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))
             $this->orderLineAction->updateMany($data['order_lines']);
@@ -149,8 +149,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function getOrderPermittedRules(&$order): array
     {
-        $orderableType = $order->orderable_type === Business::class ?
-            PermissionsConstants::Business : PermissionsConstants::Hotels;
+        $orderableType = $order->orderable_type === PermissionsConstants::Business;
         return [
             $orderableType . '.' . RolesConstants::OWNER . '.' . $order->orderable()->id,
             $orderableType . '.' . RolesConstants::KITCHEN . '.' . $order->orderable()->id,
