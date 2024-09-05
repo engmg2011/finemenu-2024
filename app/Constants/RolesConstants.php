@@ -5,7 +5,8 @@ namespace App\Constants;
 class RolesConstants
 {
     const ADMIN = 'admin';
-    const OWNER = 'owner';
+    const BUSINESS_OWNER = 'business-owner';
+    const BRANCH_MANAGER = 'branch-manager';
     const SUPERVISOR = 'supervisor';
     const KITCHEN = 'kitchen';
     const CASHIER = 'cashier';

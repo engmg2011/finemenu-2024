@@ -40,4 +40,12 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         return $businessName.'.'.$role.'.' . $id;
     }
 
+    public function createBranchPermission($branchId, $assignUser = null)
+    {
+        $permissionName = 'branch.'.$branchId;
+        Permission::create(['name' => $permissionName]);
+        if($assignUser)
+            $assignUser->givePermissionTo([$permissionName]);
+    }
+
 }

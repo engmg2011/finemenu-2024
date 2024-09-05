@@ -40,7 +40,7 @@ Route::group(['prefix' => 'users/{modelId}',
 
 Route::group(['middleware' => [
     'auth:api',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER]
 ], function () {
     Route::group(['prefix' => 'users',], function () {
         Route::get('/', [UsersController::class, 'index']);

@@ -36,8 +36,8 @@ class PusherAuthController extends Controller
         $user = $request->user();
         //"private-business-" + this.selectedBusinessId + "-branch-" + this.selectedBranchId + "-orders"
         if ($user->hasRole('admin', 'web')
-            || $user->hasPermissionTo(PermissionsConstants::Business . "." . RolesConstants::OWNER . "." . $businessNumber, 'web')
-            || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . RolesConstants::OWNER . "." . $branchNumber, 'web')
+            || $user->hasPermissionTo(PermissionsConstants::Business . "." . RolesConstants::BUSINESS_OWNER . "." . $businessNumber, 'web')
+            || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . RolesConstants::BUSINESS_OWNER . "." . $branchNumber, 'web')
             || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . RolesConstants::KITCHEN . "." . $branchNumber, 'web')
             || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . RolesConstants::DRIVER . "." . $branchNumber, 'web')
             || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . RolesConstants::CASHIER . "." . $branchNumber, 'web')

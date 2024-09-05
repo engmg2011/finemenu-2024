@@ -2,10 +2,10 @@
 
 use App\Constants\RolesConstants;
 use App\Http\Controllers\BranchesController;
+use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
-use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\UsersController;
@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // TODO :: put admin only roles
-Route::group(['middleware' => [
-    'auth:api',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER. '|' . RolesConstants::KITCHEN. '|' .
-    RolesConstants::SUPERVISOR. '|' . RolesConstants::CASHIER. '|' . RolesConstants::DRIVER ]
+Route::group(['middleware' => ['auth:api', 'role:' . businessRoles()]
 ], function () {
 
     Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
@@ -55,7 +52,7 @@ Route::group(['middleware' => [
 
                 Route::group(['prefix' => 'orders'], function () {
                     Route::get('/', [OrdersController::class, 'businessOrders']);
-    //                Route::get('/', [OrdersController::class, 'index']);
+                    //                Route::get('/', [OrdersController::class, 'index']);
                     Route::get('/{id}', [OrdersController::class, 'show']);
                     Route::post('/', [OrdersController::class, 'create']);
                     Route::post('/{id}', [OrdersController::class, 'update']);
@@ -115,3 +112,11 @@ Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]],
 
 
 });
+
+function businessRoles(): string
+{
+    return RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' .
+        RolesConstants::BRANCH_MANAGER . '|' . RolesConstants::KITCHEN . '|' .
+        RolesConstants::SUPERVISOR . '|' . RolesConstants::CASHIER . '|' .
+        RolesConstants::DRIVER;
+}

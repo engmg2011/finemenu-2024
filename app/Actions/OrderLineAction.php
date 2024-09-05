@@ -29,8 +29,9 @@ class OrderLineAction
     public function processRelations(&$orderLine, &$data)
     {
         if(isset($data['price_id'])){
-            $priceData = Price::select(["price"])->find($data['price_id'])->toArray();
-            $this->priceAction->setPrices($orderLine, [$priceData]);
+            $priceData = Price::select(["price"])->find($data['price_id'])?->toArray();
+            if($priceData)
+                $this->priceAction->setPrices($orderLine, [$priceData]);
         }
         if (isset($data['addons']))
             $this->addonAction->set($orderLine, $data['addons']);

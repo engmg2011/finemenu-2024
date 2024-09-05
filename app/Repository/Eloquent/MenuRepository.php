@@ -99,6 +99,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     {
         $businessName = str_replace(' ', '-', $businessName);
         $businessName = str_replace('.', '-', $businessName);
+        $businessName = str_replace('@', '-', $businessName);
         $businessName = urlencode($businessName);
         $businessName = strtolower($businessName);
         $count = $this->model->where('slug', $businessName)->count();

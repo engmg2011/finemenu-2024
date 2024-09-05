@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:api',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::OWNER]
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER]
 ], function () {
 
     Route::group(['prefix' => 'locales'], function () {

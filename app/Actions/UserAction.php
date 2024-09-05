@@ -7,10 +7,9 @@ namespace App\Actions;
 use App\Constants\PermissionsConstants;
 use App\Constants\UserTypes;
 use App\Models\Branch;
+use App\Models\Business;
 use App\Models\Device;
 use App\Models\LoginSession;
-use App\Models\Business;
-use App\Models\Salon;
 use App\Models\User;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\UserRepository;
@@ -100,19 +99,18 @@ class UserAction
         $branch = Branch::find($branchId);
         $userSlug = $branch->slug . '-' . $userType;
         $userEmail = $userSlug . '@menu-ai.net';
-        $subUser = User::firstOrCreate(['email' => $userEmail],
-            [
-                'name' => $userSlug,
-                'email' => $userEmail,
-                'type' => $userType,
-                'password' => $this->generateRandomString()
-            ]);
+        for ($i = 0; $i < 100; $i++) {
+            if (!User::where('email', $userEmail)->exists())
+                break;
+            $userEmail = $userSlug . '-' . rand(0, 100) . '@menu-ai.net';
+        }
+        $subUser = User::create(['email' => $userEmail,
+            'name' => $userSlug,
+            'type' => $userType,
+            'password' => $this->generateRandomString()
+        ]);
         $subUser->assignRole($userType);
-        $this->permissionRepository->setPermission(
-            $subUser->id,
-            PermissionsConstants::Business,
-            $userType,
-            $branch->business_id);
+        $this->permissionRepository->createBranchPermission($branchId, $subUser);
         return $subUser;
     }
 
@@ -167,30 +165,31 @@ class UserAction
         $loginSession = LoginSession::where('login_session', $token)
             ->where('valid_until', '<', Carbon::now())->first();
         // Validate the token (you can add your own validation logic here)
-        if ($loginSession) {
-            // get subUser or create  if no one exists
-            // only one subUser with the same type under every owner
-            if (in_array($type, [UserTypes::KITCHEN, UserTypes::CASHIER,
-                UserTypes::DRIVER, UserTypes::SUPERVISOR])) {
-                $subUser = $this->getBranchSubUser($branchId, $type);
-                $authToken = $subUser->createToken('authToken');
-                $subUser['token'] = $authToken->accessToken;
-                $branch = Branch::find($branchId);
-                $branchSlug = $branch->slug;
-                $business = Business::with('locales',
-                    'media',
-                    'branches.locales',
-                    'branches.media')->find($branch->business_id);
+        if (!$loginSession)
+            return response()->json(['message' => 'Invalid QR Login code'], 400);
 
-                $device = $this->subUserDevice($request, $subUser, $authToken, $branchSlug);
-                return response()->json(compact('device', 'business') + [
-                        'user' => $subUser,
-                        'branch_slug' => $branchSlug,
-                        'message' => 'Logged in successfully',
-                    ]);
-            }
-        }
-        return response()->json(['message' => 'Invalid QR Login code'], 401);
+        // get subUser or create  if no one exists
+        // only one subUser with the same type under every owner
+        if (!in_array($type, [UserTypes::KITCHEN, UserTypes::CASHIER,
+            UserTypes::DRIVER, UserTypes::SUPERVISOR]))
+            return response()->json(['message' => 'Invalid type'], 400);
+
+        $subUser = $this->getBranchSubUser($branchId, $type);
+        $authToken = $subUser->createToken('authToken');
+        $subUser['token'] = $authToken->accessToken;
+
+        $branch = Branch::find($branchId);
+        $branchSlug = $branch->slug;
+        $business = Business::with('locales', 'media', 'branches.locales', 'branches.media')->find($branch->business_id);
+
+        $device = $this->subUserDevice($request, $subUser, $authToken, $branchSlug);
+        return response()->json(compact('device', 'business') + [
+                'user' => $subUser,
+                'branch_slug' => $branchSlug,
+                'message' => 'Logged in successfully',
+            ]);
+
+
     }
 
 }

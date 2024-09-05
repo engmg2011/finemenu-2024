@@ -6,41 +6,44 @@ namespace App\Repository\Eloquent;
 use App\Actions\DiscountAction;
 use App\Actions\OrderLineAction;
 use App\Constants\OrderStatus;
-use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
-use App\Models\Order;
+use App\Models\Branch;
 use App\Models\Business;
+use App\Models\Order;
 use App\Models\User;
-use App\Notifications\OneSignalNotification;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
-    public const Relations = [  'orderLines.locales', 'locales','prices.locales', 'discounts.locales',
+    public const Relations = ['orderLines.locales', 'locales', 'prices.locales', 'discounts.locales',
         'orderLines.prices.locales', 'orderLines.item.locales',
         'orderLines.addons.locales', 'orderLines.addons.prices', 'orderLines.discounts.locales'];
+
     /**
      * UserRepository constructor.
      * @param Order $model
      */
-    public function __construct(Order $model,
+    public function __construct(Order                    $model,
                                 private LocaleRepository $localeRepository,
-                                private OrderLineAction $orderLineAction,
-                                private PriceRepository     $priceAction,
-                                private DiscountAction  $discountAction
-    ) {
+                                private OrderLineAction  $orderLineAction,
+                                private PriceRepository  $priceAction,
+                                private DiscountAction   $discountAction
+    )
+    {
         parent::__construct($model);
     }
 
-    public function get($id){
+    public function get($id)
+    {
         return $this->model->with(OrderRepository::Relations)->find($id);
     }
 
-    public function businessOrders($businessId){
+    public function businessOrders($businessId)
+    {
         return $this->model->where([
             'orderable_type' => Business::class,
             'orderable_id' => $businessId
@@ -57,16 +60,19 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function create(array $data): Model
     {
+        $data['orderable_id'] = request()->route()->parameter('branchId');
+        $data['orderable_type'] = get_class(new Branch());
+
         $model = $this->model->create($this->process($data));
         $totalPrice = 0;
         foreach ($data['order_lines'] as &$ol) {
             $ol['order_id'] = $model->id;
             $orderLine = $this->orderLineAction->create($ol);
-            if(isset($orderLine->prices[0]))
+            if (isset($orderLine->prices[0]))
                 $totalPrice += $orderLine->prices[0]->price;
         }
         $data['prices'] = [];
-        $data['prices'][] =  [
+        $data['prices'][] = [
             'price' => $totalPrice
         ];
         $this->setOrderData($model, $data);
@@ -91,8 +97,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $userId = auth('api')->user()->id;
         $user = User::find($userId);
         $order = Order::find($id);
-        if (!($user->hasRole('admin') || $order->user_id === $userId ||
-            $user->hasAnyDirectPermission($this->getOrderPermittedRules($order))))
+        if ( $user->hasPermissionTo($this->getOrderRequiredPermission($order)))
             return throw new \Exception('You Don\'t have permission', 403);
 
         // TODO:: check if data['paid']
@@ -103,7 +108,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         // Send event
         event(new UpdateOrder($model->id));
 
-        if (isset($data['status'] ) && $data['status'] === OrderStatus::Ready) {
+        if (isset($data['status']) && $data['status'] === OrderStatus::Ready) {
 //            User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))
@@ -131,7 +136,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $businessId = $businessId ?? request()->header('business-id');
         return Order::with(OrderRepository::Relations)
             ->where(fn($q) => $businessId ?
-                $q->where(['orderable_id' => $businessId, 'orderable_type' =>  Business::class]) : $q)
+                $q->where(['orderable_id' => $businessId, 'orderable_type' => Business::class]) : $q)
             ->where('status', '!=', OrderStatus::Delivered)
             ->orderByDesc('id')
             ->paginate(10);
@@ -147,14 +152,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->list(['status', '!=', OrderStatus::Delivered]);
     }
 
-    public function getOrderPermittedRules(&$order): array
+    public function getOrderRequiredPermission(&$order): string
     {
-        $orderableType = $order->orderable_type === PermissionsConstants::Business;
-        return [
-            $orderableType . '.' . RolesConstants::OWNER . '.' . $order->orderable()->id,
-            $orderableType . '.' . RolesConstants::KITCHEN . '.' . $order->orderable()->id,
-            $orderableType . '.' . RolesConstants::DRIVER . '.' . $order->orderable()->id,
-            $orderableType . '.' . RolesConstants::CASHIER . '.' . $order->orderable()->id,
-        ];
+        $or = explode('\\', get_class($order->orderable));
+        $orderableType = strtolower(end($or));
+        return $orderableType.'.'.$order->orderable->id;
     }
 }

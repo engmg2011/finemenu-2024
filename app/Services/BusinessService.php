@@ -31,7 +31,7 @@ readonly class BusinessService
         ];
     }
 
-    public function createBusiness($model, $data)
+    public function createMenuAndBranch($model, $data)
     {
         // create menu
         $data['business_id'] = $model->id;
@@ -40,13 +40,5 @@ readonly class BusinessService
         // create branch
         $data['menu_id'] = $menu->id;
         $this->branchRepository->createModel($model->id, $data);
-
-        // give owner permissions
-        $userId = $data['user_id'] ?? auth('api')->id();
-        $this->permissionRepository->setPermission(
-            $userId,
-            PermissionsConstants::Business,
-            RolesConstants::OWNER,
-            $model->id);
     }
 }

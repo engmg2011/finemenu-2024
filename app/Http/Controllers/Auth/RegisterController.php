@@ -262,15 +262,15 @@ class RegisterController extends Controller
             return response()->json(['message' => 'Wrong code, try again'], 403);
 
         $data['password'] = bcrypt($request->password);
-        $data['type'] = RolesConstants::OWNER;
+        $data['type'] = "";
         $data['email_verified_at'] = Carbon::now();
 
         // Create user && assign general role
         $user = $this->userAction->create($data);
-        $user->assignRole(RolesConstants::OWNER);
         $token = $user->createToken('API Token')->accessToken;
 
         if (isset($data['businessName']) && isset($data['businessType'])) {
+            $user->assignRole(RolesConstants::BUSINESS_OWNER);
             $this->businessRepository->registerNewOwner($request, $user);
         }
 

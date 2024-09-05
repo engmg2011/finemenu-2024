@@ -4,13 +4,15 @@ namespace App\Repository\Eloquent;
 
 
 use App\Models\Branch;
+use App\Models\User;
 use App\Repository\BranchRepositoryInterface;
+use App\Repository\PermissionRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class BranchRepository extends BaseRepository implements BranchRepositoryInterface
 {
 
-    public function __construct(Branch $model, private LocaleRepository $localeAction)
+    public function __construct(Branch $model, private LocaleRepository $localeAction, private PermissionRepositoryInterface $permissionRepository)
     {
         parent::__construct($model);
     }
@@ -37,6 +39,10 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         $data['business_id'] = $businessId;
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
+        // Give permission to owner
+        $userId = $data['user_id'] ?? auth('api')->id();
+        $this->permissionRepository->createBranchPermission($entity->id, User::find($userId));
+        // return branch data
         return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);
     }
 

@@ -48,7 +48,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
 
-        $this->businessService->createBusiness($model, $data);
+        $this->businessService->createMenuAndBranch($model, $data);
 
         return $model;
     }
