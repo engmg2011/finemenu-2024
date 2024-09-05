@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 use App\Constants\RolesConstants;
+use App\Models\Business;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class PermissionsSeeder extends Seeder
@@ -50,6 +53,19 @@ class PermissionsSeeder extends Seeder
         Role::findOrCreate(RolesConstants::DRIVER);
         Role::findOrCreate(RolesConstants::GUEST);
         Role::findOrCreate(RolesConstants::CUSTOMER);
+
+        foreach (Business::all() as $business) {
+            $businessPermission = Permission::findOrCreate('business.' . $business->id);
+            $owner =  User::find($business->user_id);
+            $owner->assignRole(RolesConstants::BUSINESS_OWNER);
+            $owner->givePermissionTo($businessPermission);
+
+            foreach ($business->branches as $branch) {
+                $permission = Permission::findOrCreate('branch.' . $branch->id);
+                $owner->givePermissionTo($permission);
+            }
+        }
+
 
     }
 }
