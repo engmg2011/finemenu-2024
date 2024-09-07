@@ -54,9 +54,9 @@ class OrdersController extends Controller
      * @param $businessId
      * @return AnonymousResourceCollection
      */
-    public function businessOrders($businessId)
+    public function branchOrders($businessId)
     {
-        return DataResource::collection($this->orderRepository->businessOrders($businessId));
+        return DataResource::collection($this->orderRepository->branchOrders($businessId));
     }
     /**
      * Update the specified resource in storage.
@@ -65,9 +65,9 @@ class OrdersController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        return \response()->json($this->orderRepository->update($id, $request->all()));
+        return \response()->json($this->orderRepository->update(\request()->route('id'), $request->all()));
     }
 
     /**

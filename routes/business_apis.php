@@ -51,7 +51,7 @@ Route::group(['middleware' => ['auth:api', 'role:' . businessRoles()]
                 Route::post('/delete', [BranchesController::class, 'destroy']);
 
                 Route::group(['prefix' => 'orders'], function () {
-                    Route::get('/', [OrdersController::class, 'businessOrders']);
+                    Route::get('/', [OrdersController::class, 'branchOrders']);
                     //                Route::get('/', [OrdersController::class, 'index']);
                     Route::get('/{id}', [OrdersController::class, 'show']);
                     Route::post('/', [OrdersController::class, 'create']);

@@ -42,10 +42,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->with(OrderRepository::Relations)->find($id);
     }
 
-    public function businessOrders($businessId)
+    public function branchOrders($businessId)
     {
         return $this->model->where([
-            'orderable_type' => Business::class,
+            'orderable_type' => Branch::class,
             'orderable_id' => $businessId
         ])->with(OrderRepository::Relations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
@@ -121,12 +121,12 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
      */
     public function list($conditions = null)
     {
-        $businessId = request()->header('business-id');
+        $branchId = request()->route('branchId');
         return Order::with(OrderRepository::Relations)
             ->orderByDesc('id')
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
-            ->where(fn($q) => $businessId ?
-                $q->where(['orderable_id' => $businessId, 'orderable_type' => '\\App\\Models\\Business']) : $q)
+            ->where(fn($q) => $branchId ?
+                $q->where(['orderable_id' => $branchId, 'orderable_type' => Branch::class]) : $q)
             ->orderByDesc('id')
             ->paginate(request('per-page', 15));
     }

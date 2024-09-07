@@ -16,9 +16,10 @@ Route::group(['prefix' => 'webapp',
 
 
     Route::get('menus/{id}', [WebAppController::class, 'nestedMenu']);
-    Route::get('diet-business/{id}', [WebAppController::class, 'dietBusiness']);
 
     Route::get('branches/{slug}', [WebAppController::class, 'branchMenu']);
+
+    Route::get('branches/{slug}/menu-type', [WebAppController::class, 'menuType']);
 
 
     Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {

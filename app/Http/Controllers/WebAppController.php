@@ -22,7 +22,7 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $businessId
+     * @param $menuId
      * @return JsonResponse
      */
     public function nestedMenu($menuId): JsonResponse
@@ -35,7 +35,7 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $businessId
+     * @param $branchSlug
      * @return JsonResponse
      */
     public function branchMenu($branchSlug): JsonResponse
@@ -53,13 +53,13 @@ class WebAppController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $businessId
+     * @param $branchSlug
      * @return JsonResponse
      */
-    public function dietBusiness($businessId): JsonResponse
+    public function menuType($branchSlug): JsonResponse
     {
-        $menu = $this->businessRepository->dietMenu($businessId);
-        return response()->json($menu);
+        $branch = Branch::with(['menu'])->where('slug', $branchSlug)->firstOrFail();
+        return response()->json(['type' => $branch->menu->type]);
     }
 
     public function version(): JsonResponse

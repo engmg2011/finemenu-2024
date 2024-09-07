@@ -59,6 +59,13 @@ class Media extends Model
 
     public function getSrcAttribute($src)
     {
+        if( env('APP_ENV') == 'local' && env('ALTERENATE_URL')){
+            if ( strpos($src, "http:") === 0 )
+                return str_replace("http://localhost:8000", env('ALTERENATE_URL'), $src);
+            if ( strpos($src, "https:") === 0 )
+                return str_replace("https://localhost:8000", env('ALTERENATE_URL'), $src);
+            return url($src);
+        }
         return ( strpos($src, "http:") === 0 ||  strpos($src, "https:") === 0 ) ?
             str_replace("http:", "https:", $src)
             : url($src);
