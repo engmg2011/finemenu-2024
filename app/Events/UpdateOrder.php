@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Order;
+use App\Repository\Eloquent\OrderRepository;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -21,8 +22,7 @@ class UpdateOrder implements ShouldBroadcast
      */
     public function __construct($orderId)
     {
-        $this->order = Order::with([  'orderLines.locales', 'locales',
-            'orderLines.prices', 'orderLines.item.locales' ])->find($orderId);
+        $this->order = Order::with(OrderRepository::Relations)->find($orderId);
     }
 
     /**
