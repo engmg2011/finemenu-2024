@@ -18,7 +18,7 @@ class DeviceAction
 
     public function process(array $data): array
     {
-        return array_only($data, ['token_id', 'device_name', 'player_id', 'last_sync', 'user_id', 'info']);
+        return array_only($data, ['token_id', 'device_name', 'onesignal_token', 'last_sync', 'user_id', 'info']);
     }
 
     public function create(array $data)

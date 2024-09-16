@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $device_name
  * @property string|null $token_id
- * @property string|null $player_id
+ * @property string|null $onesignal_token
  * @property mixed|null $info
  * @property string $last_active
  * @property string|null $os

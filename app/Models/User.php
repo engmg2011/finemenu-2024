@@ -140,7 +140,7 @@ class User extends Authenticatable
     {
         $playerIds = [];
         foreach (User::find(1)->devices as $device){
-            $playerIds[] = $device->player_id;
+            $playerIds[] = $device->onesignal_token;
         }
         return $playerIds;
     }

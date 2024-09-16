@@ -140,7 +140,7 @@ class UserAction
             'type' => $type,
             'device_name' => $deviceName,
             'os' => request()->header('User-Agent'),
-            'player_id' => request()->input('player_id'),
+            'onesignal_token' => request()->input('onesignal_token'),
             'version' => request()->header('App-Version'),
             'info' => request()->header('App-Info'),
             'last_active' => Carbon::now()
