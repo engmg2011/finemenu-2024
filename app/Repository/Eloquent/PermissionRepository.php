@@ -21,11 +21,11 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
      * @param $role : like RolesConstants::OWNER
      * @param $businessId : int
      */
-    public function setPermission($userId, $businessName, $role, $businessId )
+    public function setPermission($userId, $businessName, $role, $businessId)
     {
         $user = User::find($userId);
         $permissionName = $this->getPermissionName($businessName, $role, $businessId);
-        $myWebPermission = Permission::findOrCreate($permissionName , 'web');
+        $myWebPermission = Permission::findOrCreate($permissionName, 'web');
         $user->givePermissionTo([$myWebPermission]);
     }
 
@@ -37,15 +37,15 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
      */
     public function getPermissionName($businessName, $role, $id): string
     {
-        return $businessName.'.'.$role.'.' . $id;
+        return $businessName . '.' . $role . '.' . $id;
     }
 
     public function createBranchPermission($branchId, $assignUser = null)
     {
-        $permissionName = 'branch.'.$branchId;
-        Permission::create(['name' => $permissionName]);
-        if($assignUser)
-            $assignUser->givePermissionTo([$permissionName]);
+        $permissionName = 'branch.' . $branchId;
+        Permission::findOrCreate($permissionName, 'web');
+        if ($assignUser)
+            $assignUser->givePermissionTo($permissionName);
     }
 
 }
