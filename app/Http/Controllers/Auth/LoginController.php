@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\UserAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -39,7 +40,7 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct( private UserAction $userAction)
     {
         $this->middleware('guest')->except('logout');
     }
@@ -72,9 +73,10 @@ class LoginController extends Controller
             ->with(UserRepository::LoginUserRelations)->first();
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 403);
-
-        $token = $user->createToken('authToken')->accessToken;
-        $user['token'] = $token;
+        $token = $user->createToken('authToken');
+        $device = $this->userAction->userDevice($request, $user, $token);
+        $user['token'] = $token->accessToken;
+        $user['device'] = $device;
         return response()->json($user);
     }
 }

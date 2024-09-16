@@ -4,7 +4,6 @@
 namespace App\Actions;
 
 
-use App\Constants\PermissionsConstants;
 use App\Constants\UserTypes;
 use App\Models\Branch;
 use App\Models\Business;
@@ -136,6 +135,40 @@ class UserAction
         return Device::updateOrCreate(['device_name' => $deviceName], [
             'token_id' => $authToken->token->id,
             'user_id' => $subUser->id,
+            'branch_id' => $branchId,
+            'type' => $type,
+            'device_name' => $deviceName,
+            'os' => request()->header('User-Agent'),
+            'onesignal_token' => request()->input('onesignal_token'),
+            'version' => request()->header('App-Version'),
+            'info' => request()->header('App-Info'),
+            'last_active' => Carbon::now()
+        ]);
+
+    }
+
+    /**
+     * // Create a device for a user
+     * // if no device name sent : create device for this user and save device name
+     * // if device name sent : unAuthorize the old device with the same device name
+     * // save ip, last login, last sync, OS, ....
+     * @param Request $request
+     * @param $subUser
+     * @param $token
+     * @return Device
+     */
+    public function userDevice(Request $request, $user, $authToken): Device
+    {
+        $branchId = \request()->route('modelId');
+        $type = $request->input('type');
+
+        $deviceName = $request->input('device_name');
+        if (!$deviceName)
+            $deviceName = strtolower(str_replace(' ', '_', $user->name)) . '-' . random_int(1000, 9999);
+
+        return Device::updateOrCreate(['device_name' => $deviceName], [
+            'token_id' => $authToken->token->id,
+            'user_id' => $user->id,
             'branch_id' => $branchId,
             'type' => $type,
             'device_name' => $deviceName,
