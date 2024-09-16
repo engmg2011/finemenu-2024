@@ -219,8 +219,10 @@ class RegisterController extends Controller
             return response()->json(['message' => 'Wrong code, try again'], 403);
         if ($reset) {
             $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
-            $token = $user->createToken('authToken')->accessToken;
-            $user['token'] = $token;
+            $token = $user->createToken('authToken');
+            $device = $this->userAction->userDevice($request, $user, $token);
+            $user['token'] = $token->accessToken;
+            $user['device'] = $device;
             return response()->json($user);
         }
         return response()->json(['message' => 'success']);
