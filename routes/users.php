@@ -3,6 +3,7 @@
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\CheckUserModel;
@@ -36,6 +37,12 @@ Route::group(['prefix' => 'users/{modelId}',
         Route::post('settings/set', [SettingsController::class, 'setSetting']);
 //        Route::post('/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+
+
+        Route::group(['prefix' => 'devices'], function () {
+            Route::post('/{id}', [DevicesController::class, 'update']);
+        });
+
 });
 
 Route::group(['middleware' => [

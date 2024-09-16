@@ -38,5 +38,4 @@ Route::group(['prefix' => 'webapp',
         Route::get('/{id}', [DietPlansController::class, 'show']);
     });
 
-
 });
