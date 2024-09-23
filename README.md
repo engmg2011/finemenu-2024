@@ -25,9 +25,11 @@ It’s the FineMenu version for the Diet & healthy business, It is a SAAS projec
   - cp Dockerfile vendor/laravel/sail/runtimes/8.2/Dockerfile
   - sail build
   - sail up -d
+
 - In mysql container
-    - mysql -u sail -ppassword
-    - create database finemenu;
+    - mysql -u sail -p{password}
+    - create database menuai;
+
 - In backend directory
   - sail artisan migrate
   - sail artisan db:seed --class PermissionsSeeder
