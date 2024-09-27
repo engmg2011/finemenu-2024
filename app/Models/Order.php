@@ -75,4 +75,9 @@ class Order extends Model
     {
         return $this->morphTo();
     }
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
+    }
 }
