@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->unsignedBigInteger("device_id")->nullable();
             $table->foreign("device_id")->references("id")->on('devices')->onDelete("set null");
+            $table->json('delivery_address')->nullable();
         });
     }
 
@@ -25,6 +26,7 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->dropForeign("orders_device_id_foreign");
             $table->dropColumn("device_id");
+            $table->dropColumn("delivery_address");
         });
     }
 };

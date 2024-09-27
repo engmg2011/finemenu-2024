@@ -56,7 +56,7 @@ class Order extends Model
     use HasFactory, Localizable, Priceable, Discountable;
 
     protected $guarded = ['id'];
-    protected $casts = ['paid' => 'boolean'];
+    protected $casts = ['paid' => 'boolean', 'delivery_address' => 'json'];
 
     /**
      * @return HasMany

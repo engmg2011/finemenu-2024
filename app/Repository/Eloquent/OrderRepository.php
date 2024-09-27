@@ -42,7 +42,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['user_id'] = auth('api')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
         return array_only($data, ['user_id', 'note', 'orderable_id',
-            'orderable_type', 'scheduled_at', 'status', 'paid', 'device_id']);
+            'orderable_type', 'scheduled_at', 'status', 'paid', 'device_id', 'delivery_address']);
     }
 
     public function get($id)
