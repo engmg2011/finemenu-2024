@@ -36,6 +36,14 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         parent::__construct($model);
     }
 
+    public function process(array $data): array
+    {
+        $data['user_id'] = auth('api')->user()->id;
+        $data['status'] = $data['status'] ?? OrderStatus::Pending;
+        return array_only($data, ['user_id', 'note', 'orderable_id',
+            'orderable_type', 'scheduled_at', 'status', 'paid', 'device_id']);
+    }
+
     public function get($id)
     {
         return $this->model->with(OrderRepository::Relations)->find($id);
@@ -60,13 +68,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 5));
     }
 
-    public function process(array $data): array
-    {
-        $data['user_id'] = auth('api')->user()->id;
-        $data['status'] = $data['status'] ?? OrderStatus::Pending;
-        return array_only($data, ['user_id', 'note', 'orderable_id',
-            'orderable_type', 'scheduled_at', 'status', 'paid']);
-    }
 
     public function create(array $data): Model
     {
