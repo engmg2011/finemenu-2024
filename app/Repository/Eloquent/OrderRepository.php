@@ -6,7 +6,6 @@ namespace App\Repository\Eloquent;
 use App\Actions\DiscountAction;
 use App\Actions\OrderLineAction;
 use App\Constants\OrderStatus;
-use App\Constants\RolesConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
 use App\Models\Branch;
@@ -47,7 +46,18 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->where([
             'orderable_type' => Branch::class,
             'orderable_id' => $businessId
-        ])->with(OrderRepository::Relations)->orderByDesc('id')->paginate(request('per-page', 15));
+        ])->with(OrderRepository::Relations)
+            ->with('orderable.business.locales', 'orderable.locales')
+            ->orderByDesc('id')->paginate(request('per-page', 10));
+    }
+
+    public function userOrders()
+    {
+        return $this->model->where([
+            'user_id' => auth()->id()
+        ])->with(OrderRepository::Relations)
+            ->with('orderable.business.locales', 'orderable.locales')
+            ->orderByDesc('id')->paginate(request('per-page', 5));
     }
 
     public function process(array $data): array
@@ -97,7 +107,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $userId = auth('api')->user()->id;
         $user = User::find($userId);
         $order = Order::find($id);
-        if ( $user->hasPermissionTo($this->getOrderRequiredPermission($order)))
+        if ($user->hasPermissionTo($this->getOrderRequiredPermission($order)))
             return throw new \Exception('You Don\'t have permission', 403);
 
         // TODO:: check if data['paid']
@@ -156,6 +166,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $or = explode('\\', get_class($order->orderable));
         $orderableType = strtolower(end($or));
-        return $orderableType.'.'.$order->orderable->id;
+        return $orderableType . '.' . $order->orderable->id;
     }
 }

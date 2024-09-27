@@ -4,6 +4,7 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\CheckUserModel;
@@ -42,6 +43,12 @@ Route::group(['prefix' => 'users/{modelId}',
         Route::group(['prefix' => 'devices'], function () {
             Route::post('/{id}', [DevicesController::class, 'update']);
         });
+
+
+    Route::group(['prefix' => 'orders'], function () {
+        Route::get('/', [OrdersController::class, 'userOrders']);
+    });
+
 
 });
 

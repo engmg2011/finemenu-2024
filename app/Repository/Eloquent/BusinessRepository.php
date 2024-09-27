@@ -84,9 +84,13 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     /**
      * @return mixed
      */
-    public function allList()
+    public function businessList()
     {
         return Business::with(BusinessRepository::$modelRelations)
+            ->where(function ($query) {
+                if(\request('type'))
+                $query->where('type', request('type'));
+            })
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 

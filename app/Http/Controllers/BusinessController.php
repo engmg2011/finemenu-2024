@@ -34,9 +34,9 @@ class BusinessController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function allList()
+    public function businessList()
     {
-        return DataResource::collection($this->repository->allList());
+        return DataResource::collection($this->repository->businessList());
     }
 
     /**

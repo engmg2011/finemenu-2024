@@ -12,8 +12,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
-
-// TODO :: put admin only roles
+// Admin and business users
 Route::group(['middleware' => ['auth:api', 'role:' . businessRoles()]
 ], function () {
 

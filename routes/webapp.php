@@ -2,6 +2,7 @@
 
 
 // TODO :: put admin only roles
+use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\BusinessController;
@@ -23,13 +24,20 @@ Route::group(['prefix' => 'webapp',
 
 
     Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
-        Route::get('/', [BusinessController::class, 'allList']);
+        Route::get('/', [BusinessController::class, 'businessList']);
+        Route::get('/types', [WebAppController::class , 'businessTypes']);
 
-        // Business Branch floors
-        Route::group(['prefix' => '/{businessId}/branches/{branchId}/floors'], function () {
-            Route::get('/', [FloorsController::class, 'index']);
-            Route::get('/{floorId}/tables', [TablesController::class, 'index']);
+        // Business branches
+        Route::group(['prefix' => '/{businessId}/branches'], function () {
+            Route::get('/', [BranchesController::class, 'index']);
+
+            // Business Branch floors
+            Route::group(['prefix' => '{branchId}/floors'], function () {
+                Route::get('/', [FloorsController::class, 'index']);
+                Route::get('/{floorId}/tables', [TablesController::class, 'index']);
+            });
         });
+
     });
 
 

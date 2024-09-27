@@ -58,6 +58,16 @@ class OrdersController extends Controller
     {
         return DataResource::collection($this->orderRepository->branchOrders($businessId));
     }
+
+    /**
+     * @param $businessId
+     * @return AnonymousResourceCollection
+     */
+    public function userOrders()
+    {
+        return DataResource::collection($this->orderRepository->userOrders());
+    }
+
     /**
      * Update the specified resource in storage.
      *
