@@ -59,9 +59,13 @@ class Media extends Model
 
     public function getSrcAttribute($src)
     {
-        return ( strpos($src, "http:") === 0 ||  strpos($src, "https:") === 0 ) ?
-            str_replace("http:", "https:", $src)
-            : url($src);
+        if ( strpos($src, "http:") === 0 ||  strpos($src, "https:") === 0 )
+            $src = str_replace("http:", "https:", $src);
+        else $src = url($src);
+
+        $src = str_replace("https://finemenu.net", "https://menu-ai.net", $src);
+
+        return $src;
     }
 
 
