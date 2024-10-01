@@ -63,7 +63,7 @@ class Media extends Model
             $src = str_replace("http:", "https:", $src);
         else $src = url($src);
 
-        $src = str_replace("https://finemenu.net", "https://menu-ai.net", $src);
+        $src = str_replace("https://api.finemenu.net", "https://api.menu-ai.net", $src);
 
         return $src;
     }
