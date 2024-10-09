@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SocialController;
+
 
 //use App\Events\SendOrders;
 
@@ -46,3 +48,6 @@ Route::get('orders-sender', function () {
 
 });
 
+
+Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);

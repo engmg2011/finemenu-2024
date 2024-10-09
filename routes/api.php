@@ -10,7 +10,6 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
-use App\Http\Controllers\HotelsController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
@@ -48,19 +47,6 @@ Route::group(['middleware' => ['auth:api',
 
     Route::group(['prefix' => 'menu'], function () {
         Route::get("/{id}", [MenusController::class, 'menu']);
-    });
-
-    Route::group(['prefix' => 'hotels', 'middleware' => [SetRequestModel::class]], function () {
-        Route::get('/', [HotelsController::class, 'index']);
-        Route::get('/{id}', [HotelsController::class, 'show']);
-        Route::post('/{id}/delete', [HotelsController::class, 'destroy']);
-        Route::post('/', [HotelsController::class, 'create'])->middleware('role:' . RolesConstants::ADMIN);
-        Route::post('/{id}', [HotelsController::class, 'update'])
-            ->middleware('role:' . RolesConstants::ADMIN . '|permission:hotels.owner.{id}');
-        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
     });
 
     Route::group(['prefix' => 'contacts'], function () {
