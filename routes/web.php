@@ -47,7 +47,3 @@ Route::get('orders-sender', function () {
 //    event(new MyEvent('hello world'));
 
 });
-
-
-Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
-Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);

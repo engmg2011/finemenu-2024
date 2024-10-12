@@ -2,6 +2,7 @@
 
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
+use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
@@ -34,6 +35,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+
+Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
+
 
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:api',

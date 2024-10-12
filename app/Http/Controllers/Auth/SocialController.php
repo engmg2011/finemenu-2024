@@ -10,39 +10,48 @@ use Socialite;
 class SocialController extends Controller
 {
     /**
-     * Redirect the user to the OAuth provider.
+     * Redirect to the social provider.
      */
     public function redirectToProvider($provider)
     {
-        return Socialite::driver($provider)->redirect();
+        return response()->json([
+            'url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
+        ]);
     }
 
     /**
-     * Obtain the user information from the provider.
+     * Handle the provider callback.
      */
     public function handleProviderCallback($provider)
     {
-        $socialUser = Socialite::driver($provider)->user();
+        try {
+            // Get user information from the provider
+            $socialUser = Socialite::driver($provider)->stateless()->user();
 
-        // Check if the user already exists in the database
-        $user = User::where('provider_id', $socialUser->id)->first();
+            // Find or create a user
+            $user = User::where('provider_id', $socialUser->id)->first();
 
-        if (!$user) {
-            // If not, create a new user
-            $user = User::create([
-                'name' => $socialUser->name,
-                'email' => $socialUser->email,
-                'provider' => $provider,
-                'provider_id' => $socialUser->id,
-                // Add additional fields as needed
-            ]);
+            if (!$user) {
+                $user = User::create([
+                    'name' => $socialUser->name,
+                    'email' => $socialUser->email,
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->id,
+                ]);
+            }
+
+            // Generate a token for API authentication
+            $token = $user->createToken('API Token')->plainTextToken;
+
+            // Return the token and user info
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Authentication failed'], 401);
         }
-
-        // Log the user in
-        Auth::login($user);
-
-        // Redirect to the desired location
-        return redirect('/home');
     }
 }
 
