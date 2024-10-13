@@ -26,12 +26,12 @@ class OrderLineAction
         return array_only($data, ['user_id','note','order_id','item_id', 'count', 'price_id']);
     }
 
-    public function processRelations(&$orderLine, &$data)
+    public function processRelations(&$orderLine, &$data, bool $create = false)
     {
         if(isset($data['price_id'])){
-            $priceData = Price::select(["price"])->find($data['price_id'])?->toArray();
+            $priceData = Price::with('locales')->find($data['price_id'])?->toArray();
             if($priceData)
-                $this->priceAction->setPrices($orderLine, [$priceData]);
+                $this->priceAction->setPrices($orderLine, [$priceData] , $create );
         }
         if (isset($data['addons']))
             $this->addonAction->set($orderLine, $data['addons']);
@@ -42,7 +42,7 @@ class OrderLineAction
     public function create(array $data)
     {
         $orderLine = $this->repository->create($this->process($data));
-        $this->processRelations($orderLine, $data);
+        $this->processRelations($orderLine, $data , true);
         return $orderLine;
     }
 

@@ -40,9 +40,11 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
         return $model;
     }
 
-    public function setPrices(&$model, $prices)
+    public function setPrices(&$model, $prices, bool $create = false)
     {
         foreach ($prices as &$price) {
+            if($create)
+                $price['id'] = null;
             $price['priceable_id'] = $model['id'];
             $price['priceable_type'] = get_class($model);
             $price['user_id'] = auth('api')->user()->id;
