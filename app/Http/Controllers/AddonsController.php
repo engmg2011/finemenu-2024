@@ -66,10 +66,10 @@ class AddonsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        //
+        return \response()->json($this->action->destroy($id));
     }
 }

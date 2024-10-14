@@ -145,6 +145,7 @@ Route::group(['middleware' => ['auth:api',
         Route::get('/{id}', [AddonsController::class, 'show']);
         Route::post('/', [AddonsController::class, 'create']);
         Route::post('/{id}', [AddonsController::class, 'update']);
+        Route::post('/{id}/delete', [AddonsController::class, 'destroy']);
     });
 
     Route::group(['prefix' => 'discounts'], function () {

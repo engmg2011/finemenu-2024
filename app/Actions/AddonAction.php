@@ -72,4 +72,11 @@ class AddonAction
                 $this->create($addon);
         }
     }
+
+
+    public function destroy($id): ?bool
+    {
+        return $this->repository->delete($id);
+    }
+
 }
