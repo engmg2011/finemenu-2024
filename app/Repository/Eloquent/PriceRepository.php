@@ -3,7 +3,6 @@
 namespace App\Repository\Eloquent;
 
 
-
 use App\Models\Price;
 use App\Repository\PriceRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,8 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
      * UserRepository constructor.
      * @param Price $model
      */
-    public function __construct(Price $model, private LocaleRepository $localeRepository) {
+    public function __construct(Price $model, private LocaleRepository $localeRepository)
+    {
         parent::__construct($model);
     }
 
@@ -26,8 +26,9 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
 
     public function create(array $data): Model
     {
+        \Log::debug(["will create " => $data]);
         $model = $this->model->create($this->process($data));
-        if(isset($data['locales']))
+        if (isset($data['locales']))
             $this->localeRepository->setLocales($model, $data['locales']);
         return $model;
     }
@@ -42,12 +43,21 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
 
     public function setPrices(&$model, $prices, bool $create = false)
     {
+
         foreach ($prices as &$price) {
-            if($create)
+            if ($create) {
                 $price['id'] = null;
+                foreach ($price['locales'] as &$locale) {
+                    $locale['id'] = null;
+                }
+
+            }
             $price['priceable_id'] = $model['id'];
             $price['priceable_type'] = get_class($model);
             $price['user_id'] = auth('api')->user()->id;
+
+            \Log::debug(["price ss " => $price]);
+
             if (isset($price['id']) && $price['id'])
                 $this->update($price['id'], $price);
             else

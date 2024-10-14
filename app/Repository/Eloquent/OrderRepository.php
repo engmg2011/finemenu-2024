@@ -19,7 +19,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
     public const Relations = ['orderLines.locales', 'locales', 'prices.locales', 'discounts.locales',
-        'orderLines.prices.locales', 'orderLines.item.locales',
+        'orderLines.prices.locales', 'orderLines.item.locales', 'orderLines.item.media',
         'orderLines.addons.locales', 'orderLines.addons.prices', 'orderLines.discounts.locales',
         'device'];
 

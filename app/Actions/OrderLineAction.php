@@ -14,9 +14,9 @@ class OrderLineAction
 {
 
     public function __construct(private OrderLineRepository $repository,
-                                private PriceRepository $priceAction,
-                                private AddonAction $addonAction,
-                                private DiscountAction $discountAction)
+                                private PriceRepository     $priceRepository,
+                                private AddonAction         $addonAction,
+                                private DiscountAction      $discountAction)
     {
     }
 
@@ -30,8 +30,10 @@ class OrderLineAction
     {
         if(isset($data['price_id'])){
             $priceData = Price::with('locales')->find($data['price_id'])?->toArray();
+            \Log::debug(["pid" => $data['price_id'] ,  "priceData" => $priceData]);
+            \Log::debug(["ol" => $orderLine, "pdata"=>[$priceData]]);
             if($priceData)
-                $this->priceAction->setPrices($orderLine, [$priceData] , $create );
+                $this->priceRepository->setPrices($orderLine, [$priceData] , $create );
         }
         if (isset($data['addons']))
             $this->addonAction->set($orderLine, $data['addons']);
