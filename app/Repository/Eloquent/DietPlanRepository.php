@@ -90,6 +90,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
 
     public function delete($id)
     {
+        $this->localeAction->deleteEntityLocales(DietPlan::find($id));
         $plan = $this->model->find($id);
         $plan->items()->detach();
         return $plan->delete();

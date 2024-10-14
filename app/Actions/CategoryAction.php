@@ -76,6 +76,7 @@ class CategoryAction
 
     public function destroy($id): ?bool
     {
+        $this->localeRepository->deleteEntityLocales(Category::find($id));
         return $this->repository->delete($id);
     }
 

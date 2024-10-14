@@ -119,6 +119,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
 
     public function destroy($id)
     {
+        $this->localeAction->deleteEntityLocales(Business::find($id));
         Menu::where('business_id', $id)->delete();
         $this->model->find($id)->delete();
 

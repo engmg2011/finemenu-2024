@@ -30,8 +30,6 @@ class OrderLineAction
     {
         if(isset($data['price_id'])){
             $priceData = Price::with('locales')->find($data['price_id'])?->toArray();
-            \Log::debug(["pid" => $data['price_id'] ,  "priceData" => $priceData]);
-            \Log::debug(["ol" => $orderLine, "pdata"=>[$priceData]]);
             if($priceData)
                 $this->priceRepository->setPrices($orderLine, [$priceData] , $create );
         }

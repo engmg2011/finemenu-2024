@@ -50,6 +50,7 @@ class PackageAction
 
     public function destroy($id): ?bool
     {
+        $this->localeAction->deleteEntityLocales(Package::find($id));
         return $this->repository->delete($id);
     }
 

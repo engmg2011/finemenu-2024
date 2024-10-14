@@ -129,6 +129,7 @@ class MediaAction
     }
 
     public function delete(int $id){
+        $this->localeRepository->deleteEntityLocales(Media::find($id));
         return app(MediaRepository::class)->delete($id);
     }
 

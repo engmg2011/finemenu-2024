@@ -85,6 +85,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
     public function destroy($id): ?bool
     {
+        $this->localeAction->deleteEntityLocales(Item::find($id));
         return $this->delete($id);
     }
 

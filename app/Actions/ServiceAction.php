@@ -58,6 +58,7 @@ class ServiceAction
 
     public function destroy($id): ?bool
     {
+        $this->localeAction->deleteEntityLocales(Service::find($id));
         return $this->repository->delete($id);
     }
 

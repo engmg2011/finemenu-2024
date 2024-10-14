@@ -73,6 +73,8 @@ class SubscriptionAction
 
     public function destroy($id): ?bool
     {
+        $this->localeAction->deleteEntityLocales(Subscription::find($id));
+
         return $this->repository->delete($id);
     }
 

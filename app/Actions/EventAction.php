@@ -13,7 +13,7 @@ class EventAction
 
     public function __construct(private EventRepository $repository,
                                 private MediaAction $mediaAction,
-                                private LocaleRepository $localeAction)
+                                private LocaleRepository $localeRepository)
     {
     }
 
@@ -26,7 +26,7 @@ class EventAction
     {
         $data['user_id'] = auth('api')->user()->id;
         $model = $this->repository->create($this->process($data));
-        $this->localeAction->createLocale($model, $data['locales']);
+        $this->localeRepository->createLocale($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;
@@ -36,7 +36,7 @@ class EventAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->setLocales($model, $data['locales']);
+        $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         return $model;
@@ -57,6 +57,7 @@ class EventAction
 
     public function destroy($id): ?bool
     {
+        $this->localeRepository->deleteEntityLocales(Event::find($id));
         return $this->repository->delete($id);
     }
 }

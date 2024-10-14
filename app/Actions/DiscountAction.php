@@ -62,4 +62,11 @@ class DiscountAction
                 $this->create($discount);
         }
     }
+
+    public function destroy($id): ?bool
+    {
+        $this->localeRespository->deleteEntityLocales(Discount::find($id));
+        return $this->repository->delete($id);
+    }
+
 }
