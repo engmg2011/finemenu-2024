@@ -4,6 +4,8 @@
 namespace App\Actions;
 
 
+use App\Models\Addon;
+use App\Models\Discount;
 use App\Models\OrderLine;
 use App\Models\Price;
 use App\Repository\Eloquent\OrderLineRepository;
@@ -33,10 +35,20 @@ class OrderLineAction
             if($priceData)
                 $this->priceRepository->setPrices($orderLine, [$priceData] , $create );
         }
-        if (isset($data['addons']))
-            $this->addonAction->set($orderLine, $data['addons']);
-        if (isset($data['discounts']))
-            $this->discountAction->set($orderLine, $data['discounts']);
+
+        if (isset($data['addon_ids'])) {
+            $addons = Addon::with('locales')->whereIn('id', $data['addon_ids'])
+                ->select('id','price')->get()?->toArray();
+            foreach ($addons as &$addon) {
+                $addon['id'] = null;
+                if(isset($addon['locales']))
+                    foreach ($addon['locales'] as &$locale) $locale['id'] = null;
+            }
+            $this->addonAction->set($orderLine, $addons);
+        }
+
+        if (isset($data['discount_ids']))
+            $this->discountAction->setModelDiscounts($orderLine, $data['discount_ids']);
     }
 
     public function create(array $data)

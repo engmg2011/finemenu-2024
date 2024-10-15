@@ -20,7 +20,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public const Relations = ['orderLines.locales', 'locales', 'prices.locales', 'discounts.locales',
         'orderLines.prices.locales', 'orderLines.item.locales', 'orderLines.item.media',
-        'orderLines.addons.locales', 'orderLines.addons.prices', 'orderLines.discounts.locales',
+        'orderLines.addons.locales', 'orderLines.discounts.locales',
         'device'];
 
     /**
@@ -87,6 +87,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['prices'][] = [
             'price' => $totalPrice
         ];
+
+        if (isset($data['discount_ids']))
+            $this->discountAction->setModelDiscounts($model, $data['discount_ids']);
+
         $this->setOrderData($model, $data);
         // Send Event
         event(new NewOrder($model->id));
@@ -99,6 +103,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['prices']))
             $this->priceAction->setPrices($model, $data['prices']);
+        if (isset($data['addons']))
+            $this->discountAction->set($model, $data['addons']);
         if (isset($data['discounts']))
             $this->discountAction->set($model, $data['discounts']);
     }

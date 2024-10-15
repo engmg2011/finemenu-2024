@@ -50,13 +50,10 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
                 foreach ($price['locales'] as &$locale) {
                     $locale['id'] = null;
                 }
-
             }
             $price['priceable_id'] = $model['id'];
             $price['priceable_type'] = get_class($model);
             $price['user_id'] = auth('api')->user()->id;
-
-            \Log::debug(["price ss " => $price]);
 
             if (isset($price['id']) && $price['id'])
                 $this->update($price['id'], $price);

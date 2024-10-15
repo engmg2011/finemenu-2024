@@ -50,7 +50,7 @@ use Illuminate\Support\Carbon;
  */
 class Addon extends Model
 {
-    use HasFactory, Priceable, Localizable, Mediable;
+    use HasFactory, Localizable, Mediable;
     protected $guarded = ['id'];
 
     public function children()

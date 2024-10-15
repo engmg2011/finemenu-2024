@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class DiscountAction
 {
     public function __construct(private DiscountRepository $repository,
-                                private LocaleRepository       $localeRespository)
+                                private LocaleRepository   $localeRespository)
     {
     }
 
@@ -67,6 +67,23 @@ class DiscountAction
     {
         $this->localeRespository->deleteEntityLocales(Discount::find($id));
         return $this->repository->delete($id);
+    }
+
+    /**
+     * @param $model
+     * @param $data: Array of discount ids [1,2]
+     * @return void
+     */
+    public function setModelDiscounts(&$model, &$data)
+    {
+        $discounts = Discount::with('locales')->whereIn('id', $data)
+            ->select('id', 'amount', 'type', 'from', 'to')->get()?->toArray();
+        foreach ($discounts as &$discount) {
+            $discount['id'] = null;
+            if (isset($discount['locales']))
+                foreach ($discount['locales'] as &$locale) $locale['id'] = null;
+        }
+        $this->set($model, $discounts);
     }
 
 }
