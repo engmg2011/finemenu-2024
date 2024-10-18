@@ -73,7 +73,6 @@ class AddonAction
         }
     }
 
-
     public function destroy($id): ?bool
     {
         $this->localeRepository->deleteEntityLocales(Addon::find($id));
