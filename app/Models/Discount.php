@@ -44,4 +44,5 @@ class Discount extends Model
 {
     use HasFactory, Localizable;
     protected $guarded = ['id'];
+    protected $hidden = ['created_at', 'updated_at' , 'discountable_type' , 'discountable_id'];
 }

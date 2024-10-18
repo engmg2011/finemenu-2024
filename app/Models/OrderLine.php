@@ -53,6 +53,8 @@ class OrderLine extends Model
 {
     use HasFactory, Priceable, Addonable, Discountable, Localizable;
     protected $guarded = ['id'];
+    protected $casts = ['data'=>'json'];
+    protected $hidden = ['created_at', 'updated_at'];
 
     public function user() {
         return $this->belongsTo(User::class);

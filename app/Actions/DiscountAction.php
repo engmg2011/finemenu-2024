@@ -86,4 +86,21 @@ class DiscountAction
         $this->set($model, $discounts);
     }
 
+    /**
+     * @param $model
+     * @param $data: Array of discount ids [1,2]
+     * @return mixed[]|null
+     */
+    public function getModelDiscounts(&$model, &$data)
+    {
+        $discounts = Discount::with('locales')->whereIn('id', $data)
+            ->select('id', 'amount', 'type', 'from', 'to')->get()?->toArray();
+        foreach ($discounts as &$discount) {
+            unset($discount['id']);
+            if (isset($discount['locales']))
+                foreach ($discount['locales'] as &$locale) $locale['id'] = null;
+        }
+        return $discounts;
+    }
+
 }

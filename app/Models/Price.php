@@ -40,6 +40,7 @@ class Price extends Model
 {
     use Localizable;
     protected $guarded = ['id'];
+    protected $hidden = ['created_at', 'updated_at', 'priceable_id' , 'priceable_type'];
 
     public function user() {
         return $this->belongsTo(User::class);

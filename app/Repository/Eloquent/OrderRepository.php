@@ -4,7 +4,6 @@ namespace App\Repository\Eloquent;
 
 
 use App\Actions\DiscountAction;
-use App\Actions\OrderLineAction;
 use App\Constants\OrderStatus;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
@@ -18,20 +17,17 @@ use Illuminate\Database\Eloquent\Model;
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
-    public const Relations = ['orderLines.locales', 'locales', 'prices.locales', 'discounts.locales',
-        'orderLines.prices.locales', 'orderLines.item.locales', 'orderLines.item.media',
-        'orderLines.addons.locales', 'orderLines.discounts.locales',
-        'device'];
+    public const Relations = ['discounts.locales', 'orderlines','device'];
 
     /**
      * UserRepository constructor.
      * @param Order $model
      */
-    public function __construct(Order                    $model,
-                                private LocaleRepository $localeRepository,
-                                private OrderLineAction  $orderLineAction,
-                                private PriceRepository  $priceAction,
-                                private DiscountAction   $discountAction
+    public function __construct(Order                       $model,
+                                private LocaleRepository    $localeRepository,
+                                private OrderLineRepository $orderLineRepository,
+                                private PriceRepository     $priceAction,
+                                private DiscountAction      $discountAction
     )
     {
         parent::__construct($model);
@@ -41,7 +37,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $data['user_id'] = auth('api')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
-        return array_only($data, ['user_id', 'note', 'orderable_id',
+        return array_only($data, ['user_id', 'note', 'orderable_id', 'total_price', 'subtotal_price',
             'orderable_type', 'scheduled_at', 'status', 'paid', 'device_id', 'delivery_address']);
     }
 
@@ -76,22 +72,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['orderable_type'] = get_class(new Branch());
 
         $model = $this->model->create($this->process($data));
-        $totalPrice = 0;
-        foreach ($data['order_lines'] as &$ol) {
-            $ol['order_id'] = $model->id;
-            $orderLine = $this->orderLineAction->create($ol);
-            if (isset($orderLine->prices[0]))
-                $totalPrice += $orderLine->prices[0]->price;
+        $data['total_price'] = 0;
+        $data['subtotal_price'] = 0;
+        $orderLines = $this->orderLineRepository->createManyOLs($model->id, $data['order_lines']);
+        foreach ($orderLines as &$orderLine) {
+            $data['total_price'] += $orderLine->total_price;
+            $data['subtotal_price'] += $orderLine->subtotal_price;
         }
-        $data['prices'] = [];
-        $data['prices'][] = [
-            'price' => $totalPrice
-        ];
-
-        if (isset($data['discount_ids']))
-            $this->discountAction->setModelDiscounts($model, $data['discount_ids']);
 
         $this->setOrderData($model, $data);
+        $model->update(['total_price' => $data['total_price'],
+            'subtotal_price' => $data['subtotal_price']]);
         // Send Event
         event(new NewOrder($model->id));
         return $this->get($model->id);
@@ -130,7 +121,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 //            User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))
-            $this->orderLineAction->updateMany($data['order_lines']);
+            $this->orderLineRepository->updateMany($data['order_lines']);
         return $this->get($model->id);
     }
 

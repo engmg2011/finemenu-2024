@@ -46,6 +46,7 @@ class Media extends Model
     use Localizable;
 
     protected $guarded = ['id'];
+    protected $hidden = ['created_at', 'updated_at', 'mediable_id' , 'mediable_type'];
 
     public function user()
     {
