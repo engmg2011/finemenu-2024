@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
-    public const Relations = ['discounts.locales', 'orderlines','device'];
+    public const Relations = ['discounts.locales', 'orderlines', 'device'];
 
     /**
      * UserRepository constructor.
@@ -58,9 +58,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function userOrders()
     {
-        return $this->model->where([
-            'user_id' => auth()->id()
-        ])->with(OrderRepository::Relations)
+        $branchId = request('branch_id');
+        return $this->model->where(
+            ['user_id' => auth()->id()]
+            + ( $branchId ? [
+                "orderable_type" => Branch::class ,
+                "orderable_id" => $branchId] : [] )
+        )->with(OrderRepository::Relations)
             ->with('orderable.business.locales', 'orderable.locales')
             ->orderByDesc('id')->paginate(request('per-page', 5));
     }
