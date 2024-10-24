@@ -2,149 +2,60 @@
 
 namespace App\Models;
 
-use App\Traits\Contactable;
-use App\Traits\Mediable;
-use App\Traits\Settable;
-use Database\Factories\UserFactory;
-use Eloquent;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
-use Laravel\Passport\Client;
-use Laravel\Passport\HasApiTokens;
-use Laravel\Passport\Token;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Traits\HasPermissions;
-use Spatie\Permission\Traits\HasRoles;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Jetstream\HasProfilePhoto;
+use Laravel\Sanctum\HasApiTokens;
 
-/**
- * App\Models\User
- *
- * @property int $id
- * @property string $name
- * @property string|null $email
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property string|null $phone
- * @property-read Collection<int, Category> $categories
- * @property-read int|null $categories_count
- * @property-read Collection<int, Client> $clients
- * @property-read int|null $clients_count
- * @property-read Collection<int, Contact> $contacts
- * @property-read int|null $contacts_count
- * @property-read Collection<int, Device> $devices
- * @property-read int|null $devices_count
- * @property-read int|null $hotels_count
- * @property-read Collection<int, Item> $items
- * @property-read int|null $items_count
- * @property-read Collection<int, Media> $media
- * @property-read int|null $media_count
- * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
- * @property-read int|null $notifications_count
- * @property-read Collection<int, Permission> $permissions
- * @property-read int|null $permissions_count
- * @property-read Collection<int, Business> $business
- * @property-read int|null $business_count
- * @property-read Collection<int, Role> $roles
- * @property-read int|null $roles_count
- * @property-read Collection<int, Service> $services
- * @property-read int|null $services_count
- * @property-read Collection<int, Setting> $settings
- * @property-read int|null $settings_count
- * @property-read Collection<int, Subscription> $subscriptions
- * @property-read int|null $subscriptions_count
- * @property-read Collection<int, Token> $tokens
- * @property-read int|null $tokens_count
- * @method static UserFactory factory($count = null, $state = [])
- * @method static Builder|User newModelQuery()
- * @method static Builder|User newQuery()
- * @method static Builder|User permission($permissions, $without = false)
- * @method static Builder|User query()
- * @method static Builder|User role($roles, $guard = null, $without = false)
- * @method static Builder|User whereCreatedAt($value)
- * @method static Builder|User whereEmail($value)
- * @method static Builder|User whereEmailVerifiedAt($value)
- * @method static Builder|User whereId($value)
- * @method static Builder|User whereName($value)
- * @method static Builder|User wherePassword($value)
- * @method static Builder|User wherePhone($value)
- * @method static Builder|User whereRememberToken($value)
- * @method static Builder|User whereUpdatedAt($value)
- * @method static Builder|User withoutPermission($permissions)
- * @method static Builder|User withoutRole($roles, $guard = null)
- * @mixin Eloquent
- */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, Settable, Contactable, Mediable, HasRoles, HasPermissions;
+    use HasApiTokens;
+    use HasFactory;
+    use HasProfilePhoto;
+    use Notifiable;
+    use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $guarded = ['id', 'remember_token'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
 
     /**
-     * The attributes that should be hidden for arrays.
+     * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $hidden = ['password', 'remember_token',];
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'two_factor_recovery_codes',
+        'two_factor_secret',
+    ];
 
     /**
-     * The attributes that should be cast to native types.
+     * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
-    protected $casts = ['email_verified_at' => 'datetime',];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
-    public function items(): HasMany {
-        return $this->hasMany(Item::class)->orderBy('sort');
-    }
-
-    public function categories(): HasMany {
-        return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
-    }
-
-    public function business(): HasMany {
-        return $this->hasMany(Business::class);
-    }
-
-    public function services(): HasMany {
-        return $this->hasMany(Service::class);
-    }
-
-    public function devices() {
-        return $this->hasMany(Device::class);
-    }
-
-    public function subscriptions()
-    {
-        return $this->hasMany(Subscription::class);
-
-    }
-
-    public function routeNotificationForOneSignal()
-    {
-        $playerIds = [];
-        foreach (User::find(1)->devices as $device){
-            $playerIds[] = $device->onesignal_token;
-        }
-        return $playerIds;
-    }
-
-
-
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'profile_photo_url',
+    ];
 }

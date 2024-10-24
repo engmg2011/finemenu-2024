@@ -42,7 +42,7 @@ Route::get('auth/{provider}/callback', [SocialController::class, 'handleProvider
 
 
 // TODO :: put admin only roles
-Route::group(['middleware' => ['auth:api',
+Route::group(['middleware' => ['auth:sanctum',
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER]
 ], function () {
 
@@ -199,7 +199,7 @@ Route::group(['middleware' => ['auth:api',
 
 });
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 });
 

@@ -47,3 +47,13 @@ Route::get('orders-sender', function () {
 //    event(new MyEvent('hello world'));
 
 });
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
