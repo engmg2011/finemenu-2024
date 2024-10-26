@@ -221,7 +221,7 @@ class RegisterController extends Controller
             $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
             $token = $user->createToken('authToken');
             $device = $this->userAction->userDevice($request, $user, $token);
-            $user['token'] = $token->accessToken;
+            $user['token'] = $token->plainTextToken;
             $user['device'] = $device;
             return response()->json($user);
         }
