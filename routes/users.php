@@ -16,7 +16,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('users/info', [UsersController::class, 'info'])->middleware('auth:api');
+Route::get('users/info', [UsersController::class, 'info'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [LoginController::class, 'login']);
