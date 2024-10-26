@@ -269,7 +269,7 @@ class RegisterController extends Controller
 
         // Create user && assign general role
         $user = $this->userAction->create($data);
-        $token = $user->createToken('API Token')->accessToken;
+        $token = $user->createToken('API Token')->plainTextToken;
 
         if (isset($data['businessName']) && isset($data['businessType'])) {
             $user->assignRole(RolesConstants::BUSINESS_OWNER);

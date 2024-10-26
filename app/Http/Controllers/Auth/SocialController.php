@@ -41,7 +41,7 @@ class SocialController extends Controller
             }
 
             // Generate a token for API authentication
-            $token = $user->createToken('API Token')->plainTextToken;
+            $token = $user->createToken('Register API Token')->plainTextToken;
 
             // Return the token and user info
             return response()->json([

@@ -208,7 +208,7 @@ class UserAction
             return response()->json(['message' => 'Invalid type'], 400);
 
         $subUser = $this->getBranchSubUser($branchId, $type);
-        $authToken = $subUser->createToken('authToken');
+        $authToken = $subUser->createToken('QR Auth Token');
         $subUser['token'] = $authToken->plainTextToken;
 
         $branch = Branch::find($branchId);

@@ -73,7 +73,7 @@ class LoginController extends Controller
             ->with(UserRepository::LoginUserRelations)->first();
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 403);
-        $token = $user->createToken('authToken');
+        $token = $user->createToken('Login Token');
         $device = $this->userAction->userDevice($request, $user, $token);
         $user['token'] = $token->plainTextToken;
         $user['device'] = $device;
