@@ -19,7 +19,7 @@ class ServiceAction
     {
         if (strpos($data['serviceable_type'], 'App') === false)
             $data['serviceable_type'] = 'App\\Models\\' . $data['serviceable_type'];
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         return array_only($data, ['user_id', 'serviceable_id', 'serviceable_type']);
     }
 

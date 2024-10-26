@@ -40,7 +40,7 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         // Give permission to owner
-        $userId = $data['user_id'] ?? auth('api')->id();
+        $userId = $data['user_id'] ?? auth('sanctum')->id();
         $this->permissionRepository->createBranchPermission($entity->id, User::find($userId));
         // return branch data
         return $this->model->with(BranchRepository::$modelRelations)->find($entity->id);

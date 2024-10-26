@@ -71,7 +71,7 @@ class BusinessController extends Controller
     public function update(Request $request, $id)
     {
         return \response()->json($this->repository->updateModel($id, $request->all() + [
-            "user_id" => auth('api')->user()->id]));
+            "user_id" => auth('sanctum')->user()->id]));
     }
 
     /**

@@ -30,7 +30,7 @@ class MediaAction
         return [
                 "mediable_type" => get_class($mediable),
                 "mediable_id" => $mediable->id,
-                "user_id" => auth('api')->user()->id];
+                "user_id" => auth('sanctum')->user()->id];
     }
 
     public function create(array $data)

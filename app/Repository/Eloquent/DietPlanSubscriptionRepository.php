@@ -35,8 +35,8 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
     public function process(array $data): array
     {
-        $data['creator_id'] = auth('api')->user()->id;
-        $data['user_id'] = request()->get('user_id') ?? auth('api')->user()->id;
+        $data['creator_id'] = auth('sanctum')->user()->id;
+        $data['user_id'] = request()->get('user_id') ?? auth('sanctum')->user()->id;
 
         return array_only($data, ['creator_id', 'user_id', 'business_id',
             'status', 'selected_meals', 'diet_plan_id', 'note']);

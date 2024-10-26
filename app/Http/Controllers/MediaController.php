@@ -76,7 +76,7 @@ class MediaController extends Controller
 
     public function postUpload()
     {
-        $user_id = auth('api')->user()->id;
+        $user_id = auth('sanctum')->user()->id;
         request()->validate(['file' => 'required|file']);
         $file = $this->request->file('file');
         $file_type = $file->getMimeType();
@@ -93,7 +93,7 @@ class MediaController extends Controller
                 'fileType' => $file_type
             ];
             $user = [
-                'userId' => auth('api')->user()->id,
+                'userId' => auth('sanctum')->user()->id,
                 'menuId' => request()->header('menu-id'),
                 'locale' => request()->header('locale')
             ];

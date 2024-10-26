@@ -55,7 +55,7 @@ class DiscountAction
         foreach ($discounts as &$discount) {
             $discount['discountable_id'] = $model['id'];
             $discount['discountable_type'] = get_class($model);
-            $discount['user_id'] = auth('api')->user()->id;
+            $discount['user_id'] = auth('sanctum')->user()->id;
             if (isset($discount['id']) && $discount['id'])
                 $this->update($discount['id'], $discount);
             else

@@ -23,7 +23,7 @@ class ContentAction
 
     public function create(array $data)
     {
-        $data['user_id'] = request()->get('user_id') ?? auth('api')->user()->id;
+        $data['user_id'] = request()->get('user_id') ?? auth('sanctum')->user()->id;
         $model = $this->repository->create($this->process($data));
         $this->localeRepository->createLocale($model, $data['locales']);
         return $model;

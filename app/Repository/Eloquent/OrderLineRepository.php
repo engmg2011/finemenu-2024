@@ -24,7 +24,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
 
     public function process(array $data): array
     {
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         return array_only($data, ['user_id', 'note', 'order_id', 'item_id', 'count', 'price_id', 'data', 'total_price', 'subtotal_price']);
     }
 

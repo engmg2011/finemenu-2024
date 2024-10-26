@@ -33,7 +33,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
 
     public function processPlan(array $data): array
     {
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         return array_only($data, ['business_id', 'category_id', 'user_id', 'item_ids']);
     }
 
@@ -60,7 +60,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
 
     public function createModel(array $data): Model
     {
-        $data["creator_id"] = auth('api')->user()->id;
+        $data["creator_id"] = auth('sanctum')->user()->id;
         $model = $this->model->create($this->processPlan($data));
         if (isset($data['item_ids']))
             $model->items()->attach($data['item_ids']);

@@ -64,7 +64,7 @@ class AddonAction
         foreach ($addons as &$addon) {
             $addon['addonable_id'] = $model['id'];
             $addon['addonable_type'] = get_class($model);
-            $addon['user_id'] = auth('api')->user()->id;
+            $addon['user_id'] = auth('sanctum')->user()->id;
             $addon['parent_id'] = $model['parent_id'];
             if (isset($addon['id']) && $addon['id'])
                 $this->update($addon['id'], $addon);

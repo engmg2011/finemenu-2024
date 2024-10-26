@@ -36,10 +36,10 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
 
     public function process(&$data): array
     {
-        $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
+        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
-        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
+        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('sanctum')->user()->email ?? $data['email']);
         return array_only($data, ['name', 'user_id', 'passcode', 'creator_id', 'slug']);
     }
 
@@ -77,7 +77,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     public function list()
     {
         return Business::with(BusinessRepository::$modelRelations)
-            ->where('user_id', auth('api')->id())
+            ->where('user_id', auth('sanctum')->id())
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 

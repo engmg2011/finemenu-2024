@@ -53,7 +53,7 @@ class PriceRepository extends BaseRepository implements PriceRepositoryInterface
             }
             $price['priceable_id'] = $model['id'];
             $price['priceable_type'] = get_class($model);
-            $price['user_id'] = auth('api')->user()->id;
+            $price['user_id'] = auth('sanctum')->user()->id;
 
             if (isset($price['id']) && $price['id'])
                 $this->update($price['id'], $price);

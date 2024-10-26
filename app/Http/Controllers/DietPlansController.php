@@ -36,7 +36,7 @@ class DietPlansController extends Controller
         return \response()->json($this->repository->createModel($request->all() + [
                 "name" => $request->name,
                 "user_id" => $request->user_id,
-                "creator_id" => auth('api')->user()->id]));
+                "creator_id" => auth('sanctum')->user()->id]));
     }
 
     /**

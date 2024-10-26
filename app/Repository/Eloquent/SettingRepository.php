@@ -38,7 +38,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
 
     public function process(array $data): array
     {
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         return array_only($data, ['settable_id', 'settable_type', 'key', 'data', 'user_id']);
     }
 
@@ -46,7 +46,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     {
         $data['settable_id'] = $relationModel->id;
         $data['settable_type'] = get_class($relationModel);
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
     }
 
     public function relationsProcess(&$model, &$data): void

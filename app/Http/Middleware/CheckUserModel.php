@@ -15,7 +15,7 @@ class CheckUserModel
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        if( intval($request->route('modelId')) === auth('api')->user()->id) {
+        if( intval($request->route('modelId')) === auth('sanctum')->user()->id) {
             return $next($request);
         }
         return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);

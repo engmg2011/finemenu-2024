@@ -53,7 +53,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
     public function create(Array $data): Model
     {
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         $item = $this->model->create($this->process($data));
         $this->relations($item, $data);
         return $item;

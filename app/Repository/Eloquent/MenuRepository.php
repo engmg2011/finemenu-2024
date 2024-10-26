@@ -27,10 +27,10 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function process($businessId, array $data)
     {
-        $data['user_id'] = $data['user_id'] ?? auth('api')->user()->id;
+        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         if (!isset($data['name']) && isset($data['locales']))
             $data['name'] = $data['locales'][0]['name'];
-        $data['slug'] = $this->createMenuId($data['name'], auth('api')->user()->email ?? $data['email']);
+        $data['slug'] = $this->createMenuId($data['name'], auth('sanctum')->user()->email ?? $data['email']);
         return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id', 'type']);
     }
 

@@ -27,7 +27,7 @@ class CategoryAction
 
     public function create(array $data)
     {
-        $data['user_id'] = auth('api')->user()->id;
+        $data['user_id'] = auth('sanctum')->user()->id;
         $category = $this->repository->create($this->process($data));
         $this->localeRepository->createLocale($category, $data['locales']);
         if (isset($data['media']))
