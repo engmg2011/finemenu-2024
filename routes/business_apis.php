@@ -13,7 +13,7 @@ use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
 // Admin and business users
-Route::group(['middleware' => ['auth:api', 'role:' . businessRoles()]
+Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
 ], function () {
 
     Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {

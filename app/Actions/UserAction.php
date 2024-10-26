@@ -133,7 +133,7 @@ class UserAction
             $deviceName = $branchSlug . '-' . random_int(1000, 9999);
 
         return Device::updateOrCreate(['device_name' => $deviceName], [
-            'token_id' => $authToken->token->id,
+            'token_id' => $authToken->accessToken->id,
             'user_id' => $subUser->id,
             'branch_id' => $branchId,
             'type' => $type,
@@ -167,7 +167,7 @@ class UserAction
             $deviceName = strtolower(str_replace(' ', '_', $user->name)) . '-' . random_int(1000, 9999);
 
         return Device::updateOrCreate(['device_name' => $deviceName], [
-            'token_id' => $authToken->token->id,
+            'token_id' => $authToken->accessToken->id,
             'user_id' => $user->id,
             'branch_id' => $branchId,
             'type' => $type,
@@ -209,7 +209,7 @@ class UserAction
 
         $subUser = $this->getBranchSubUser($branchId, $type);
         $authToken = $subUser->createToken('authToken');
-        $subUser['token'] = $authToken->accessToken;
+        $subUser['token'] = $authToken->plainTextToken;
 
         $branch = Branch::find($branchId);
         $branchSlug = $branch->slug;

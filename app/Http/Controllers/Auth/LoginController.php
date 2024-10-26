@@ -75,7 +75,7 @@ class LoginController extends Controller
             return response()->json(["message" => "Invalid user credentials"], 403);
         $token = $user->createToken('authToken');
         $device = $this->userAction->userDevice($request, $user, $token);
-        $user['token'] = $token->accessToken;
+        $user['token'] = $token->plainTextToken;
         $user['device'] = $device;
         return response()->json($user);
     }

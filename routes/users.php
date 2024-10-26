@@ -29,7 +29,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-    'middleware' => ['auth:api', SetRequestModel::class , CheckUserModel::class]], function () {
+    'middleware' => ['auth:sanctum', SetRequestModel::class , CheckUserModel::class]], function () {
         Route::get('/', [UsersController::class, 'show']);
         Route::post('/', [UsersController::class, 'update']);
         Route::get('/items', [UsersController::class, 'userItems']);
