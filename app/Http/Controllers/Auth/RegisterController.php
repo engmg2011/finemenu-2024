@@ -269,7 +269,7 @@ class RegisterController extends Controller
 
         // Create user && assign general role
         $user = $this->userAction->create($data);
-        $token = $user->createToken('API Token')->plainTextToken;
+        $token = $user->createToken('API Token');
 
         if (isset($data['businessName']) && isset($data['businessType'])) {
             $user->assignRole(RolesConstants::BUSINESS_OWNER);
@@ -279,8 +279,11 @@ class RegisterController extends Controller
         // Create subscription
         // $this->createSubscription($user);
 
+        $device = $this->userAction->userDevice($request, $user, $token);
+        $user['device'] = $device;
+
         // TODO:: Notify user on his accounts
-        return response()->json($user->toArray() + ['token' => $token]);
+        return response()->json($user->toArray() + ['token' => $token->plainTextToken]);
     }
 
 }
