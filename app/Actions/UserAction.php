@@ -57,11 +57,14 @@ class UserAction
 
     public function updateModel($id, array $data): Model
     {
-        if (isset($data['password']))
+        if ( $data['password'] )
             $data['password'] = bcrypt($data['password']);
+        else
+            unset($data['password']);
+
         $model = tap($this->repository->find($id))
             ->update($this->processUser($data));
-        return $model;
+        return User::with('media')->find($model->id);
     }
 
 

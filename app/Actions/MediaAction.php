@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Jobs\UploadMenuQueue;
 use App\Models\Category;
 use App\Models\Media;
+use App\Models\User;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -59,7 +60,8 @@ class MediaAction
 
     public function setMedia(&$model, &$data)
     {
-        if(get_class($model) === Category::class)
+        if(get_class($model) === Category::class ||
+            get_class($model) === User::class)
             $this->removeUnsentMedia($model, $data);
         foreach ($data as &$media)
             $this->updateMediaMulti($media, $model);

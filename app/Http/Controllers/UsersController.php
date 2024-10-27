@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\MediaAction;
 use App\Actions\UserAction;
 use App\Constants\UserTypes;
 use App\Http\Resources\DataResource;
@@ -12,11 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
+use function PHPUnit\Framework\isEmpty;
 
 class UsersController extends Controller
 {
 
-    public function __construct(public UserAction $action)
+    public function __construct(public UserAction $action, private MediaAction $mediaAction)
     {
     }
 
@@ -63,18 +65,25 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->all();
-        // unset not enabled to update
         unset($data['email']);
         unset($data['phone']);
+        if( $data['password'] === "" || $data['password'] === null)
+            unset($data['password']);
 
         $validator = Validator::make($data, [
             'email' => ['string', 'email', 'max:255', 'unique:users'],
             'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
             'name' => ['string', 'max:255'],
-            'password' => 'confirmed|min:8',
+            'password' => ['sometimes', 'string', 'confirmed' , 'min:8'],
         ]);
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+
+        if(isset($data['media']) && count($data['media']) > 0){
+            $data['media'][0]['slug'] = 'profile-picture';
+            $user = User::find($id);
+            $this->mediaAction->setMedia( $user ,$data['media']);
+        }
         return \response()->json($this->action->updateModel($id, $request->all()));
     }
 
@@ -97,6 +106,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'Not authorized'], 401);
 
         $user = User::with([
+            'media',
             'business.locales',
             'business.menus.locales',
             'business.branches.locales',
