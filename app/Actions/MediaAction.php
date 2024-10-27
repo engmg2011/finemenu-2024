@@ -106,7 +106,7 @@ class MediaAction
 
     public function uploadMedia($file, $file_name, $savePath)
     {
-        Storage::putFileAs($savePath, $file->path(), $file_name);
+        Storage::putFileAs($savePath, $file, $file_name);
         return $savePath . $file_name;
     }
 

@@ -9,7 +9,6 @@ use App\Jobs\UploadMenuQueue;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 
 class MediaController extends Controller
 {
@@ -83,8 +82,8 @@ class MediaController extends Controller
 
         $file_name = rand(1000, 10000) . '_' . $file->getClientOriginalName();
         $savePath = $user_id . '/';
-        $uploadedFile = $savePath . $file_name;
-        $storagePath = "storage/" . $uploadedFile;
+        $fixFileName = str_replace(' ', '_', $file_name);
+        $storagePath = "storage/" . $savePath . $fixFileName;
         if ($this->request->headers->has('convert-item')) {
             $fullPath = $this->request->header('full-path');
             $myFile = [
@@ -98,10 +97,10 @@ class MediaController extends Controller
                 'locale' => request()->header('locale')
             ];
 
-            UploadMenuQueue::dispatch( $myFile,$user);
+            UploadMenuQueue::dispatch($myFile, $user);
         }
 
-        $this->action->uploadMedia($file, $file_name, "public/" . $savePath);
+        $this->action->uploadMedia($file, $fixFileName, "public/" . $savePath);
 
         return response()->json([
             'file' => url($storagePath),
