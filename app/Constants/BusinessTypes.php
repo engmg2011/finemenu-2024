@@ -6,6 +6,7 @@ namespace App\Constants {
         public final const RESTAURANT = "restaurant";
         public final const SALON = "salon";
         public final const HOTEL = "hotel";
+        public final const CHALET = "chalet";
 
         public static function all(): array
         {
@@ -13,6 +14,7 @@ namespace App\Constants {
                 BusinessTypes::RESTAURANT,
                 BusinessTypes::SALON,
                 BusinessTypes::HOTEL,
+                BusinessTypes::CHALET,
             ];
         }
     }

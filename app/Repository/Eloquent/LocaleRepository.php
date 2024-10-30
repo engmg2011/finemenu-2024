@@ -74,6 +74,7 @@ class LocaleRepository extends BaseRepository implements LocaleRepositoryInterfa
 
     public function deleteEntityLocales($model)
     {
-        $this->model->where(['localizable_type' => get_class($model), 'localizable_id' => $model->id])->delete();
+        if($model)
+            $this->model->where(['localizable_type' => get_class($model), 'localizable_id' => $model->id])->delete();
     }
 }
