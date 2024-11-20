@@ -23,12 +23,11 @@ Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
         Route::post('/{id}', [BusinessController::class, 'update']);
         Route::post('/{id}/delete', [BusinessController::class, 'destroy']);
 
-        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/{modelId}/settings/set', [SettingsController::class, 'setSetting']);
-
-
-        Route::get('/{modelId}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-
+        Route::group(["prefix" => "/{modelId}/settings"], function () {
+            Route::get('/', [SettingsController::class, 'listSettings']);
+            Route::post('/set', [SettingsController::class, 'setSetting']);
+            Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+        });
 
         Route::group(['prefix' => '/{businessId}/menus'], function () {
             Route::get('/', [MenusController::class, 'index']);

@@ -74,6 +74,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         return Menu::with(['settings', 'media', 'locales',
             'categories.childrenNested',
             'categories.locales',
+            'categories.settings',
             'categories.media',
             'categories.items.locales',
             'categories.items.addons.locales',

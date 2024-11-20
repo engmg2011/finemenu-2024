@@ -65,15 +65,19 @@ Route::group(['middleware' => ['auth:sanctum',
 
     Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
         Route::get('/', [CategoriesController::class, 'index']);
-        Route::get('/{id}', [CategoriesController::class, 'show']);
         Route::post('/', [CategoriesController::class, 'create']);
-        Route::post('/{id}/delete', [CategoriesController::class, 'destroy']);
         Route::post('/sort', [CategoriesController::class, 'updateSort']);
-        Route::post('/{id}', [CategoriesController::class, 'update']);
-        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+        Route::group(['prefix' => '{modelId}'], function () {
+            Route::get('/', [CategoriesController::class, 'show']);
+            Route::post('/', [CategoriesController::class, 'update']);
+            Route::post('/delete', [CategoriesController::class, 'destroy']);
+
+            Route::group(["prefix" => "/settings"], function () {
+                Route::get('/', [SettingsController::class, 'listSettings']);
+                Route::post('/set', [SettingsController::class, 'setSetting']);
+                Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+            });
+        });
     });
 
     Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {

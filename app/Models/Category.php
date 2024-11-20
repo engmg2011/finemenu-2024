@@ -75,7 +75,8 @@ class Category extends Model
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id')
-            ->with(['locales', 'media', 'items.locales',
+            ->with(['locales', 'media', 'settings',
+                'items.locales',
                 'items.addons.locales',
                 'items.addons.locales',
                 'items.discounts.locales',
