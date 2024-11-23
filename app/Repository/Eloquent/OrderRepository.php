@@ -11,6 +11,7 @@ use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Order;
 use App\Models\User;
+use App\Notifications\OneSignalNotification;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
@@ -122,7 +123,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         event(new UpdateOrder($model->id));
 
         if (isset($data['status']) && $data['status'] === OrderStatus::Ready) {
-//            User::find($model->user_id)->notify(new OneSignalNotification('FineMenu', 'Your order became ready 😋'));
+            User::find($model->user_id)->notify(new OneSignalNotification('MenuAI', 'Your order became ready 😋'));
         }
         if (isset($data['order_lines']))
             $this->orderLineRepository->updateMany($data['order_lines']);
