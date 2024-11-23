@@ -58,7 +58,7 @@ class DevicesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json($this->action->update($id,$request->all()));
+        return response()->json($this->action->update($request->route('id'),$request->all()));
     }
 
     /**
