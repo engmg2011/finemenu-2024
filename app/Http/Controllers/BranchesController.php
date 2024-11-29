@@ -88,7 +88,7 @@ class BranchesController extends Controller
         $resolutionValue = $resolution === 'hd' ? 1024 : 250;
         $branch = Branch::find($branchId);
         $imageName = $branch->slug.($resolution === 'hd' ? '_HD' : '').'.svg';
-        $content = env('WEB_APP_URL') . '/?BID='.$branch->slug;
+        $content = env('WEB_APP_URL') . '/'.$branch->slug;
         if(\request()->has('download')){
             $qrImage = (new QrService())->generateBranchQrCode($branch, $content, $resolutionValue);
             return response()->streamDownload(static function () use ($qrImage) {
