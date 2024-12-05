@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\RolesConstants;
 use App\Http\Resources\DataResource;
+use App\Models\Order;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,6 +48,20 @@ class OrdersController extends Controller
      */
     public function show($id)
     {
+        return \response()->json($this->orderRepository->get($id));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function showForCreator($id)
+    {
+        if( Order::find($id)->user_id !==  auth('sanctum')->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
+        }
         return \response()->json($this->orderRepository->get($id));
     }
 

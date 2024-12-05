@@ -6,6 +6,7 @@ use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
@@ -31,10 +32,17 @@ Route::group(['prefix' => 'webapp',
         Route::group(['prefix' => '/{businessId}/branches'], function () {
             Route::get('/', [BranchesController::class, 'index']);
 
-            // Business Branch floors
-            Route::group(['prefix' => '{branchId}/floors'], function () {
-                Route::get('/', [FloorsController::class, 'index']);
-                Route::get('/{floorId}/tables', [TablesController::class, 'index']);
+            Route::group(['prefix' => '/{branchId}'], function () {
+                // Business Branch orders
+                Route::group([ 'middleware'=>'auth:sanctum', 'prefix' => 'orders'], function () {
+                    Route::post('/', [OrdersController::class, 'create']);
+                    Route::get('/{id}', [OrdersController::class, 'showForCreator']);
+                });
+                // Business Branch floors
+                Route::group(['prefix' => '/floors'], function () {
+                    Route::get('/', [FloorsController::class, 'index']);
+                    Route::get('/{floorId}/tables', [TablesController::class, 'index']);
+                });
             });
         });
 
