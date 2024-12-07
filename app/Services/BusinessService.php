@@ -11,7 +11,6 @@ use App\Repository\PermissionRepositoryInterface;
 readonly class BusinessService
 {
     public function __construct(
-        private PermissionRepositoryInterface $permissionRepository,
         private BranchRepositoryInterface     $branchRepository,
         private MenuRepositoryInterface       $menuRepository)
     {
@@ -27,6 +26,7 @@ readonly class BusinessService
             'name' => $request->businessName,
             'email' => $request->email,
             'slug' => $menuSlug,
+            'type' => $request->businessType,
             "locales" => [["name" => $request->businessName, "locale" => "en"]]
         ];
     }
