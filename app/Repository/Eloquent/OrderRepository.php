@@ -112,7 +112,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $order = Order::find($id);
-        if ($user->hasAnyPermission($this->getOrderRequiredPermission($order)))
+        if (!$user->hasAnyPermission($this->getOrderRequiredPermission($order)))
             return throw new \Exception('You Don\'t have permission', 403);
 
         // TODO:: check if data['paid']
@@ -171,7 +171,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $or = explode('\\', get_class($order->orderable));
         $orderableType = strtolower(end($or));
-        if ($orderableType === 'branch') {
+        if ($orderableType === 'Branch') {
             $businessId = request()->route('businessId');
             return [$orderableType . '.' . $order->orderable->id, PermissionsConstants::Business . '.' . $businessId];
         }
