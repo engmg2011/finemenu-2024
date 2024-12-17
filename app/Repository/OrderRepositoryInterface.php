@@ -24,6 +24,6 @@ interface OrderRepositoryInterface
 
     public function driverOrders();
 
-    public function getOrderRequiredPermission(&$order): string;
+    public function getOrderRequiredPermission(&$order): array;
 
 }

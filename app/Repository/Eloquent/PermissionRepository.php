@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Constants\PermissionsConstants;
 use App\Models\User;
 use App\Repository\PermissionRepositoryInterface;
 use Spatie\Permission\Models\Permission;
@@ -42,7 +43,15 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     public function createBranchPermission($branchId, $assignUser = null)
     {
-        $permissionName = 'branch.' . $branchId;
+        $permissionName = PermissionsConstants::Branch.'.' . $branchId;
+        Permission::findOrCreate($permissionName, 'web');
+        if ($assignUser)
+            $assignUser->givePermissionTo($permissionName);
+    }
+
+    public function createBusinessPermission($branchId, $assignUser = null)
+    {
+        $permissionName = PermissionsConstants::Business.'.' . $branchId;
         Permission::findOrCreate($permissionName, 'web');
         if ($assignUser)
             $assignUser->givePermissionTo($permissionName);

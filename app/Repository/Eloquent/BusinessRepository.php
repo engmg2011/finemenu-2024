@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\DietPlan;
 use App\Models\Menu;
 use App\Models\Package;
+use App\Models\User;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use App\Services\BusinessService;
@@ -28,7 +29,9 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                                 private readonly SettingRepository       $settingAction,
                                 private readonly BusinessService         $businessService,
                                 private readonly MenuRepositoryInterface $menuRepository,
-                                private readonly SubscriptionAction      $subscriptionAction
+                                private readonly SubscriptionAction      $subscriptionAction,
+                                private readonly PermissionRepository    $permissionRepository,
+
     )
     {
         parent::__construct($model);
@@ -47,6 +50,10 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     {
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
+
+        // Give permission to owner
+        $userId = $data['user_id'] ?? auth('sanctum')->id();
+        $this->permissionRepository->createBusinessPermission($model->id, User::find($userId));
 
         $this->businessService->createMenuAndBranch($model, $data);
 

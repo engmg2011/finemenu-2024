@@ -71,7 +71,8 @@ class OrdersController extends Controller
      */
     public function branchOrders($businessId)
     {
-        return DataResource::collection($this->orderRepository->branchOrders($businessId));
+        $branchId = \request()->route('branchId');
+        return DataResource::collection($this->orderRepository->branchOrders($branchId));
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 
 use App\Actions\DiscountAction;
 use App\Constants\OrderStatus;
+use App\Constants\PermissionsConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
 use App\Models\Branch;
@@ -47,11 +48,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->model->with(OrderRepository::Relations)->find($id);
     }
 
-    public function branchOrders($businessId)
+    public function branchOrders($branchId)
     {
         return $this->model->where([
             'orderable_type' => Branch::class,
-            'orderable_id' => $businessId
+            'orderable_id' => $branchId
         ])->with(OrderRepository::Relations)
             ->with('orderable.business.locales', 'orderable.locales')
             ->orderByDesc('id')->paginate(request('per-page', 10));
@@ -62,9 +63,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $branchId = request('branch_id');
         return $this->model->where(
             ['user_id' => auth()->id()]
-            + ( $branchId ? [
-                "orderable_type" => Branch::class ,
-                "orderable_id" => $branchId] : [] )
+            + ($branchId ? [
+                "orderable_type" => Branch::class,
+                "orderable_id" => $branchId] : [])
         )->with(OrderRepository::Relations)
             ->with('orderable.business.locales', 'orderable.locales')
             ->orderByDesc('id')->paginate(request('per-page', 5));
@@ -111,7 +112,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $order = Order::find($id);
-        if ($user->hasPermissionTo($this->getOrderRequiredPermission($order)))
+        if ($user->hasAnyPermission($this->getOrderRequiredPermission($order)))
             return throw new \Exception('You Don\'t have permission', 403);
 
         // TODO:: check if data['paid']
@@ -166,10 +167,14 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->list(['status', '!=', OrderStatus::Delivered]);
     }
 
-    public function getOrderRequiredPermission(&$order): string
+    public function getOrderRequiredPermission(&$order): array
     {
         $or = explode('\\', get_class($order->orderable));
         $orderableType = strtolower(end($or));
-        return $orderableType . '.' . $order->orderable->id;
+        if ($orderableType === 'branch') {
+            $businessId = request()->route('businessId');
+            return [$orderableType . '.' . $order->orderable->id, PermissionsConstants::Business . '.' . $businessId];
+        }
+        return [$orderableType . '.' . $order->orderable->id];
     }
 }
