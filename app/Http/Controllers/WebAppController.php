@@ -6,7 +6,9 @@ namespace App\Http\Controllers;
 use App\Constants\BusinessTypes;
 use App\Constants\MenuTypes;
 use App\Models\Branch;
+use App\Models\Device;
 use App\Models\Menu;
+use App\Notifications\OneSignalNotification;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -76,4 +78,8 @@ class WebAppController extends Controller
         return response()->json(BusinessTypes::all());
     }
 
+    public function send()
+    {
+        Device::find(25)->notify(new OneSignalNotification("hi" , "test"));
+    }
 }

@@ -155,7 +155,7 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
 
     }
-
+/*
     public function routeNotificationForOneSignal()
     {
         $playerIds = [];
@@ -163,7 +163,7 @@ class User extends Authenticatable
             $playerIds[] = $device->onesignal_token;
         }
         return $playerIds;
-    }
+    }*/
 
 
 }

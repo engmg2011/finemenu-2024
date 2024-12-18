@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
 
 /**
@@ -53,4 +54,15 @@ class Device extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Route notifications for the OneSignal channel.
+     *
+     * @param Notification $notification
+     * @return string
+     */
+    public function routeNotificationForOneSignal($notification)
+    {
+        // Return the onesignal_token field
+        return $this->onesignal_token;
+    }
 }

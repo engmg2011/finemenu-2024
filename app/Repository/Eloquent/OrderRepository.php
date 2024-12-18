@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use function PHPUnit\Framework\isEmpty;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -124,7 +125,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         event(new UpdateOrder($model->id));
 
         if (isset($data['status']) && $data['status'] === OrderStatus::Ready) {
-            User::find($model->user_id)->notify(new OneSignalNotification('MenuAI', 'Your order became ready 😋'));
+            $userDevices = User::find($model->user_id)->devices()->get();
+            /*foreach ($userDevices as $device) {
+                if($device->onesignal_token)
+                    $device->notify(new OneSignalNotification('MenuAI', 'Your order became ready 😋'));
+            }*/
         }
         if (isset($data['order_lines']))
             $this->orderLineRepository->updateMany($data['order_lines']);

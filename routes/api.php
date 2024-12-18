@@ -209,3 +209,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 Route::get('ordering-app-version', [WebAppController::class , 'version']);
 Route::get('business-types', [WebAppController::class , 'businessTypes']);
+
+Route::get('send', [WebAppController::class , 'send']);
