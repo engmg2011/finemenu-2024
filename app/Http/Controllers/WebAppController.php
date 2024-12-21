@@ -64,13 +64,31 @@ class WebAppController extends Controller
         return response()->json(['type' => $branch->menu->type]);
     }
 
-    public function version(): JsonResponse
+    public function QRAppVersion(): JsonResponse
     {
         return response()->json([
-            "latest-version" => env("WEB_APP_LATEST_VERSION"),
-            "should-update" => env("WEB_APP_SHOULD_UPDATE"),
-            "must-update" => env("WEB_APP_MUST_UPDATE"),
-            "min-acceptable-version" => env("WEB_APP_MIN_ACCEPTABLE_VERSION"),
+            "latest-version" => env("QR_APP_LATEST_VERSION"),
+            "should-update" => env("QR_APP_SHOULD_UPDATE"),
+            "must-update" => env("QR_APP_MUST_UPDATE"),
+            "min-acceptable-version" => env("QR_APP_MIN_ACCEPTABLE_VERSION"),
+        ]);
+    }
+    public function TabletAppVersion(): JsonResponse
+    {
+        return response()->json([
+            "latest-version" => env("TABLET_APP_LATEST_VERSION"),
+            "should-update" => env("TABLET_APP_SHOULD_UPDATE"),
+            "must-update" => env("TABLET_APP_MUST_UPDATE"),
+            "min-acceptable-version" => env("TABLET_APP_MIN_ACCEPTABLE_VERSION"),
+        ]);
+    }
+    public function OrdersAppVersion(): JsonResponse
+    {
+        return response()->json([
+            "latest-version" => env("ORDERS_APP_LATEST_VERSION"),
+            "should-update" => env("ORDERS_APP_SHOULD_UPDATE"),
+            "must-update" => env("ORDERS_APP_MUST_UPDATE"),
+            "min-acceptable-version" => env("ORDERS_APP_MIN_ACCEPTABLE_VERSION"),
         ]);
     }
 

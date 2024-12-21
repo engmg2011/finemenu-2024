@@ -207,7 +207,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
 });
 
-Route::get('ordering-app-version', [WebAppController::class , 'version']);
+Route::get('qr-app-version', [WebAppController::class , 'QRAppVersion']);
+Route::get('tablet-app-version', [WebAppController::class , 'TabletAppVersion']);
+Route::get('orders-app-version', [WebAppController::class , 'OrdersAppVersion']);
+
 Route::get('business-types', [WebAppController::class , 'businessTypes']);
 
 Route::get('send', [WebAppController::class , 'send']);
