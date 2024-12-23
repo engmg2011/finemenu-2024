@@ -2,6 +2,7 @@
 
 
 // TODO :: put admin only roles
+use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\FloorsController;
@@ -33,11 +34,20 @@ Route::group(['prefix' => 'webapp',
             Route::get('/', [BranchesController::class, 'index']);
 
             Route::group(['prefix' => '/{branchId}'], function () {
-                // Business Branch orders
-                Route::group([ 'middleware'=>'auth:sanctum', 'prefix' => 'orders'], function () {
-                    Route::post('/', [OrdersController::class, 'create']);
-                    Route::get('/{id}', [OrdersController::class, 'showForCreator']);
+                // Logged in only features
+                Route::group([ 'middleware'=>'auth:sanctum', ], function () {
+                    // orders
+                    Route::group(['prefix' => 'orders'], function () {
+                        Route::post('/', [OrdersController::class, 'create']);
+                        Route::get('/{id}', [OrdersController::class, 'showForCreator']);
+                    });
+                    // bookmarks
+                    Route::group(['prefix' => 'bookmarks'], function () {
+                        Route::get('/', [BookmarksController::class, 'userBookmarks']);
+                        Route::post('/sync', [BookmarksController::class, 'syncBookmarks']);
+                    });
                 });
+
                 // Business Branch floors
                 Route::group(['prefix' => '/floors'], function () {
                     Route::get('/', [FloorsController::class, 'index']);

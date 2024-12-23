@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repository\BookmarkRepositoryInterface;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
@@ -10,6 +11,7 @@ use App\Repository\DeviceRepositoryInterface;
 use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
 use App\Repository\Eloquent\BaseRepository;
+use App\Repository\Eloquent\BookmarkRepository;
 use App\Repository\Eloquent\BranchRepository;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ContactRepository;
@@ -77,6 +79,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(BranchRepositoryInterface::class, BranchRepository::class);
         $this->app->bind(MenuRepositoryInterface::class, MenuRepository::class);
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
+        $this->app->bind(BookmarkRepositoryInterface::class, BookmarkRepository::class);
     }
 
     /**
