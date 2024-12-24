@@ -35,9 +35,6 @@ Route::get('notification', function (){
     return view('notification');
 });
 
-Route::get('/generate-qrcode', [QrCodeController::class, 'index']);
-Route::get('/save-qrcode', [QrCodeController::class, 'save']);
-
 Route::get('/send', [HomeController::class, 'send'])->name('home.send');*/
 
 Route::get('orders-sender', function () {
@@ -57,3 +54,8 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('auth/app-token', [SocialController::class, 'appToken']);
+Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
+Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
+

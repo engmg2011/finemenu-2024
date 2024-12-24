@@ -36,11 +36,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
-Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
-
-
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:sanctum',
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER]

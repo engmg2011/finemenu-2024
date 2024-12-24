@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Socialite;
 
 class SocialController extends Controller
@@ -14,9 +13,7 @@ class SocialController extends Controller
      */
     public function redirectToProvider($provider)
     {
-        return response()->json([
-            'url' => Socialite::driver($provider)->stateless()->redirect()->getTargetUrl(),
-        ]);
+        return Socialite::driver($provider)->redirect();
     }
 
     /**
@@ -24,34 +21,46 @@ class SocialController extends Controller
      */
     public function handleProviderCallback($provider)
     {
-        try {
-            // Get user information from the provider
-            $socialUser = Socialite::driver($provider)->stateless()->user();
+        // Get user information from the provider
+        $socialUser = Socialite::driver($provider)->user();
 
+        // check if user with the same email exists
+        $user = User::where('email', $socialUser->email)->first();
+        if ($user) {
+            $user->update([
+                'provider_id' => $socialUser->id,
+                'provider' => $provider,
+                'name' => $socialUser->name,
+                'email' => $socialUser->email,
+                'password' => encrypt($socialUser->id),
+                'email_verified_at' => now(),
+            ]);
+        } else {
             // Find or create a user
-            $user = User::where('provider_id', $socialUser->id)->first();
-
-            if (!$user) {
-                $user = User::create([
+            $user = User::updateOrCreate(
+                [
+                    'provider_id' => $socialUser->id,
+                    'provider' => $provider
+                ],
+                [
                     'name' => $socialUser->name,
                     'email' => $socialUser->email,
                     'provider' => $provider,
                     'provider_id' => $socialUser->id,
-                ]);
-            }
+                    'password' => encrypt($socialUser->id),
+                    'email_verified_at' => now(),
+                ]
+            );
 
-            // Generate a token for API authentication
-            $token = $user->createToken('Register API Token')->plainTextToken;
-
-            // Return the token and user info
-            return response()->json([
-                'token' => $token,
-                'user' => $user,
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Authentication failed'], 401);
         }
+
+        // Generate a token for API authentication
+        $token = $user->createToken('Register API Token')->plainTextToken;
+        return redirect('/auth/app-token?token=' . $token);
+    }
+
+    public function appToken(){
+        return request()->get('token');
     }
 }
 
