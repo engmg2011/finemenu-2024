@@ -8,6 +8,7 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
@@ -39,6 +40,7 @@ Route::group(['prefix' => 'webapp',
                     // orders
                     Route::group(['prefix' => 'orders'], function () {
                         Route::post('/', [OrdersController::class, 'create']);
+                        Route::get('/', [OrdersController::class, 'userOrders']);
                         Route::get('/{id}', [OrdersController::class, 'showForCreator']);
                     });
                     // bookmarks
@@ -46,6 +48,13 @@ Route::group(['prefix' => 'webapp',
                         Route::get('/', [BookmarksController::class, 'userBookmarks']);
                         Route::post('/sync', [BookmarksController::class, 'syncBookmarks']);
                     });
+                    //reservations
+                    Route::group(['prefix' => 'reservations'], function () {
+                        Route::get('/', [ReservationsController::class, 'userReservations']);
+                        Route::get('/{id}', [ReservationsController::class, 'showForReservationOwner']);
+                        Route::post('/', [ReservationsController::class, 'create']);
+                    });
+
                 });
 
                 // Business Branch floors

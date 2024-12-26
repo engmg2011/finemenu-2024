@@ -29,11 +29,13 @@ use App\Repository\Eloquent\OrderRepository;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\BusinessRepository;
+use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\Eloquent\SettingRepository;
 use App\Repository\Eloquent\TableRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\EloquentRepositoryInterface;
 use App\Repository\FloorRepositoryInterface;
+use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
 use App\Repository\MediaRepositoryInterface;
@@ -43,6 +45,7 @@ use App\Repository\OrderRepositoryInterface;
 use App\Repository\PermissionRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
 use App\Repository\BusinessRepositoryInterface;
+use App\Repository\ReservationRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
 use App\Repository\TableRepositoryInterface;
 use App\Repository\UserRepositoryInterface;
@@ -80,6 +83,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MenuRepositoryInterface::class, MenuRepository::class);
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(BookmarkRepositoryInterface::class, BookmarkRepository::class);
+        $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
+        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepositoryInterface::class);
     }
 
     /**

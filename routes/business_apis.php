@@ -6,6 +6,7 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\UsersController;
@@ -54,6 +55,15 @@ Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
                     Route::get('/{id}', [OrdersController::class, 'show']);
                     Route::post('/', [OrdersController::class, 'create']);
                     Route::post('/{id}', [OrdersController::class, 'update']);
+                });
+
+
+                Route::group(['prefix' => 'reservations'], function () {
+                    Route::get('/', [ReservationsController::class, 'index']);
+                    //                Route::get('/', [\App\Http\Controllers\ReservationsController::class, 'index']);
+                    Route::get('/{id}', [ReservationsController::class, 'show']);
+                    Route::post('/', [ReservationsController::class, 'create']);
+                    Route::post('/{id}', [ReservationsController::class, 'update']);
                 });
 
                 // Business Branch floors

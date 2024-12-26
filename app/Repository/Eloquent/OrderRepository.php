@@ -121,7 +121,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->update($this->process($data));
         $this->setOrderData($model, $data);
 
-        // Send event
+        // Send evenxt
         event(new UpdateOrder($model->id));
 
         if (isset($data['status']) && $data['status'] === OrderStatus::Ready) {
@@ -143,7 +143,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $branchId = request()->route('branchId');
         return Order::with(OrderRepository::Relations)
-            ->orderByDesc('id')
+            ->orderBxyDesc('id')
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->where(fn($q) => $branchId ?
                 $q->where(['orderable_id' => $branchId, 'orderable_type' => Branch::class]) : $q)

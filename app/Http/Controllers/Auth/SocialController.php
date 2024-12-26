@@ -60,7 +60,7 @@ class SocialController extends Controller
     }
 
     public function appToken(){
-        return request()->get('token');
+        return "";
     }
 }
 

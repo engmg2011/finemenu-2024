@@ -9,6 +9,7 @@ use App\Models\Discount;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Repository\OrderLineRepositoryInterface;
+use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderLineRepository extends BaseRepository implements OrderLineRepositoryInterface
@@ -17,7 +18,8 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
      * UserRepository constructor.
      * @param OrderLine $model
      */
-    public function __construct(OrderLine $model)
+    public function __construct(OrderLine $model,
+                                private ReservationRepositoryInterface $reservationRepository)
     {
         parent::__construct($model);
     }
@@ -46,7 +48,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
                 ->with(['prices' => fn($q) => $q->with('locales')->where('id', $data['price_id'])])
                 ->find($data['item_id'])
             : Item::with('locales' ,'media')->find($data['item_id']);
-        $orderLine['data'] += ["item" => $item];
+        $orderLine['data'] += ["item" => $item , "user" => auth()->user()];
 
         // orderLine addons data
         if (isset($data['addon_ids'])) {
@@ -76,6 +78,20 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
             'total_price' => $orderLine['total_price'] ?? 0,
             'data' => $orderLine['data']
         ]);
+
+        if(isset($data['reservation']) && is_array($data['reservation'])) {
+            $reservationData =$data['reservation'] + [
+                'reservable_id' => $item->id,
+                'reservable_type' => Item::class,
+                'orderline_id' => $orderLine->id,
+                'order_id' => $orderLine->order_id,
+                'item_id' => $orderLine->item_id,
+                'reservation_for_id' => $orderLine->user_id,
+                'data' => $orderLine->data
+            ];
+            $this->reservationRepository->create($reservationData);
+        }
+
 
     }
 

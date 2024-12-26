@@ -7,6 +7,7 @@ use App\Traits\Discountable;
 use App\Traits\Localizable;
 use App\Traits\Mediable;
 use App\Traits\Priceable;
+use App\Traits\Reservable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -50,7 +51,9 @@ use Illuminate\Support\Carbon;
  */
 class Item extends Model
 {
-    use HasFactory, Localizable, Mediable, Priceable, Discountable, Addonable;
+    use HasFactory, Localizable, Mediable,
+        Priceable, Discountable, Addonable, Reservable;
+
     protected $guarded = ['id'];
 
     public function category() {
