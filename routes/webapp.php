@@ -7,6 +7,7 @@ use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\TablesController;
@@ -53,6 +54,13 @@ Route::group(['prefix' => 'webapp',
                         Route::get('/', [ReservationsController::class, 'userReservations']);
                         Route::get('/{id}', [ReservationsController::class, 'showForReservationOwner']);
                         Route::post('/', [ReservationsController::class, 'create']);
+                    });
+
+                    //reservations
+                    Route::group(['prefix' => 'invoices'], function () {
+                        Route::get('/', [InvoicesController::class, 'userInvoices']);
+                        Route::get('/{id}', [InvoicesController::class, 'showForInvoiceOwner']);
+//                        Route::post('/', [InvoicesController::class, 'create']);
                     });
 
                 });

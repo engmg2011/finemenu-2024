@@ -13,12 +13,11 @@ return new class extends Migration {
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
-            $table->unsignedFloat('amount')->default(0);
+            $table->decimal('amount', 8,3)->unsigned()->default(0);
             $table->json('data')->nullable();
             $table->string('external_link')->nullable();
             $table->string('reference_id')->nullable();
             $table->string('note')->nullable();
-            $table->dateTime('status_changed_at')->nullable();
             $table->timestamps();
 
             $table->enum('type', [PaymentConstants::CREDIT, PaymentConstants::DEBIT])
@@ -28,13 +27,13 @@ return new class extends Migration {
                 PaymentConstants::STATUS_PAID, PaymentConstants::STATUS_REFUNDED,
                 PaymentConstants::STATUS_CANCELED])
                 ->default(PaymentConstants::STATUS_PENDING);
+            $table->dateTime('status_changed_at')->nullable();
 
             $table->enum('payment_type', [PaymentConstants::TYPE_CASH, PaymentConstants::TYPE_ONLINE,
                 PaymentConstants::TYPE_KNET, PaymentConstants::TYPE_LINK,
                 PaymentConstants::TYPE_CHECK, PaymentConstants::TYPE_WAMD,
                 PaymentConstants::TYPE_TRANSFER])
                 ->default(PaymentConstants::TYPE_CASH);
-
 
             $table->unsignedBigInteger('reservation_id')->nullable();
             $table->foreign("reservation_id")->references("id")->on('reservations')->onDelete("SET NULL");

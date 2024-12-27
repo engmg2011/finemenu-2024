@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
-use App\Models\Reservation;
-use App\Repository\ReservationRepositoryInterface;
+use App\Models\Invoice;
+use App\Repository\InvoiceRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class ReservationsController extends Controller
+class InvoicesController extends Controller
 {
 
-    public function __construct(protected ReservationRepositoryInterface $repository)
+    public function __construct(protected InvoiceRepositoryInterface $repository)
     {
     }
 
@@ -22,9 +22,9 @@ class ReservationsController extends Controller
         return DataResource::collection($ordersList);
     }
 
-    public function userReservations()
+    public function userInvoices()
     {
-        $conditions = [['reserved_for_id' => auth('sanctum')->id()]];
+        $conditions = [['invoice_for_id' => auth('sanctum')->id()]];
         return DataResource::collection($this->repository->list($conditions));
     }
 
@@ -33,9 +33,9 @@ class ReservationsController extends Controller
         return \response()->json($this->repository->get($id));
     }
 
-    public function showForReservationOwner($id)
+    public function showForInvoiceOwner($id)
     {
-        if( Reservation::find($id)->reserved_for_id !==  auth('sanctum')->user()->id) {
+        if( Invoice::find($id)->invoice_for_id !==  auth('sanctum')->user()->id) {
             return response()->json(['message' => 'Unauthorized'], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
         }
         return \response()->json($this->repository->get($id));
@@ -54,25 +54,12 @@ class ReservationsController extends Controller
     }
 
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
     public function update(Request $request)
     {
         return \response()->json($this->repository->update(\request()->route('id'), $request->all()));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return Response
-     */
+
     public function destroy($id)
     {
         //

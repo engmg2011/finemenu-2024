@@ -90,6 +90,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
             'subtotal_price' => $data['subtotal_price']]);
+
+
         // Send Event
         event(new NewOrder($model->id));
         return $this->get($model->id);

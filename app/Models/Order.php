@@ -80,4 +80,10 @@ class Order extends Model
     {
         return $this->belongsTo(Device::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+
+    }
 }

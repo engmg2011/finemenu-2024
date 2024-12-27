@@ -20,6 +20,7 @@ use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\FloorRepository;
+use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
@@ -84,7 +85,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(BookmarkRepositoryInterface::class, BookmarkRepository::class);
         $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
-        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepositoryInterface::class);
+        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepository::class);
     }
 
     /**

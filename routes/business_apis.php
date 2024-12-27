@@ -4,6 +4,7 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReservationsController;
@@ -57,13 +58,20 @@ Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
                     Route::post('/{id}', [OrdersController::class, 'update']);
                 });
 
-
                 Route::group(['prefix' => 'reservations'], function () {
                     Route::get('/', [ReservationsController::class, 'index']);
-                    //                Route::get('/', [\App\Http\Controllers\ReservationsController::class, 'index']);
+                    //                Route::get('/', [ReservationsController::class, 'index']);
                     Route::get('/{id}', [ReservationsController::class, 'show']);
                     Route::post('/', [ReservationsController::class, 'create']);
                     Route::post('/{id}', [ReservationsController::class, 'update']);
+                });
+
+                Route::group(['prefix' => 'invoices'], function () {
+                    Route::get('/', [InvoicesController::class, 'index']);
+                    //                Route::get('/', [InvoicesController::class, 'index']);
+                    Route::get('/{id}', [InvoicesController::class, 'show']);
+                    Route::post('/', [InvoicesController::class, 'create']);
+                    Route::post('/{id}', [InvoicesController::class, 'update']);
                 });
 
                 // Business Branch floors
