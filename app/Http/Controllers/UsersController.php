@@ -67,8 +67,9 @@ class UsersController extends Controller
         $data = $request->all();
         unset($data['email']);
         unset($data['phone']);
-        if( $data['password'] === "" || $data['password'] === null)
-            unset($data['password']);
+
+        if(isset($data['password']) && $data['password'] === "")
+                unset($data['password']);
 
         $validator = Validator::make($data, [
             'email' => ['string', 'email', 'max:255', 'unique:users'],

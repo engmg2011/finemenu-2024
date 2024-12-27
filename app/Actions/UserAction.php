@@ -57,7 +57,8 @@ class UserAction
 
     public function updateModel($id, array $data): Model
     {
-        if ( $data['password'] )
+
+        if(isset($data['password']) && $data['password'] !== "")
             $data['password'] = bcrypt($data['password']);
         else
             unset($data['password']);
