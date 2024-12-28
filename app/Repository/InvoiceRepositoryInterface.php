@@ -3,6 +3,8 @@
 
 namespace App\Repository;
 
+use App\Models\Reservation;
+
 interface InvoiceRepositoryInterface
 {
 
@@ -16,5 +18,6 @@ interface InvoiceRepositoryInterface
 
     public function list($conditions = null);
 
+    public function set(Reservation $reservation, array &$invoices);
 
 }

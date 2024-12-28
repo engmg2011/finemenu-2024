@@ -3,6 +3,9 @@
 
 namespace App\Repository;
 
+use App\Models\Item;
+use App\Models\OrderLine;
+
 interface ReservationRepositoryInterface
 {
 
@@ -16,5 +19,6 @@ interface ReservationRepositoryInterface
 
     public function list($conditions = null);
 
+    public function set(Item $item, OrderLine $orderLine, array $reservation);
 
 }

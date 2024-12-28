@@ -56,7 +56,7 @@ Route::group(['prefix' => 'webapp',
                         Route::post('/', [ReservationsController::class, 'create']);
                     });
 
-                    //reservations
+                    //invoices
                     Route::group(['prefix' => 'invoices'], function () {
                         Route::get('/', [InvoicesController::class, 'userInvoices']);
                         Route::get('/{id}', [InvoicesController::class, 'showForInvoiceOwner']);

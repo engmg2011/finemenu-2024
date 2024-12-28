@@ -20,12 +20,8 @@ use function PHPUnit\Framework\isEmpty;
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
-    public const Relations = ['discounts.locales', 'orderlines', 'device'];
+    public const Relations = ['discounts.locales', 'orderlines.reservation.invoices', 'device'];
 
-    /**
-     * UserRepository constructor.
-     * @param Order $model
-     */
     public function __construct(Order                       $model,
                                 private LocaleRepository    $localeRepository,
                                 private OrderLineRepository $orderLineRepository,
@@ -90,8 +86,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
             'subtotal_price' => $data['subtotal_price']]);
-
-
         // Send Event
         event(new NewOrder($model->id));
         return $this->get($model->id);

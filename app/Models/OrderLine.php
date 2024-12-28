@@ -64,4 +64,9 @@ class OrderLine extends Model
        return $this->belongsTo(Item::class);
     }
 
+    public function reservation()
+    {
+        return $this->hasOne(Reservation::class,'order_line_id','id');
+    }
+
 }

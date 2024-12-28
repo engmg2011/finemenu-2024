@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\PaymentConstants;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,10 +19,13 @@ return new class extends Migration
             $table->unsignedBigInteger('reservable_id')->nullable();
             $table->string('reservable_type')->nullable();
             $table->json('data')->nullable();
+            $table->enum('status', [PaymentConstants::RESERVATION_PENDING,PaymentConstants::RESERVATION_COMPLETED,
+                PaymentConstants::RESERVATION_CANCELED, PaymentConstants::RESERVATION_REFUNDED])
+                ->default(PaymentConstants::STATUS_PENDING);
             $table->unsignedBigInteger("order_id")->nullable();
             $table->foreign("order_id")->references("id")->on('orders')->onDelete("SET NULL");
-            $table->unsignedBigInteger("orderline_id")->nullable();
-            $table->foreign("orderline_id")->references("id")->on('order_lines')->onDelete("SET NULL");
+            $table->unsignedBigInteger("order_line_id")->nullable();
+            $table->foreign("order_line_id")->references("id")->on('order_lines')->onDelete("SET NULL");
             $table->unsignedBigInteger("reserved_by_id")->nullable();
             $table->foreign("reserved_by_id")->references("id")->on('users')->onDelete("SET NULL");
             $table->unsignedBigInteger("reserved_for_id")->nullable();

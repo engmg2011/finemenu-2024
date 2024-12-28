@@ -14,10 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderLineRepository extends BaseRepository implements OrderLineRepositoryInterface
 {
-    /**
-     * UserRepository constructor.
-     * @param OrderLine $model
-     */
+
+    public const Relations = ['prices','invoices'];
+
     public function __construct(OrderLine $model,
                                 private ReservationRepositoryInterface $reservationRepository)
     {
@@ -27,7 +26,8 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     public function process(array $data): array
     {
         $data['user_id'] = auth('sanctum')->user()->id;
-        return array_only($data, ['user_id', 'note', 'order_id', 'item_id', 'count', 'price_id', 'data', 'total_price', 'subtotal_price']);
+        return array_only($data, ['user_id', 'note', 'order_id', 'item_id', 'count', 'price_id', 'data',
+            'total_price', 'subtotal_price']);
     }
 
     /**
@@ -79,19 +79,9 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
             'data' => $orderLine['data']
         ]);
 
-        if(isset($data['reservation']) && is_array($data['reservation'])) {
-            $reservationData =$data['reservation'] + [
-                'reservable_id' => $item->id,
-                'reservable_type' => Item::class,
-                'orderline_id' => $orderLine->id,
-                'order_id' => $orderLine->order_id,
-                'item_id' => $orderLine->item_id,
-                'reservation_for_id' => $orderLine->user_id,
-                'data' => $orderLine->data
-            ];
-            $this->reservationRepository->create($reservationData);
+        if(isset($data['reservation'])) {
+            $this->reservationRepository->set($item, $orderLine, $data['reservation']);
         }
-
 
     }
 
@@ -134,11 +124,11 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
      */
     public function list()
     {
-        return OrderLine::with('prices')->orderByDesc('id')->get();
+        return OrderLine::with(OrderLineRepository::Relations)->orderByDesc('id')->get();
     }
 
     public function get(int $id)
     {
-        return OrderLine::with('prices')->find($id);
+        return OrderLine::with(OrderLineRepository::Relations)->find($id);
     }
 }

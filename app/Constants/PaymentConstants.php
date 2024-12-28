@@ -20,4 +20,9 @@ class PaymentConstants
     const TYPE_LINK = "link";
     const TYPE_WAMD = "wamd";
 
+    const RESERVATION_PENDING = "pending";
+    const RESERVATION_CANCELED = "canceled";
+    const RESERVATION_REFUNDED = "refunded";
+    const RESERVATION_COMPLETED = "completed";
+
 }

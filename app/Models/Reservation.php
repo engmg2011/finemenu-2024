@@ -47,4 +47,9 @@ class Reservation extends Model
         return $this->belongsTo(Business::class);
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
 }

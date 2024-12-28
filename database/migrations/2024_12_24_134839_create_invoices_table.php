@@ -41,6 +41,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('order_id')->nullable();
             $table->foreign("order_id")->references("id")->on('orders')->onDelete("SET NULL");
 
+            $table->unsignedBigInteger("order_line_id")->nullable();
+            $table->foreign("order_line_id")->references("id")->on('order_lines')->onDelete("SET NULL");
+
             $table->unsignedBigInteger("invoice_by_id")->nullable();
             $table->foreign("invoice_by_id")->references("id")->on('users')->onDelete("SET NULL");
 
