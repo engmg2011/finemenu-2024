@@ -4,13 +4,18 @@ namespace App\Constants;
 
 class PaymentConstants
 {
-    const CREDIT = "credit";
-    const DEBIT = "debit";
+    const RESERVATION_PENDING = "pending";
+    const RESERVATION_CANCELED = "canceled";
+    const RESERVATION_REFUNDED = "refunded";
+    const RESERVATION_COMPLETED = "completed";
 
-    const STATUS_PENDING = "pending";
-    const STATUS_PAID = "paid";
-    const STATUS_CANCELED = "canceled";
-    const STATUS_REFUNDED = "refunded";
+    const INVOICE_CREDIT = "credit";
+    const INVOICE_DEBIT = "debit";
+
+    const INVOICE_PENDING = "pending";
+    const INVOICE_PAID = "paid";
+    const INVOICE_CANCELED = "canceled";
+    const INVOICE_REFUNDED = "refunded";
 
     const TYPE_CASH = "cash";
     const TYPE_ONLINE = "online";
@@ -19,10 +24,5 @@ class PaymentConstants
     const TYPE_KNET = "knet";
     const TYPE_LINK = "link";
     const TYPE_WAMD = "wamd";
-
-    const RESERVATION_PENDING = "pending";
-    const RESERVATION_CANCELED = "canceled";
-    const RESERVATION_REFUNDED = "refunded";
-    const RESERVATION_COMPLETED = "completed";
 
 }
