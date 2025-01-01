@@ -16,7 +16,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 {
 
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
-        'reservedFor.contacts', 'branch', 'business'];
+        'reservedFor.contacts','invoices' , 'branch.settings', 'business.settings'];
 
     public function __construct(Reservation $model, private InvoiceRepositoryInterface $invoiceRepository)
     {
@@ -49,7 +49,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function list($conditions = null)
     {
         $branchId = request()->route('branchId');
-        $businessId = request()->route('branchId');
+        $businessId = request()->route('businessId');
         return Reservation::with(ReservationRepository::Relations)
             ->orderByDesc('id')
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])

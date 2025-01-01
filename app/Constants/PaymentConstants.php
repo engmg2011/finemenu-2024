@@ -6,7 +6,6 @@ class PaymentConstants
 {
     const RESERVATION_PENDING = "pending";
     const RESERVATION_CANCELED = "canceled";
-    const RESERVATION_REFUNDED = "refunded";
     const RESERVATION_COMPLETED = "completed";
 
     const INVOICE_CREDIT = "credit";

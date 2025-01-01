@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('reservable_type')->nullable();
             $table->json('data')->nullable();
             $table->enum('status', [PaymentConstants::RESERVATION_PENDING,PaymentConstants::RESERVATION_COMPLETED,
-                PaymentConstants::RESERVATION_CANCELED, PaymentConstants::RESERVATION_REFUNDED])
+                PaymentConstants::RESERVATION_CANCELED])
                 ->default(PaymentConstants::INVOICE_PENDING);
             $table->unsignedBigInteger("order_id")->nullable();
             $table->foreign("order_id")->references("id")->on('orders')->onDelete("SET NULL");
