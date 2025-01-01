@@ -34,7 +34,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
 
     public function process(Array $data) {
-        return array_only( $data , ['category_id', 'user_id', 'sort']);
+        return array_only( $data , ['category_id', 'user_id', 'sort', 'insurance']);
     }
 
     public function relations($model , $data)

@@ -12,21 +12,21 @@ use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Order;
 use App\Models\User;
-use App\Notifications\OneSignalNotification;
+use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
-use function PHPUnit\Framework\isEmpty;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
 
-    public const Relations = ['discounts.locales', 'orderlines.reservation.invoices', 'device'];
+    public const Relations = ['discounts.locales', 'orderlines.reservation', 'device', 'invoices'];
 
-    public function __construct(Order                       $model,
-                                private LocaleRepository    $localeRepository,
-                                private OrderLineRepository $orderLineRepository,
-                                private PriceRepository     $priceAction,
-                                private DiscountAction      $discountAction
+    public function __construct(Order                              $model,
+                                private LocaleRepository           $localeRepository,
+                                private OrderLineRepository        $orderLineRepository,
+                                private PriceRepository            $priceAction,
+                                private DiscountAction             $discountAction,
+                                private InvoiceRepositoryInterface $invoiceRepository,
     )
     {
         parent::__construct($model);
@@ -86,6 +86,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
             'subtotal_price' => $data['subtotal_price']]);
+        if ($data['invoice'])
+            $this->invoiceRepository->setForOrder($model, $data['invoice']);
         // Send Event
         event(new NewOrder($model->id));
         return $this->get($model->id);

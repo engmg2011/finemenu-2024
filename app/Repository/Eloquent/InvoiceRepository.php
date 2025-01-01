@@ -2,11 +2,15 @@
 
 namespace App\Repository\Eloquent;
 
+use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
+use App\Services\PaymentProviders\Hesabe;
+use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -55,9 +59,12 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         $data['branch_id'] = request()->route('branchId');
         $data['business_id'] = request()->route('businessId');
-
+        $data['reference_id'] = strtoupper(uniqid());
+        $data['invoice_by_id'] = auth('sanctum')->user()->id;
+        $data['invoice_for_id'] = $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id;
         $data['data'] = [];
-
+        if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_KNET)
+            $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
         $model = $this->model->create($this->process($data));
         return $this->get($model->id);
     }
@@ -79,13 +86,13 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $data['status_changed_at'] = now();
 
         $model = tap($this->model->find($id))
-            ->update($this->process($data));
+            ->update(array_only($data, ['status', 'status_changed_at']));
 
         return $this->get($model->id);
     }
 
 
-    public function set(Reservation $reservation, array &$invoices)
+    public function setForReservation(Reservation $reservation, array &$invoices)
     {
         // TODO :: Validate if total invoices amount == orderline price
         // TODO :: if auth user not admin -> remove status
@@ -94,13 +101,59 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                     'reservation_id' => $reservation->id,
                     'order_id' => $reservation->order_id,
                     'order_line_id' => $reservation->order_line_id,
-                    'invoice_by_id' => auth('sanctum')->user()->id,
-                    'invoice_for_id' => $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id,
                 ];
             if (isset($invoice['id']) && $invoice['id'])
                 $this->update($invoice['id'], $invoiceData);
             else
                 $this->create($invoiceData);
         }
+    }
+
+    public function setForOrder(Order $order, array &$orderInvoice)
+    {
+        /**
+         * assume
+         *  - one acceptable reservation
+         *  - reservation on orderline[0]
+         */
+        $invoices = [];
+        $invoiceData = [
+            'payment_type' => $orderInvoice['payment_type'],
+            'note' => $orderInvoice['payment_type'],
+            'order_id' => $order->id
+        ];
+        $reservation = $order->orderLines[0]->reservation;
+        if ($reservation) {
+            $invoiceData = $invoiceData + ['reservation_id' => $reservation->id];
+        }
+        $invoices[0] = $invoiceData + [
+                'type' => PaymentConstants::INVOICE_CREDIT,
+                'amount' => $order->total_price,
+                'order_line_id' => $order->orderLines[0]->order_line_id,
+            ];
+        $i = 1;
+        foreach ($order->orderlines as &$orderLine) {
+            if ($orderLine->item->insurance) {
+                $invoices[$i] = $invoiceData;
+                $invoices[$i]['type'] = PaymentConstants::INVOICE_DEBIT;
+                $invoices[$i]['amount'] = $orderLine->item->insurance;
+                $invoices[$i]['orderline_id'] = $orderLine->id;
+                $i++;
+            }
+        }
+        foreach ($invoices as &$invoice) {
+            if (isset($invoice['id']) && $invoice['id'])
+                $this->update($invoice['id'], $invoice);
+            else
+                $this->create($invoice);
+        }
+    }
+
+    public function pay($referenceNumber)
+    {
+        $invoice = $this->model->findOrFail(['reference_id' => $referenceNumber]);
+        $invoice->update(["payment_type" => PaymentConstants::TYPE_KNET]);
+        $paymentService = new PaymentService(new Hesabe());
+        $paymentService->checkout($invoice->reference_id);
     }
 }

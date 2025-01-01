@@ -37,8 +37,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function setModelRelations($model, $data)
     {
-        if(isset($data['invoices']))
-            $this->invoiceRepository->set($model, $data['invoices']);
+//        if(isset($data['invoices']))
+//            $this->invoiceRepository->set($model, $data['invoices']);
     }
 
     public function get($id)
