@@ -5,7 +5,7 @@ namespace App\Services\PaymentProviders;
 class PaymentService
 {
 
-    public function __construct(private PaymentProviderInterface $provider)
+    public function __construct(private PaymentProviderInterface $provider = new Hesabe())
     {
     }
 
@@ -19,8 +19,4 @@ class PaymentService
         return $this->provider->completed($request, $referenceNumber);
     }
 
-    public function failed(): void
-    {
-        $this->provider->failed();
-    }
 }

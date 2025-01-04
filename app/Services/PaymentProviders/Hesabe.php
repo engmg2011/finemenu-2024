@@ -42,16 +42,6 @@ class Hesabe implements PaymentProviderInterface
         return $this->payment->checkout($paymentData);
     }
 
-    public function msg($msg, $color)
-    {
-        return "<h4 style='text-align: center;
-                    color:$color ;
-                    font-family: arial sans-serif;
-                    margin: 30px;
-                    text-transform: uppercase
-                    '>$msg</h4>";
-    }
-
     public function completed($request, $referenceNumber)
     {
         // Step 1: Get encrypted data from Hesabe
@@ -66,7 +56,8 @@ class Hesabe implements PaymentProviderInterface
 
         // Step 3: Validate the response
         if (!$decryptedDataObj || !isset($decryptedDataObj->response)) {
-            return $this->msg("Error: Invalid data received", "red");
+            \Log::critical("Error: Invalid data received : ". $encryptedData);
+            return redirect()->route('payment.failed');
         }
 
         \Log::debug(json_encode($decryptedDataObj->response));
@@ -83,18 +74,14 @@ class Hesabe implements PaymentProviderInterface
             if ($invoice) {
                 if ($invoice->status !== PaymentConstants::INVOICE_PAID) {
                     $invoice->update(['status' => PaymentConstants::INVOICE_PAID]);
-                    return $this->msg("Completed Successfully", "green");
+                    return redirect()->route('payment.success');
                 }
-                if ($invoice->status === PaymentConstants::INVOICE_PAID)
-                    return $this->msg("The invoice already paid", "green");
+                \Log::info("Invoice checked while it's paid");
+                return redirect()->route('payment.success');
             }
         }
-        return $this->msg("Error: Please contact Administration", "red");
+        return redirect()->route('payment.failed');
     }
 
-    public function failed(): string
-    {
-        return $this->msg("Error: Please contact Administration", "red");
-    }
 
 }

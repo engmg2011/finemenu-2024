@@ -8,11 +8,9 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    private PaymentService  $paymentService;
 
-    public function completed($referenceNumber)
+    public function __construct(private PaymentService  $paymentService = new PaymentService())
     {
-        $this->paymentService->checkout($referenceNumber);
     }
 
     public function hesabeCheckout($referenceNumber)
@@ -28,10 +26,16 @@ class PaymentController extends Controller
         return $this->paymentService->completed($request, $referenceNumber);
     }
 
+    public function success()
+    {
+        $data = ["msg" => "Completed Successfully", "color" =>"green"];
+        return view('payment.success', $data);
+    }
+
     public function failed()
     {
-        $this->paymentService = new PaymentService(new Hesabe());
-        $this->paymentService->failed();
+        $data = ["msg" => "Error: Invalid data received", "color" =>"red"];
+        return view('payment.failed', $data);
     }
 
 
