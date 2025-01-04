@@ -2,10 +2,7 @@
 namespace App\Services\PaymentProviders;
 
 interface PaymentProviderInterface{
-    public function createLink($referenceNumber): string;
-    public function checkPayment(): void;
-    public function success(): void;
-    public function failure(): void;
+    public function failed(): string;
     public function checkout($referenceNumber);
-    public function completed($referenceNumber);
+    public function completed($request, $referenceNumber);
 }

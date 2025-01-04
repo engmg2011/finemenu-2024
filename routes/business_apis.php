@@ -15,7 +15,9 @@ use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
 // Admin and business users
-Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
+Route::group(['middleware' => [
+    'auth:sanctum', 'role:' . businessRoles()
+]
 ], function () {
 
     Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
@@ -60,6 +62,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:' . businessRoles()]
 
                 Route::group(['prefix' => 'reservations'], function () {
                     Route::get('/', [ReservationsController::class, 'index']);
+                    Route::get('/filter', [ReservationsController::class, 'filter']);
                     //                Route::get('/', [ReservationsController::class, 'index']);
                     Route::get('/{id}', [ReservationsController::class, 'show']);
                     Route::post('/', [ReservationsController::class, 'create']);

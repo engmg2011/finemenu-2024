@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 
 class ReservationRepository extends BaseRepository implements ReservationRepositoryInterface
@@ -46,12 +47,35 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return $this->model->with(ReservationRepository::Relations)->find($id);
     }
 
+    public function filter(Request $request)
+    {
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('businessId');
+        $startDate = $request->input('from');
+        $endDate = $request->input('to');
+        return Reservation::with(ReservationRepository::Relations)
+            ->where(['branch_id' => $branchId, 'business_id' => $businessId])
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('from', [$startDate, $endDate])
+                    ->orWhereBetween('to', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('from', '<=', $startDate)
+                            ->where('to', '>=', $endDate);
+                    });
+            })
+            ->paginate(request('per-page', 15));
+    }
+
     public function list($conditions = null)
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
         return Reservation::with(ReservationRepository::Relations)
-            ->orderByDesc('id')
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->orderByDesc('id')

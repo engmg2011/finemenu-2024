@@ -10,11 +10,15 @@ use App\Events\NewOrder;
 use App\Events\UpdateOrder;
 use App\Models\Branch;
 use App\Models\Business;
+use App\Models\Category;
+use App\Models\Item;
 use App\Models\Order;
+use App\Models\Price;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Ratchet\Wamp\Exception;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -68,11 +72,42 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 5));
     }
 
+    /**
+     * @throws Exception
+     */
+    public function validateCategoriesInBranch(&$orderLines)
+    {
+        $categoryIds = [];
+        foreach ($orderLines as &$orderLine)
+            $categoryIds[] = Item::select('category_id')->find($orderLine['item_id'])->category_id;;
 
+        $branchId = request()->route('branchId');
+        $menuId = Branch::find($branchId)->menu_id;
+        $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->toArray();
+        if (count($menuIds) > 1 || $menuId !== $menuIds[0])
+            throw new Exception("Wrong Data");
+    }
+
+    public function validatePrices(&$orderLines)
+    {
+        foreach ($orderLines as &$orderLine) {
+            $priceable = Price::find($orderLine['price_id'])->priceable;
+            if(get_class($priceable) !== Item::class || $orderLine['item_id'] !== $priceable->id)
+                throw new Exception("Wrong Data");
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public function create(array $data): Model
     {
         $data['orderable_id'] = request()->route()->parameter('branchId');
         $data['orderable_type'] = get_class(new Branch());
+
+        $this->validateCategoriesInBranch($data['order_lines']);
+        $this->validatePrices($data['order_lines']);
+
 
         $model = $this->model->create($this->process($data));
         $data['total_price'] = 0;
@@ -86,7 +121,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
             'subtotal_price' => $data['subtotal_price']]);
-        if ($data['invoice'])
+        if ($data['invoice'] && $data['total_price'] > 0)
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         // Send Event
         event(new NewOrder($model->id));

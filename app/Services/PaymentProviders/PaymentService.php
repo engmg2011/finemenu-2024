@@ -9,33 +9,18 @@ class PaymentService
     {
     }
 
-    public function createLink($referenceNumber): string
-    {
-        return $this->provider->createLink($referenceNumber);
-    }
-
     public function checkout($referenceNumber)
     {
         return $this->provider->checkout($referenceNumber);
     }
 
-    public function completed($referenceNumber)
+    public function completed($request, $referenceNumber)
     {
-        return $this->provider->completed($referenceNumber);
+        return $this->provider->completed($request, $referenceNumber);
     }
 
-    public function success(): void
+    public function failed(): void
     {
-        $this->provider->success();
-    }
-
-    public function failure(): void
-    {
-        $this->provider->failure();
-    }
-
-    public function createMultipleInvoices()
-    {
-
+        $this->provider->failed();
     }
 }

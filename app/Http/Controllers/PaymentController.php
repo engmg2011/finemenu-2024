@@ -4,16 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
+use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     private PaymentService  $paymentService;
-
-    public function createLink($referenceNumber)
-    {
-        return $this->paymentService->createLink($referenceNumber);
-    }
-
 
     public function completed($referenceNumber)
     {
@@ -27,21 +22,16 @@ class PaymentController extends Controller
         exit;
     }
 
-    public function hesabeCompleted($referenceNumber)
+    public function hesabeCompleted(Request $request ,$referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        $this->paymentService->completed($referenceNumber);
-        return response()->json(['success' => true, 'message' => 'Thank you for informing us']);
+        return $this->paymentService->completed($request, $referenceNumber);
     }
 
-    public function success()
+    public function failed()
     {
-        $this->paymentService->success();
-    }
-
-    public function failure()
-    {
-        $this->paymentService->failure();
+        $this->paymentService = new PaymentService(new Hesabe());
+        $this->paymentService->failed();
     }
 
 
