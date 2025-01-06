@@ -3,11 +3,12 @@
 namespace App\Repository\Eloquent;
 
 use App\Constants\PermissionsConstants;
+use App\Events\NewReservation;
+use App\Events\UpdateReservation;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Reservation;
 use App\Models\User;
-use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
         'reservedFor.contacts','invoices' , 'branch.settings', 'business.settings'];
 
-    public function __construct(Reservation $model, private InvoiceRepositoryInterface $invoiceRepository)
+    public function __construct(Reservation $model)
     {
         parent::__construct($model);
     }
@@ -38,8 +39,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function setModelRelations($model, $data)
     {
-//        if(isset($data['invoices']))
-//            $this->invoiceRepository->set($model, $data['invoices']);
+
     }
 
     public function get($id)
@@ -73,10 +73,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function list($conditions = null)
+    public function listModel($businessId, $branchId , $conditions = null)
     {
-        $branchId = request()->route('branchId');
-        $businessId = request()->route('businessId');
         return Reservation::with(ReservationRepository::Relations)
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
@@ -90,6 +88,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $data['business_id'] = request()->route('businessId');
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
+        event(new NewReservation($model->id));
         return $this->get($model->id);
     }
 
@@ -112,6 +111,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->update($this->process($data));
 
         $this->setModelRelations($model, $data);
+        event(new UpdateReservation($model->id));
         return $this->get($model->id);
     }
 

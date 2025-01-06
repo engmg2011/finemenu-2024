@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Repository\Eloquent\OrderRepository;
+use App\Repository\Eloquent\ReservationRepository;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -10,20 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendOrders implements ShouldBroadcast
+class SendReservations implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $orders;
+    public $reservations;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(public int $businessId, public int $branchId)
+    public function __construct(public int $business_id,public int $branch_id)
     {
-        $orderRepository = app(OrderRepository::class);
+        $reservationRepository = app(ReservationRepository::class);
         request()->request->add(['per-page'=>1000]);
-        $this->orders = json_decode(json_encode($orderRepository->kitchenOrders($businessId)))->data ;
+        $this->reservations = json_decode(json_encode($reservationRepository->listModel($business_id, $branch_id)))->data ;
     }
 
     /**
@@ -34,12 +34,12 @@ class SendOrders implements ShouldBroadcast
     public function broadcastOn()
     {
         return [
-            new PrivateChannel('business-'.$this->businessId.'-branch-'.$this->branchId.'-orders'),
+            new PrivateChannel('business-'.$this->business_id.'-branch-'.$this->branch_id.'-reservations'),
         ];
     }
 
     public function broadcastAs()
     {
-        return 'business-'.$this->businessId.'-branch-'.$this->branchId.'-orders';
+        return 'business-'.$this->business_id.'-branch-'.$this->branch_id.'-reservations';
     }
 }

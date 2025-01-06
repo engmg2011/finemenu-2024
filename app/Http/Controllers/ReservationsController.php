@@ -18,7 +18,9 @@ class ReservationsController extends Controller
 
     public function index()
     {
-        $ordersList = $this->repository->list();
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('businessId');
+        $ordersList = $this->repository->listModel($businessId, $branchId);
         return DataResource::collection($ordersList);
     }
 
