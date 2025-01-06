@@ -8,6 +8,7 @@ use App\Traits\Localizable;
 use App\Traits\Mediable;
 use App\Traits\Priceable;
 use App\Traits\Reservable;
+use App\Traits\Settable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,7 +53,7 @@ use Illuminate\Support\Carbon;
 class Item extends Model
 {
     use HasFactory, Localizable, Mediable,
-        Priceable, Discountable, Addonable, Reservable;
+        Priceable, Discountable, Addonable, Reservable, Settable;
 
     protected $guarded = ['id'];
 

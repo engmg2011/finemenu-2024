@@ -58,6 +58,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $businessId = request()->route('businessId');
         $startDate = $request->input('from');
         $endDate = $request->input('to');
+
+        // TODO :: agree on default
         return Reservation::with(ReservationRepository::Relations)
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(function ($query) use ($startDate, $endDate) {
@@ -68,7 +70,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                             ->where('to', '>=', $endDate);
                     });
             })
-            ->paginate(request('per-page', 15));
+            ->paginate(request('per-page', 1200));
     }
 
     public function list($conditions = null)
