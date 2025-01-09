@@ -3,8 +3,8 @@
 namespace App\Events;
 
 use App\Models\Branch;
+use App\Models\Device;
 use App\Models\Order;
-use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\Eloquent\OrderRepository;
 use Illuminate\Broadcasting\Channel;
@@ -32,19 +32,17 @@ class NewOrder implements ShouldBroadcast
     public function notifyAdmins()
     {
         // send to business owner & branch admins
-        if($this->order->orderableType === Branch::class) {
+        if ($this->order->orderableType === Branch::class) {
             $userId = Branch::select('user_id')->find($this->order->orderable_id)?->user_id;
-            $userDevices = User::find($userId)->devices;
-            foreach ($userDevices as $device) {
-                if($device->onesignal_token)
-                {
-                    $firstItemName =  $this->order->orderlines[0]->data->item->locales[0]?->name ?? "";
-                    if(count($this->order->orderlines) > 1)
-                        $firstItemName .= " and more ";
-                    $branchName = $this->order->orderable->locales[0]->name ?? "";
-                    $device->notify(new OneSignalNotification('MenuAI', "Requested $firstItemName from $branchName "));
 
-                }
+            $device = Device::where('user_id', $userId)->orderBy('id', 'desc')->first();
+            if ($device && $device->onesignal_token) {
+                $firstItemName = $this->order->orderlines[0]->data->item->locales[0]?->name ?? "";
+                if (count($this->order->orderlines) > 1)
+                    $firstItemName .= " and more ";
+                $branchName = $this->order->orderable->locales[0]->name ?? "";
+                $device->notify(new OneSignalNotification('MenuAI', "Requested $firstItemName from $branchName "));
+
             }
         }
     }
@@ -56,10 +54,10 @@ class NewOrder implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        $branchId = $this->order->orderable_id ;
+        $branchId = $this->order->orderable_id;
         $businessId = Branch::find($branchId)->business_id;
         return [
-            new PrivateChannel('business-'.$businessId.'-branch-'.$branchId.'-orders'),
+            new PrivateChannel('business-' . $businessId . '-branch-' . $branchId . '-orders'),
         ];
     }
 

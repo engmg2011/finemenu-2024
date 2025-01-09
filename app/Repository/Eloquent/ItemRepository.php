@@ -6,6 +6,8 @@ namespace App\Repository\Eloquent;
 use App\Actions\AddonAction;
 use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
+use App\Models\Branch;
+use App\Models\Category;
 use App\Models\Item;
 use App\Repository\ItemRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +31,15 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function listModel($businessId, $branchId , $conditions = null)
+    {
+        $menuId = Branch::select('menu_id')->find($branchId)->menu_id;
+        $categoriesIds = Category::where('menu_id', $menuId)->pluck('id')->toArray();
+        return $this->model::with(['locales', 'media', 'prices', 'addons', 'discounts'])
+            ->whereIn('category_id', $categoriesIds)
+            ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
 
     public static array $itemRelations = ['locales', 'media', 'prices.locales','discounts.locales', 'addons.locales'];
 

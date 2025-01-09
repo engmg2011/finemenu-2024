@@ -3,8 +3,8 @@
 namespace App\Events;
 
 use App\Models\Business;
+use App\Models\Device;
 use App\Models\Reservation;
-use App\Models\User;
 use App\Notifications\OneSignalNotification;
 use App\Repository\Eloquent\ReservationRepository;
 use Illuminate\Broadcasting\Channel;
@@ -33,21 +33,20 @@ class UpdateReservation implements ShouldBroadcast
     {
         // send to business owner & branch admins
         $userId = Business::select('user_id')->find($this->reservation->business_id)?->user_id;
-        $userDevices = User::find($userId)->devices;
-        foreach ($userDevices as $device) {
-            if ($device->onesignal_token) {
-                $firstItemName = $this->reservation->data->item->locales[0]?->name ?? "";
-                $branchName = $this->reservation->branch->locales[0]->name ?? "";
-                try{
-                    $device->notify(new OneSignalNotification('MenuAI', "Updated Booking $firstItemName from $branchName "));
-                }
-                catch (\Exception $exception){
-                    \Log::error(json_encode([ "msg"=>"Couldn't send notification to device id ".$device->id,
-                        "ex" => $exception->getMessage()]));
-                }
+
+        $device = Device::where('user_id', $userId)->orderBy('id', 'desc')->first();
+        if ($device && $device->onesignal_token) {
+            $firstItemName = $this->reservation->data->item->locales[0]?->name ?? "";
+            $branchName = $this->reservation->branch->locales[0]->name ?? "";
+            try {
+                $device->notify(new OneSignalNotification('MenuAI', "Updated Booking $firstItemName from $branchName "));
+            } catch (\Exception $exception) {
+                \Log::error(json_encode(["msg" => "Couldn't send notification to device id " . $device->id,
+                    "ex" => $exception->getMessage()]));
             }
         }
     }
+
     /**
      * Get the channels the event should broadcast on.
      *
@@ -55,10 +54,10 @@ class UpdateReservation implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        $branchId = $this->reservation->branch_id ;
+        $branchId = $this->reservation->branch_id;
         $businessId = $this->reservation->business_id;
         return [
-            new PrivateChannel('business-'.$businessId.'-branch-'.$branchId.'-reservations'),
+            new PrivateChannel('business-' . $businessId . '-branch-' . $branchId . '-reservations'),
         ];
     }
 

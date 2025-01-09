@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReservationsController;
@@ -51,6 +52,19 @@ Route::group(['middleware' => [
                 Route::get('', [BranchesController::class, 'show']);
                 Route::post('', [BranchesController::class, 'update']);
                 Route::post('/delete', [BranchesController::class, 'destroy']);
+
+                Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {
+                    Route::get('/', [ItemsController::class, 'index']);
+//                    Route::get('/{id}', [ItemsController::class, 'show']);
+//                    Route::post('/', [ItemsController::class, 'create']);
+//                    Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
+//                    Route::post('/sort', [ItemsController::class, 'sort']);
+//                    Route::post('/{id}', [ItemsController::class, 'update']);
+//                    Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
+//                    Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
+//                    Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
+//                    Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+                });
 
                 Route::group(['prefix' => 'orders'], function () {
                     Route::get('/', [OrdersController::class, 'branchOrders']);

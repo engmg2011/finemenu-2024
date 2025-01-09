@@ -18,6 +18,7 @@ use App\Http\Controllers\MenusController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PricesController;
 use App\Http\Controllers\PusherAuthController;
+use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
@@ -75,19 +76,6 @@ Route::group(['middleware' => ['auth:sanctum',
         });
     });
 
-    Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {
-        Route::get('/', [ItemsController::class, 'index']);
-        Route::get('/{id}', [ItemsController::class, 'show']);
-        Route::post('/', [ItemsController::class, 'create']);
-        Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
-        Route::post('/sort', [ItemsController::class, 'sort']);
-        Route::post('/{id}', [ItemsController::class, 'update']);
-        Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-        Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-        Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-    });
-
     Route::group(['prefix' => 'prices'], function () {
         Route::post('/{id}/delete', [PricesController::class, 'destroy']);
     });
@@ -105,6 +93,13 @@ Route::group(['middleware' => ['auth:sanctum',
         Route::get('/{id}', [EventsController::class, 'show']);
         Route::post('/', [EventsController::class, 'create']);
         Route::post('/{id}', [EventsController::class, 'update']);
+    });
+
+    Route::group(['prefix' => 'reservations'], function () {
+        Route::get('/', [ReservationsController::class, 'index']);
+        Route::get('/{id}', [ReservationsController::class, 'show']);
+        Route::post('/', [ReservationsController::class, 'create']);
+        Route::post('/{id}', [ReservationsController::class, 'update']);
     });
 
     Route::group(['prefix' => 'contents'], function () {

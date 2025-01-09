@@ -84,8 +84,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function create(array $data): Model
     {
-        $data['branch_id'] = request()->route('branchId');
-        $data['business_id'] = request()->route('businessId');
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
         event(new NewReservation($model->id));
@@ -125,7 +123,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 'order_id' => $orderLine->order_id,
                 'item_id' => $orderLine->item_id,
                 'reservation_for_id' => $orderLine->user_id,
-                'data' => $orderLine->data
+                'data' => $orderLine->data,
+                'business_id' => request()->route('businessId'),
+                'branch_id' => request()->route('branchId'),
             ];
         if (isset($reservationData['id']) && $reservationData['id'])
             $this->update($reservationData['id'], $reservationData);

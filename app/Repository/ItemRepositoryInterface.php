@@ -13,6 +13,8 @@ interface ItemRepositoryInterface
      */
     public function list();
 
+    public function listModel($businessId, $branchId, $conditions = null);
+
     public function process(array $data);
 
     public function create(array $data): Model;
