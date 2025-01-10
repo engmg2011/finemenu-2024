@@ -15,4 +15,4 @@ RUN git clone https://github.com/flutter/flutter.git /opt/flutter && \
 ENV PATH="$PATH:/opt/flutter/bin"
 
 
-RUN apt-get install vim -y
+RUN #apt-get install vim -y
