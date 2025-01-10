@@ -131,15 +131,15 @@ class ShalehiSeeder extends Seeder
 
     public function run(): void
     {
+        $category = $this->category();
+        // import data
         $jsonFile = __DIR__ . '/data/Shalehi.json';
         $jsonData = file_get_contents($jsonFile);
-
         $dataArray = json_decode($jsonData, true);
         if (json_last_error() === JSON_ERROR_NONE) {
             foreach ($dataArray as $data) {
                 $employee = $this->employee($data);
                 $customer = $this->customer($data);
-                $category = $this->category();
                 $item = $this->chalet($data, $category);
                 $reservation = $this->reservation($data, $item, $employee, $customer);
                 $this->invoices($data, $reservation, $employee, $customer);
