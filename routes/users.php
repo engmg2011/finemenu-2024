@@ -38,18 +38,12 @@ Route::group(['prefix' => 'users/{modelId}',
         Route::post('settings/set', [SettingsController::class, 'setSetting']);
 //        Route::post('/settings/{settingId}', [SettingsController::class, 'updateSetting']);
         Route::get('/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-
-
         Route::group(['prefix' => 'devices'], function () {
             Route::post('/{id}', [DevicesController::class, 'update']);
         });
-
-
     Route::group(['prefix' => 'orders'], function () {
         Route::get('/', [OrdersController::class, 'userOrders']);
     });
-
-
 });
 
 Route::group(['middleware' => [

@@ -32,8 +32,10 @@ class ReservationsController extends Controller
 
     public function userReservations()
     {
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('businessId');
         $conditions = [['reserved_for_id' => auth('sanctum')->id()]];
-        return DataResource::collection($this->repository->list($conditions));
+        return DataResource::collection($this->repository->listModel($businessId, $branchId, $conditions));
     }
 
     public function show($id)

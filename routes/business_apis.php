@@ -127,20 +127,18 @@ Route::group(['middleware' => [
 // TODO :: put admin only roles (Business owner)
 Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
 
-    Route::group(['prefix' => '{businessId}/branches/{modelId}'], function () {
+    Route::group(['prefix' => '{businessId}/'], function () {
 
-        Route::get('settings', [SettingsController::class, 'listSettings']);
-        Route::post('settings/set', [SettingsController::class, 'setSetting']);
-
-        Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
-        Route::get('create-login-qr', [UsersController::class, 'createLoginQr']);
-        Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
-
-
-//            Route::post('reference-qr', [BranchesController::class, 'PreviewQR']);
-//            Route::get('generate-qr/{userId?}', 'FeedbackController@generateQR');
-
-
+        Route::group(['prefix' => 'users',], function () {
+            Route::post('/search', [UsersController::class, 'search']);
+        });
+        Route::group(['prefix' => 'branches/{modelId}'], function () {
+            Route::get('settings', [SettingsController::class, 'listSettings']);
+            Route::post('settings/set', [SettingsController::class, 'setSetting']);
+            Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
+            Route::get('create-login-qr', [UsersController::class, 'createLoginQr']);
+            Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
+        });
     });
 
 

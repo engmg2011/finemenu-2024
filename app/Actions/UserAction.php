@@ -35,6 +35,15 @@ class UserAction
         return $this->repository->create($this->processUser($data));
     }
 
+    public function search($businessId , array $data)
+    {
+        return User::where('business_id', $businessId)
+            ->where('name', 'like', "%{$data['search']}%")
+            ->orWhere('email', 'like', "%{$data['search']}%")
+            ->orWhere('phone', 'like', "%{$data['search']}%")
+            ->paginate(5);
+    }
+
 
     public function menu($user_id)
     {

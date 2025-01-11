@@ -44,6 +44,18 @@ class UsersController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $businessId = request()->route('business_id');
+        return \response()->json($this->action->search($businessId , $request->all()));
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param int $id
