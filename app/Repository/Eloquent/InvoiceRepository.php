@@ -63,7 +63,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $data['invoice_by_id'] = auth('sanctum')->user()->id;
         $data['invoice_for_id'] = $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id;
         $data['data'] = [];
-        if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_KNET)
+        if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_ONLINE)
             $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
         $model = $this->model->create($this->process($data));
         return $this->get($model->id);
@@ -152,7 +152,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     public function pay($referenceNumber)
     {
         $invoice = $this->model->findOrFail(['reference_id' => $referenceNumber]);
-        $invoice->update(["payment_type" => PaymentConstants::TYPE_KNET]);
+        $invoice->update(["payment_type" => PaymentConstants::TYPE_ONLINE]);
         $paymentService = new PaymentService(new Hesabe());
         $paymentService->checkout($invoice->reference_id);
     }

@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Constants\PermissionsConstants;
+use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
 use App\Models\Item;
@@ -18,9 +19,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 {
 
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
-        'reservedFor.contacts','invoices' , 'branch.settings', 'business.settings'];
+        'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings'];
 
-    public function __construct(Reservation $model)
+    public function __construct(Reservation $model, private InvoiceRepository $invoiceRepository)
     {
         parent::__construct($model);
     }
@@ -39,6 +40,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function setModelRelations($model, $data)
     {
+        $currentUser = auth('sanctum')->user();
+        if(isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
+           $this->invoiceRepository->setForReservation($model, $data['invoices']);
+        }
 
     }
 
@@ -73,7 +78,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function listModel($businessId, $branchId , $conditions = null)
+    public function listModel($businessId, $branchId, $conditions = null)
     {
         return Reservation::with(ReservationRepository::Relations)
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])

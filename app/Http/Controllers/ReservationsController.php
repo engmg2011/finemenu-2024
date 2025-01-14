@@ -53,7 +53,10 @@ class ReservationsController extends Controller
 
     public function create(Request $request)
     {
-        return \response()->json($this->repository->create($request->all()));
+        $data = $request->all();
+        $data['branch_id'] = request()->route('branchId');
+        $data['business_id']  = request()->route('businessId');
+        return \response()->json($this->repository->create($data));
     }
 
 
