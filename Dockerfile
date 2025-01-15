@@ -1,4 +1,5 @@
 FROM ubuntu:22.04
+USER root
 
 LABEL maintainer="Taylor Otwell"
 
@@ -58,6 +59,19 @@ COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.2/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
+
+RUN apt-get update && apt-get install -y cron nano
+
+RUN update-alternatives --install /usr/bin/editor editor /usr/bin/nano 100
+
+# Set nano as the default editor
+RUN update-alternatives --set editor /usr/bin/nano
+
+# Add the cron job
+RUN (crontab -u sail -l ; echo "* * * * * php /var/www/html/backend/artisan schedule:run >> /dev/null 2>&1") | crontab -u sail -
+
+# Start cron service
+CMD ["cron", "-f"]
 
 EXPOSE 8000
 

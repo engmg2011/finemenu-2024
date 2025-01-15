@@ -30,6 +30,13 @@ class ReservationsController extends Controller
         return DataResource::collection($ordersList);
     }
 
+    public function isAvailable(Request $request)
+    {
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('businessId');
+        return \response()->json($this->repository->isAvailable($request, $businessId, $branchId));
+    }
+
     public function userReservations()
     {
         $branchId = request()->route('branchId');

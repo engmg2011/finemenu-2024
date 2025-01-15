@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent;
 
+use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Events\NewReservation;
@@ -76,6 +77,31 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                     });
             })
             ->paginate(request('per-page', 1200));
+    }
+
+
+    public function isAvailable(Request $request , $businessId, $branchId)
+    {
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+        $startDate = $request->input('from');
+        $endDate = $request->input('to');
+        $reservable_id = $request->input('reservable_id');
+
+        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
+            ->where('reservable_id', $reservable_id)
+            ->where('status', '!=' , PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('from', [$startDate, $endDate])
+                    ->orWhereBetween('to', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('from', '<=', $startDate)
+                            ->where('to', '>=', $endDate);
+                    });
+            })->first();
+        return $isFound ? false : true;
     }
 
     public function listModel($businessId, $branchId, $conditions = null)
