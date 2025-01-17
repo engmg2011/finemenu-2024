@@ -55,6 +55,8 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         $userId = $data['user_id'] ?? auth('sanctum')->id();
         $this->permissionRepository->createBusinessPermission($model->id, User::find($userId));
 
+        // business type different from menu type
+        unset($data['type']);
         $this->businessService->createMenuAndBranch($model, $data);
 
         return $model;

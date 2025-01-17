@@ -171,13 +171,13 @@ class RegisterController extends Controller
         $validator = $this->validator($data);
 
         if ($validator->fails())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         if (!$this->IpCanRegister())
-            return response()->json(['message' => 'Too many tries, try again later.'], 403);
+            return response()->json(['message' => 'Too many tries, try again later.'], 400);
 
         if (!$this->sendCodeProcess($data))
-            return response()->json(['message' => 'Too many code tries, try again later.'], 403);
+            return response()->json(['message' => 'Too many code tries, try again later.'], 400);
 
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
@@ -188,13 +188,13 @@ class RegisterController extends Controller
         $validator = $this->resetValidator($data);
 
         if ($validator->fails())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         if (!$this->IpCanRegister())
-            return response()->json(['message' => 'Too many tries, try again later.'], 403);
+            return response()->json(['message' => 'Too many tries, try again later.'], 400);
 
         if (!$this->sendCodeProcess($data))
-            return response()->json(['message' => 'Too many code tries, try again later.'], 403);
+            return response()->json(['message' => 'Too many code tries, try again later.'], 400);
 
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
@@ -209,14 +209,14 @@ class RegisterController extends Controller
         $data = $request->all();
         $validator = $reset ? $this->resetValidator($data, ['code' => ['required']]) : $this->validator($data, ['code' => ['required']]);
         if ($validator->fails())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
         $isValidCode = InitRegister::where($searchArray)
             ->where('created_at', '>', Carbon::now()->subHour())
             ->where('code', $data['code'])->first();
         if (!$isValidCode)
-            return response()->json(['message' => 'Wrong code, try again'], 403);
+            return response()->json(['message' => 'Wrong code, try again'], 400);
         if ($reset) {
             $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
             $token = $user->createToken('authToken');
@@ -250,10 +250,10 @@ class RegisterController extends Controller
             'code' => 'required'
         ]);
         if ($validator->fails())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         if (!$this->IpCanRegister())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
         $isValidCode = InitRegister::where($searchArray)
@@ -261,7 +261,7 @@ class RegisterController extends Controller
             ->where('code', $data['code'])->first();
 
         if (!$isValidCode)
-            return response()->json(['message' => 'Wrong code, try again'], 403);
+            return response()->json(['message' => 'Wrong code, try again'], 400);
 
         $data['password'] = bcrypt($request->password);
         $data['type'] = "";

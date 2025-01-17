@@ -27,7 +27,7 @@ class UserAction
 
     public function processUser(array $data)
     {
-        return array_only($data, ['name', 'email', 'phone', 'type', 'currency', 'password', 'email_verified_at']);
+        return array_only($data, ['name', 'email', 'phone', 'currency', 'password', 'email_verified_at']);
     }
 
     public function create(array $data)
