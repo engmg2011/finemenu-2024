@@ -1,5 +1,7 @@
+## Please be noted to replace the vendor file
+## cp Dockerfile vendor/laravel/sail/runtimes/8.2/Dockerfile
+
 FROM ubuntu:22.04
-USER root
 
 LABEL maintainer="Taylor Otwell"
 
@@ -17,7 +19,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update \
     && mkdir -p /etc/apt/keyrings \
-    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python2 dnsutils librsvg2-bin fswatch \
+    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python2 dnsutils librsvg2-bin fswatch cron \
     && curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
@@ -53,25 +55,36 @@ RUN apt-get update \
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.2
 
 RUN groupadd --force -g $WWWGROUP sail
+RUN #useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+
+#USER root
+
+# Add your cron job
+RUN echo "* * * * * sail echo 'Cron job running' >> /var/log/cron.log 2>&1" > /etc/cron.d/my-cron-job
+
+
+# Give execution rights to the cron job
+RUN chmod 0644 /etc/cron.d/my-cron-job
+
+RUN #touch /var/log/cron.log
+
+RUN #chown sail:sail /var/log/cron.log
+
+RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+
+# Apply the cron job
+RUN crontab /etc/cron.d/my-cron-job
+# Create the log file to be able to run tail
 
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+RUN service cron start
+
+
 COPY php.ini /etc/php/8.2/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
-
-RUN apt-get update && apt-get install -y cron nano
-
-RUN update-alternatives --install /usr/bin/editor editor /usr/bin/nano 100
-
-# Set nano as the default editor
-RUN update-alternatives --set editor /usr/bin/nano
-
-# Add the cron job
-RUN (crontab -u sail -l ; echo "* * * * * php /var/www/html/backend/artisan schedule:run >> /dev/null 2>&1") | crontab -u sail -
-
-# Start cron service
-CMD ["cron", "-f"]
 
 EXPOSE 8000
 
