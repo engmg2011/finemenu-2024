@@ -57,15 +57,6 @@ Route::group(['middleware' => [
 
                     Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {
                         Route::get('/', [ItemsController::class, 'index']);
-//                    Route::get('/{id}', [ItemsController::class, 'show']);
-//                    Route::post('/', [ItemsController::class, 'create']);
-//                    Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
-//                    Route::post('/sort', [ItemsController::class, 'sort']);
-//                    Route::post('/{id}', [ItemsController::class, 'update']);
-//                    Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-//                    Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-//                    Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-//                    Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
                     });
 
                     Route::group(['prefix' => 'orders'], function () {
