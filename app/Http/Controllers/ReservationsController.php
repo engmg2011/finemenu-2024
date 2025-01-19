@@ -34,7 +34,13 @@ class ReservationsController extends Controller
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        return \response()->json($this->repository->isAvailable($request, $businessId, $branchId));
+
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+        $data = $request->all();
+        return \response()->json($this->repository->isAvailable($data, $businessId, $branchId));
     }
 
     public function userReservations()

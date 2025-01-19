@@ -17,8 +17,8 @@ use App\Models\Price;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
+use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
-use Ratchet\Wamp\Exception;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -31,6 +31,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                                 private PriceRepository            $priceAction,
                                 private DiscountAction             $discountAction,
                                 private InvoiceRepositoryInterface $invoiceRepository,
+                                private ReservationRepositoryInterface $reservationRepository,
     )
     {
         parent::__construct($model);
@@ -73,41 +74,58 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function validateCategoriesInBranch(&$orderLines)
     {
         $categoryIds = [];
-        foreach ($orderLines as &$orderLine)
-            $categoryIds[] = Item::select('category_id')->find($orderLine['item_id'])->category_id;;
+        foreach ($orderLines as &$orderLine) {
+            $item = Item::select('category_id')->find($orderLine['item_id']);
+            if($item && $item->category_id )
+                $categoryIds[] = $item->category_id;
+        }
+
+        if(!count($categoryIds)) return false;
 
         $branchId = request()->route('branchId');
         $menuId = Branch::find($branchId)->menu_id;
         $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->toArray();
         if (count($menuIds) > 1 || $menuId !== $menuIds[0])
-            throw new Exception("Wrong Data");
+            throw new \Exception("Wrong Data");
     }
 
     public function validatePrices(&$orderLines)
     {
         foreach ($orderLines as &$orderLine) {
-            $priceable = Price::find($orderLine['price_id'])->priceable;
-            if(get_class($priceable) !== Item::class || $orderLine['item_id'] !== $priceable->id)
-                throw new Exception("Wrong Data");
+            if($orderLine['price_id']){
+                $priceable = Price::find($orderLine['price_id'])->priceable;
+                if(!$priceable || get_class($priceable) !== Item::class || $orderLine['item_id'] !== $priceable->id)
+                    throw new \Exception("Wrong Data");
+            }
         }
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function create(array $data): Model
     {
-        $data['orderable_id'] = request()->route()->parameter('branchId');
+        $branchId = request()->route()->parameter('branchId');
+        $businessId = request()->route('businessId');
+        $data['orderable_id'] = $branchId;
         $data['orderable_type'] = get_class(new Branch());
+
+        if(!count($data['order_lines']))
+            throw new \Exception("Please add order content");
 
         $this->validateCategoriesInBranch($data['order_lines']);
         $this->validatePrices($data['order_lines']);
-
+        $reservationData = $data['order_lines'][0]['reservation'];
+        if( isset($reservationData)){
+            $reservationData['reservable_id'] = $data['order_lines'][0]['item_id'];
+            if(!$this->reservationRepository->isAvailable($reservationData, $businessId ,$branchId))
+                throw new \Exception("Not available now, please choose different dates or try again later");
+        }
 
         $model = $this->model->create($this->process($data));
         $data['total_price'] = 0;
