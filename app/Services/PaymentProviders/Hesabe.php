@@ -74,6 +74,10 @@ class Hesabe implements PaymentProviderInterface
             if ($invoice) {
                 if ($invoice->status !== PaymentConstants::INVOICE_PAID) {
                     $invoice->update(['status' => PaymentConstants::INVOICE_PAID]);
+                    if($invoice->reservation){
+                        $invoice->reservation->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
+                    }
+
                     return redirect()->route('payment.success');
                 }
                 \Log::info("Invoice checked while it's paid");

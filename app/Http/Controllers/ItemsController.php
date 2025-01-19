@@ -32,7 +32,7 @@ class ItemsController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function create(Request $request)
+    public function create(Request $request, $businessId )
     {
         return response()->json($this->repository->create($request->all()));
     }
@@ -43,7 +43,7 @@ class ItemsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($businessId ,$id)
     {
         return response()->json($this->repository->get($id));
     }
@@ -55,7 +55,7 @@ class ItemsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $businessId , $id)
     {
         return response()->json($this->repository->update($id, $request->all()));
     }
@@ -66,7 +66,7 @@ class ItemsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy($businessId , $id)
     {
         return response()->json($this->repository->destroy($id));
     }

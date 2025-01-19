@@ -64,10 +64,17 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $businessId = request()->route('businessId');
         $startDate = $request->input('from');
         $endDate = $request->input('to');
+        $itemId = $request->input('item_id');
 
         // TODO :: agree on default
         return Reservation::with(ReservationRepository::Relations)
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
+            ->whereHas('reservable')
+            ->where('status' , '!=' , PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ( $itemId) {
+                if(isset($itemId))
+                    $query->where('reservable_id', $itemId );
+            })
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('from', [$startDate, $endDate])
                     ->orWhereBetween('to', [$startDate, $endDate])
@@ -78,7 +85,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             })
             ->paginate(request('per-page', 1200));
     }
-
 
     public function isAvailable($data, $businessId, $branchId)
     {
