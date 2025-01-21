@@ -23,4 +23,6 @@ interface InvoiceRepositoryInterface
 
     public function setForOrder(Order $order, array &$orderInvoice);
 
+    public function updateReservationInvoicesData($reservationId , $invoices);
+
 }

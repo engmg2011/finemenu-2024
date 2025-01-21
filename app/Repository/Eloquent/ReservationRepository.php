@@ -42,8 +42,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function setModelRelations($model, $data)
     {
         $currentUser = auth('sanctum')->user();
-        if(isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
-           $this->invoiceRepository->setForReservation($model, $data['invoices']);
+        if (isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
+            $this->invoiceRepository->setForReservation($model, $data['invoices']);
         }
 
     }
@@ -67,13 +67,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $itemId = $request->input('item_id');
 
         // TODO :: agree on default
-        return Reservation::with(ReservationRepository::Relations)
-            ->where(['branch_id' => $branchId, 'business_id' => $businessId])
+        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
-            ->where('status' , '!=' , PaymentConstants::RESERVATION_CANCELED)
-            ->where(function ($query) use ( $itemId) {
-                if(isset($itemId))
-                    $query->where('reservable_id', $itemId );
+            ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ($itemId) {
+
+                if (isset($itemId)) {
+                    $query->where('reservable_id', $itemId);
+                    \Log::debug("ii $itemId");
+                }
             })
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('from', [$startDate, $endDate])
@@ -93,7 +95,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $reservable_id = $data['reservable_id'];
         $isAvailable = Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('reservable_id', $reservable_id)
-            ->where('status', '!=' , PaymentConstants::RESERVATION_CANCELED)
+            ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('from', [$startDate, $endDate])
                     ->orWhereBetween('to', [$startDate, $endDate])
@@ -118,11 +120,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        if(!$this->isAvailable($data, $businessId ,$branchId))
+        if (!$this->isAvailable($data, $businessId, $branchId))
             throw new \Exception("Not available now, please choose different dates or try again later");
 
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
+
+        if(!$model->data)
+            $this->setReservationCashedData($model->id);
+
         event(new NewReservation($model->id));
         return $this->get($model->id);
     }
@@ -150,6 +156,16 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return $this->get($model->id);
     }
 
+    public function orderLineToReservationData($olData)
+    {
+        $resData = [];
+        $resData['reservable'] = $olData['item'];
+        $resData['reserved_for'] = $olData['user'];
+        $resData['reserved_by'] = $olData['user'];
+        $resData += array_only($olData, ['addons', 'invoices', 'discounts', 'subtotal_price', 'total_price']);
+        return $resData;
+    }
+
 
     public function set(Item $item, OrderLine $orderLine, array $reservation)
     {
@@ -160,7 +176,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 'order_id' => $orderLine->order_id,
                 'item_id' => $orderLine->item_id,
                 'reservation_for_id' => $orderLine->user_id,
-                'data' => $orderLine->data,
+                'data' => $this->orderLineToReservationData($orderLine->data),
                 'business_id' => request()->route('businessId'),
                 'branch_id' => request()->route('branchId'),
             ];
@@ -170,5 +186,34 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $this->create($reservationData);
     }
 
+    public function setReservationCashedData($reservationId)
+    {
+        $reservation = Reservation::with('invoices',
+            'reservable.locales',
+            'reservable.media',
+            'reservedFor',
+            'reservedBy'
+        )->find($reservationId);
+
+        $price = 0;
+        foreach ($reservation->invoices as $invoice) {
+            if($invoice->type === PaymentConstants::INVOICE_CREDIT)
+                $price += $invoice->amount;
+            if($invoice->type === PaymentConstants::INVOICE_DEBIT)
+                $price -= $invoice->amount;
+        }
+
+        $cachedData = [];
+        $cachedData += [
+            "reservable" => $reservation->reservable,
+            "reserved_for" => $reservation->reservedFor,
+            "reserved_by" => $reservation->reservedBy,
+            "invoices" => $reservation->invoices,
+            "subtotal_price" => $price,
+            "total_price" => $price
+        ];
+        $reservation->update(['data' => $cachedData]);
+
+    }
 
 }

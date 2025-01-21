@@ -139,8 +139,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
             'subtotal_price' => $data['subtotal_price']]);
-        if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0)
+        if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
+        }
         // Send Event
         event(new NewOrder($model->id));
         return $this->get($model->id);

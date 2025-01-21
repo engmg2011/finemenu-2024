@@ -21,7 +21,7 @@ class ItemsController extends Controller
      */
     public function index()
     {
-        $branchId = request()->route('branchId');
+        $branchId = request()->get('branchId');
         $businessId = request()->route('businessId');
         return DataResource::collection($this->repository->listModel($businessId, $branchId));
     }

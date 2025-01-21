@@ -109,6 +109,14 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
     }
 
+    public function updateReservationInvoicesData($reservationId , $invoices)
+    {
+        $res = Reservation::find($reservationId);
+        $cachedReservationData = $res->data;
+        $cachedReservationData['invoices'] = $invoices;
+        $res->update(['data' => $cachedReservationData]);
+    }
+
     public function setForOrder(Order $order, array &$orderInvoice)
     {
         /**
@@ -147,6 +155,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             else
                 $this->create($invoice);
         }
+        if($reservation)
+            $this->updateReservationInvoicesData($reservation->id , $invoices);
     }
 
     public function pay($referenceNumber)
