@@ -56,16 +56,20 @@ class Item extends Model
         Priceable, Discountable, Addonable, Reservable, Settable;
 
     protected $guarded = ['id'];
+    protected $casts = ['hide' => 'boolean', 'disable_ordering' => 'boolean'];
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function plans(){
+    public function plans()
+    {
         return $this->belongsToMany(DietPlan::class);
     }
 
