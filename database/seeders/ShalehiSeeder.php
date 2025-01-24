@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Actions\CategoryAction;
 use App\Constants\PaymentConstants;
 use App\Models\Item;
+use App\Models\Items\Chalet;
 use App\Models\Locales;
 use App\Models\Reservation;
 use App\Models\User;
@@ -63,6 +64,10 @@ class ShalehiSeeder extends Seeder
             $item = Item::find($locale->localizable_id);
         } else {
             $item = Item::create(['user_id' => 1, 'category_id' => $category->id]);
+            $chalet = Chalet::create(['item_id' => $item->id , 'insurance' => $data['chalet']['insurance']]);
+            $item->itemable()->associate($chalet);
+            $item->save();
+
             Locales::create([
                 "locale" => "en",
                 "name" => $data['chalet'],

@@ -141,10 +141,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             ];
         $i = 1;
         foreach ($order->orderlines as &$orderLine) {
-            if ($orderLine->item->insurance) {
+            if ($orderLine->item->itemable?->insurance) {
                 $invoices[$i] = $invoiceData;
                 $invoices[$i]['type'] = PaymentConstants::INVOICE_DEBIT;
-                $invoices[$i]['amount'] = $orderLine->item->insurance;
+                $invoices[$i]['amount'] = $orderLine->item->itemable->insurance;
                 $invoices[$i]['orderline_id'] = $orderLine->id;
                 $i++;
             }

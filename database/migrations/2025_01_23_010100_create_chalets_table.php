@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('items', function (Blueprint $table) {
             $table->unsignedBigInteger('itemable_id')->nullable();
             $table->string('itemable_type')->nullable();
-            $table->dropColumn('insurance');
         });
 
         Schema::create('chalets', function (Blueprint $table) {
