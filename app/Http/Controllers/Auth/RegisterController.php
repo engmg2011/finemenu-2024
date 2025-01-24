@@ -255,7 +255,8 @@ class RegisterController extends Controller
         if (!$this->IpCanRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
-        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
+        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ?
+            array_only($data, ['phone']) : array_only($data, ['email']);
         $isValidCode = InitRegister::where($searchArray)
             ->where('created_at', '>', Carbon::now()->subHour())
             ->where('code', $data['code'])->first();
@@ -266,6 +267,9 @@ class RegisterController extends Controller
         $data['password'] = bcrypt($request->password);
         $data['type'] = "";
         $data['email_verified_at'] = Carbon::now();
+
+        if(!isset($data['email']) || empty($data['email']))
+            $data['email'] = $data['phone'].'@menu-ai.net';
 
         // Create user && assign general role
         $user = $this->userAction->create($data);

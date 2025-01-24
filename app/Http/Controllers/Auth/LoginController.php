@@ -67,12 +67,12 @@ class LoginController extends Controller
         $data = $request->all();
         $validator = $this->validator($data);
         if ($validator->fails())
-            return response()->json(["message" => "Error occurred", 'errors' => $validator->errors()], 403);
+            return response()->json(["message" => "Error occurred", 'errors' => $validator->errors()], 400);
 
         $user = User::where(array_only($data, ['email', 'phone']))
             ->with(UserRepository::LoginUserRelations)->first();
         if (!($user && Hash::check($data['password'], $user->password)))
-            return response()->json(["message" => "Invalid user credentials"], 403);
+            return response()->json(["message" => "Invalid user credentials"], 400);
         $token = $user->createToken('Login Token');
         $device = $this->userAction->userDevice($request, $user, $token);
         $user['token'] = $token->plainTextToken;
