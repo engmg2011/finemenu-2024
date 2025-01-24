@@ -88,4 +88,9 @@ class Category extends Model
     {
         return $this->children()->with('childrenNested');
     }
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class);
+    }
 }

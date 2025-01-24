@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Repository\BookmarkRepositoryInterface;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
+use App\Repository\ChaletRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
 use App\Repository\ContentRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
@@ -14,6 +15,7 @@ use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Eloquent\BookmarkRepository;
 use App\Repository\Eloquent\BranchRepository;
 use App\Repository\Eloquent\CategoryRepository;
+use App\Repository\Eloquent\ChaletRepository;
 use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
 use App\Repository\Eloquent\DietPlanRepository;
@@ -86,6 +88,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(BookmarkRepositoryInterface::class, BookmarkRepository::class);
         $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
         $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepository::class);
+        $this->app->bind(ChaletRepositoryInterface::class, ChaletRepository::class);
     }
 
     /**

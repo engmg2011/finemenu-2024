@@ -48,4 +48,9 @@ class Menu extends Model
     public function categories(): HasMany {
         return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
     }
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
 }

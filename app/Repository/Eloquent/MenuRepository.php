@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Constants\BusinessTypes;
 use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\MenuRepositoryInterface;
@@ -81,7 +82,8 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
             'categories.items.addons.locales',
             'categories.items.discounts.locales',
             'categories.items.media',
-            'categories.items.prices.locales'
+            'categories.items.prices.locales',
+            'categories.items.itemable'
             ])->find($id);
     }
 

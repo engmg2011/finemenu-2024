@@ -73,4 +73,9 @@ class Item extends Model
         return $this->belongsToMany(DietPlan::class);
     }
 
+    public function itemable()
+    {
+        return $this->morphTo();
+    }
+
 }

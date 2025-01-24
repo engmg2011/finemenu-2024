@@ -11,7 +11,7 @@ class Invoice extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = ['data' => 'json'];
+    protected $casts = ['data' => 'json', 'amount'=>'float'];
 
     public function reservation()
     {
