@@ -44,10 +44,10 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
 
         //orderLine item data
         $item = isset($data['price_id'])
-            ? Item::with('locales' ,'media')
+            ? Item::with('locales' ,'media', 'itemable')
                 ->with(['prices' => fn($q) => $q->with('locales')->where('id', $data['price_id'])])
                 ->find($data['item_id'])
-            : Item::with('locales' ,'media')->find($data['item_id']);
+            : Item::with('locales' ,'media', 'itemable')->find($data['item_id']);
         $orderLine['data'] += ["item" => $item , "user" => auth()->user()];
 
         // orderLine addons data

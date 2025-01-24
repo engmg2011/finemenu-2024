@@ -71,10 +71,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->whereHas('reservable')
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
             ->where(function ($query) use ($itemId) {
-
                 if (isset($itemId)) {
                     $query->where('reservable_id', $itemId);
-                    \Log::debug("ii $itemId");
                 }
             })
             ->where(function ($query) use ($startDate, $endDate) {
@@ -191,6 +189,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $reservation = Reservation::with('invoices',
             'reservable.locales',
             'reservable.media',
+            'reservable.itemable',
             'reservedFor',
             'reservedBy'
         )->find($reservationId);
