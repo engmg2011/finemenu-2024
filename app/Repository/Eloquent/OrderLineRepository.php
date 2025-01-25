@@ -69,8 +69,9 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         }
 
         if(isset($item->prices) && count($item->prices)) {
-            $orderLine['subtotal_price'] = $item->prices[0]->price + $addonsPrice;
-            $orderLine['total_price'] = $item->prices[0]->price + $addonsPrice - $discountAmount;
+            $insurance = isset($item->itemable) ? $item->itemable->insurance : 0;
+            $orderLine['subtotal_price'] = $item->prices[0]->price + $addonsPrice + $insurance;
+            $orderLine['total_price'] = $item->prices[0]->price + $addonsPrice + $insurance - $discountAmount;
             $orderLine['data'] += [
                 'subtotal_price' => $orderLine['subtotal_price'],
                 'total_price' => $orderLine['total_price'],

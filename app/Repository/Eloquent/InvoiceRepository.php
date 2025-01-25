@@ -77,18 +77,17 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $invoice = $this->model->findOrFail($id);
-
         if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $invoice->branch_id,
             PermissionsConstants::Business . '.' . $invoice->business_id]))
             return throw new \Exception('You Don\'t have permission', 403);
-
-        if (isset($data['status']) && $data['status'] != $invoice->status)
+        if (isset($data['status']) && $data['status'] != $invoice->status) {
             $data['status_changed_at'] = now();
-
-        $model = tap($this->model->find($id))
-            ->update(array_only($data, ['status', 'status_changed_at']));
-
-        return $this->get($model->id);
+            if($data['status'] === PaymentConstants::INVOICE_PAID){
+                Reservation::find($invoice->reservation_id)->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
+            }
+        }
+        $this->model->find($id)->update(array_only($data, ['status', 'status_changed_at']));
+        return Invoice::find($id);
     }
 
 
@@ -128,7 +127,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $invoiceData = [
             'payment_type' => $orderInvoice['payment_type'],
             'note' => $orderInvoice['payment_type'],
-            'order_id' => $order->id
+            'order_id' => $order->id,
+            'status' => PaymentConstants::INVOICE_PENDING,
         ];
         $reservation = $order->orderLines[0]->reservation;
         if ($reservation) {
@@ -152,8 +152,11 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         foreach ($invoices as &$invoice) {
             if (isset($invoice['id']) && $invoice['id'])
                 $this->update($invoice['id'], $invoice);
-            else
-                $this->create($invoice);
+            else {
+                $inv = $this->create($invoice);
+                $invoice['reference_id'] = $inv->reference_id;
+                $invoice['id'] = $inv->id;
+            }
         }
         if($reservation)
             $this->updateReservationInvoicesData($reservation->id , $invoices);
