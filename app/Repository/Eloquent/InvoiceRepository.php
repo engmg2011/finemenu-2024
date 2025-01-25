@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
+use App\Events\UpdateReservation;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Reservation;
@@ -20,7 +21,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     public const Relations = ['reservation', 'order.prices', 'order.discounts', 'forUser.contacts',
         'byUser.contacts', 'branch', 'business'];
 
-    public function __construct(Invoice $model,)
+    public function __construct(Invoice $model)
     {
         parent::__construct($model);
     }
@@ -86,6 +87,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                 Reservation::find($invoice->reservation_id)->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
             }
         }
+        app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation_id);
+        event(new UpdateReservation($invoice->reservation_id));
         $this->model->find($id)->update(array_only($data, ['status', 'status_changed_at']));
         return Invoice::find($id);
     }
