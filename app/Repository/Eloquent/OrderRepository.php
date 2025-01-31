@@ -195,7 +195,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $branchId = request()->route('branchId');
         return Order::with(OrderRepository::Relations)
-            ->orderBxyDesc('id')
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->where(fn($q) => $branchId ?
                 $q->where(['orderable_id' => $branchId, 'orderable_type' => Branch::class]) : $q)

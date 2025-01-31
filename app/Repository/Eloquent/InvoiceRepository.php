@@ -13,6 +13,7 @@ use App\Repository\InvoiceRepositoryInterface;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 
 class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInterface
@@ -49,7 +50,6 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $branchId = request()->route('branchId');
         $businessId = request()->route('branchId');
         return Invoice::with(InvoiceRepository::Relations)
-            ->orderByDesc('id')
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->orderByDesc('id')
@@ -173,22 +173,28 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $paymentService->checkout($invoice->reference_id);
     }
 
-    public function filterList()
+    public function filter(Request $request)
     {
-        /**
-         *
-         * from - to
-         * type
-         * status
-         * reservable_id
-         * by_user_id
-         * for_user_id *
-         *
-         *
-         */
-
-//        $query = Invoice::where()
-
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('branchId');
+        $query = $this->model->query()->with(InvoiceRepository::Relations);
+        if ($request->has('status'))
+            $query->where('status', $request->status);
+        if ($request->has('type'))
+            $query->where('type', $request->type);
+        if ($request->has('payment_type'))
+            $query->where('payment_type', $request->payment_type);
+        if ($request->has('reservable_id'))
+            $query->where('reservable_id', $request->reservable_id);
+        if ($request->has('by_user_id'))
+            $query->where('by_user_id', $request->by_user_id);
+        if ($request->has('for_user_id'))
+            $query->where('for_user_id', $request->for_user_id);
+        if ($request->has('from') && $request->has('to'))
+            $query->whereBetween('created_at',  [$request->from , $request->to ]);
+        return $query->where(['branch_id' => $branchId, 'business_id' => $businessId])
+            ->orderByDesc('id')
+            ->paginate(request('per-page', 15));
     }
 
 }

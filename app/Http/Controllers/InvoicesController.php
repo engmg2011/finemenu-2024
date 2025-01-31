@@ -20,6 +20,12 @@ class InvoicesController extends Controller
         return DataResource::collection($ordersList);
     }
 
+    public function filter(Request $request)
+    {
+        $ordersList = $this->repository->filter($request);
+        return DataResource::collection($ordersList);
+    }
+
     public function userInvoices()
     {
         $conditions = [['invoice_for_id' => auth('sanctum')->id()]];

@@ -78,6 +78,7 @@ Route::group(['middleware' => [
 
                     Route::group(['prefix' => 'invoices'], function () {
                         Route::get('/', [InvoicesController::class, 'index']);
+                        Route::get('/filter', [InvoicesController::class, 'filter']);
                         //                Route::get('/', [InvoicesController::class, 'index']);
                         Route::get('/{id}', [InvoicesController::class, 'show']);
                         Route::post('/', [InvoicesController::class, 'create']);

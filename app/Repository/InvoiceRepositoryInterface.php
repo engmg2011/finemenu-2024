@@ -5,6 +5,7 @@ namespace App\Repository;
 
 use App\Models\Order;
 use App\Models\Reservation;
+use Illuminate\Http\Request;
 
 interface InvoiceRepositoryInterface
 {
@@ -18,6 +19,8 @@ interface InvoiceRepositoryInterface
     public function update($id, array $data);
 
     public function list($conditions = null);
+
+    public function filter(Request $request);
 
     public function setForReservation(Reservation $reservation, array &$invoices);
 
