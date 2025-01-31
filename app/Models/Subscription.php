@@ -22,10 +22,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $to
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Package|null $package
- * @property-read User|null $user
+ * @property-read \App\Models\Package|null $package
+ * @property-read \App\Models\User|null $user
  * @method static Builder|Subscription newModelQuery()
  * @method static Builder|Subscription newQuery()
  * @method static Builder|Subscription query()

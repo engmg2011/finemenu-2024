@@ -20,11 +20,11 @@ use Illuminate\Support\Carbon;
  * @property string $serviceable_type
  * @property int $serviceable_id
  * @property int $user_id
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read User $user
+ * @property-read \App\Models\User $user
  * @method static Builder|Service newModelQuery()
  * @method static Builder|Service newQuery()
  * @method static Builder|Service query()

@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read User $user
+ * @property-read \App\Models\User $user
  * @method static Builder|Device newModelQuery()
  * @method static Builder|Device newQuery()
  * @method static Builder|Device query()
@@ -37,8 +37,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Device whereId($value)
  * @method static Builder|Device whereInfo($value)
  * @method static Builder|Device whereLastActive($value)
+ * @method static Builder|Device whereOnesignalToken($value)
  * @method static Builder|Device whereOs($value)
- * @method static Builder|Device wherePlayerId($value)
  * @method static Builder|Device whereTokenId($value)
  * @method static Builder|Device whereUpdatedAt($value)
  * @method static Builder|Device whereUserId($value)

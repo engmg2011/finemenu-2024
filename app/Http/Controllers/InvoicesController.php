@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
 use App\Repository\InvoiceRepositoryInterface;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class InvoicesController extends Controller
 {

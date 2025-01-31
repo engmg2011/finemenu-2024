@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Model;
 class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInterface
 {
 
-    public const Relations = ['reservation', 'order.prices', 'order.discounts', 'forUser.contacts',
-        'byUser.contacts', 'branch', 'business'];
+    public const Relations = ['reservation', 'order.discounts', 'forUser.contacts',
+        'byUser.contacts'];
 
     public function __construct(Invoice $model)
     {
@@ -83,7 +83,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             return throw new \Exception('You Don\'t have permission', 403);
         if (isset($data['status']) && $data['status'] != $invoice->status) {
             $data['status_changed_at'] = now();
-            if($data['status'] === PaymentConstants::INVOICE_PAID){
+            if ($data['status'] === PaymentConstants::INVOICE_PAID) {
                 Reservation::find($invoice->reservation_id)->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
             }
         }
@@ -111,7 +111,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
     }
 
-    public function updateReservationInvoicesData($reservationId , $invoices)
+    public function updateReservationInvoicesData($reservationId, $invoices)
     {
         $res = Reservation::find($reservationId);
         $cachedReservationData = $res->data;
@@ -161,8 +161,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                 $invoice['id'] = $inv->id;
             }
         }
-        if($reservation)
-            $this->updateReservationInvoicesData($reservation->id , $invoices);
+        if ($reservation)
+            $this->updateReservationInvoicesData($reservation->id, $invoices);
     }
 
     public function pay($referenceNumber)
@@ -172,4 +172,23 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $paymentService = new PaymentService(new Hesabe());
         $paymentService->checkout($invoice->reference_id);
     }
+
+    public function filterList()
+    {
+        /**
+         *
+         * from - to
+         * type
+         * status
+         * reservable_id
+         * by_user_id
+         * for_user_id *
+         *
+         *
+         */
+
+//        $query = Invoice::where()
+
+    }
+
 }

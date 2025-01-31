@@ -22,8 +22,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Content> $children
  * @property-read int|null $children_count
- * @property-read Model|Eloquent $contentable
- * @property-read Collection<int, Locales> $locales
+ * @property-read Model|\Eloquent $contentable
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
  * @method static Builder|Content newModelQuery()
  * @method static Builder|Content newQuery()

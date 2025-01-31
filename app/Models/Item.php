@@ -25,29 +25,42 @@ use Illuminate\Support\Carbon;
  * @property int|null $category_id
  * @property int $user_id
  * @property int|null $sort
- * @property-read Collection<int, Addon> $addons
+ * @property bool $hide
+ * @property bool $disable_ordering
+ * @property int|null $itemable_id
+ * @property string|null $itemable_type
+ * @property-read Collection<int, \App\Models\Addon> $addons
  * @property-read int|null $addons_count
- * @property-read Category|null $category
- * @property-read Collection<int, Discount> $discounts
+ * @property-read \App\Models\Category|null $category
+ * @property-read Collection<int, \App\Models\Discount> $discounts
  * @property-read int|null $discounts_count
- * @property-read Collection<int, Locales> $locales
+ * @property-read Model|\Eloquent $itemable
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, Price> $prices
+ * @property-read Collection<int, \App\Models\DietPlan> $plans
+ * @property-read int|null $plans_count
+ * @property-read Collection<int, \App\Models\Price> $prices
  * @property-read int|null $prices_count
- * @property-read User $user
+ * @property-read Collection<int, \App\Models\Reservation> $reservations
+ * @property-read int|null $reservations_count
+ * @property-read Collection<int, \App\Models\Setting> $settings
+ * @property-read int|null $settings_count
+ * @property-read \App\Models\User $user
  * @method static Builder|Item newModelQuery()
  * @method static Builder|Item newQuery()
  * @method static Builder|Item query()
  * @method static Builder|Item whereCategoryId($value)
  * @method static Builder|Item whereCreatedAt($value)
+ * @method static Builder|Item whereDisableOrdering($value)
+ * @method static Builder|Item whereHide($value)
  * @method static Builder|Item whereId($value)
+ * @method static Builder|Item whereItemableId($value)
+ * @method static Builder|Item whereItemableType($value)
  * @method static Builder|Item whereSort($value)
  * @method static Builder|Item whereUpdatedAt($value)
  * @method static Builder|Item whereUserId($value)
- * @property-read Collection<int, DietPlan> $plans
- * @property-read int|null $plans_count
  * @mixin Eloquent
  */
 class Item extends Model

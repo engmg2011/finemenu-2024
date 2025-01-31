@@ -27,12 +27,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Addon> $children
  * @property-read int|null $children_count
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, Price> $prices
- * @property-read int|null $prices_count
  * @method static Builder|Addon newModelQuery()
  * @method static Builder|Addon newQuery()
  * @method static Builder|Addon query()

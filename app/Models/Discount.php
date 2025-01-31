@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
  * @method static Builder|Discount newModelQuery()
  * @method static Builder|Discount newQuery()

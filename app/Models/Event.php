@@ -24,13 +24,13 @@ use Illuminate\Support\Carbon;
  * @property string $eventable_type
  * @property int $eventable_id
  * @property int $user_id
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, Setting> $settings
+ * @property-read Collection<int, \App\Models\Setting> $settings
  * @property-read int|null $settings_count
- * @property-read User $user
+ * @property-read \App\Models\User $user
  * @method static Builder|Event newModelQuery()
  * @method static Builder|Event newQuery()
  * @method static Builder|Event query()

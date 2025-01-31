@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string $locale
  * @property string $localizable_type
  * @property int $localizable_id
- * @property-read Model|Eloquent $localizable
+ * @property-read Model|\Eloquent $localizable
  * @method static Builder|Locales newModelQuery()
  * @method static Builder|Locales newQuery()
  * @method static Builder|Locales query()

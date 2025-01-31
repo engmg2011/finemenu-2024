@@ -19,36 +19,35 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int $business_id
  * @property int|null $parent_id
  * @property int $user_id
  * @property int|null $sort
+ * @property int|null $menu_id
+ * @property-read \App\Models\Business|null $business
  * @property-read Collection<int, Category> $children
  * @property-read int|null $children_count
- * @property-read Collection<int, Discount> $discounts
+ * @property-read Collection<int, \App\Models\Discount> $discounts
  * @property-read int|null $discounts_count
- * @property-read Collection<int, Item> $items
+ * @property-read Collection<int, \App\Models\Item> $items
  * @property-read int|null $items_count
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read Business $business
- * @property-read User $user
+ * @property-read \App\Models\Menu|null $menu
+ * @property-read Collection<int, \App\Models\Setting> $settings
+ * @property-read int|null $settings_count
+ * @property-read \App\Models\User $user
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
  * @method static Builder|Category query()
  * @method static Builder|Category whereCreatedAt($value)
  * @method static Builder|Category whereId($value)
+ * @method static Builder|Category whereMenuId($value)
  * @method static Builder|Category whereParentId($value)
- * @method static Builder|Category whereBusinessId($value)
  * @method static Builder|Category whereSort($value)
  * @method static Builder|Category whereUpdatedAt($value)
  * @method static Builder|Category whereUserId($value)
- * @property int|null $menu_id
- * @property-read Collection<int, \App\Models\Setting> $settings
- * @property-read int|null $settings_count
- * @method static Builder|Category whereMenuId($value)
  * @mixin Eloquent
  */
 class Category extends Model

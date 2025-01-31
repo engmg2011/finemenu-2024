@@ -26,20 +26,29 @@ use Illuminate\Support\Carbon;
  * @property bool $paid
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, Discount> $discounts
+ * @property int|null $device_id
+ * @property array|null $delivery_address
+ * @property float $total_price
+ * @property float $subtotal_price
+ * @property-read \App\Models\Device|null $device
+ * @property-read Collection<int, \App\Models\Discount> $discounts
  * @property-read int|null $discounts_count
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Invoice> $invoices
+ * @property-read int|null $invoices_count
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, OrderLine> $orderLines
+ * @property-read Collection<int, \App\Models\OrderLine> $orderLines
  * @property-read int|null $order_lines_count
- * @property-read Model|Eloquent $orderable
- * @property-read Collection<int, Price> $prices
+ * @property-read Model|\Eloquent $orderable
+ * @property-read Collection<int, \App\Models\Price> $prices
  * @property-read int|null $prices_count
- * @property-read User $user
+ * @property-read \App\Models\User $user
  * @method static Builder|Order newModelQuery()
  * @method static Builder|Order newQuery()
  * @method static Builder|Order query()
  * @method static Builder|Order whereCreatedAt($value)
+ * @method static Builder|Order whereDeliveryAddress($value)
+ * @method static Builder|Order whereDeviceId($value)
  * @method static Builder|Order whereId($value)
  * @method static Builder|Order whereNote($value)
  * @method static Builder|Order whereOrderableId($value)
@@ -47,6 +56,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Order wherePaid($value)
  * @method static Builder|Order whereScheduledAt($value)
  * @method static Builder|Order whereStatus($value)
+ * @method static Builder|Order whereSubtotalPrice($value)
+ * @method static Builder|Order whereTotalPrice($value)
  * @method static Builder|Order whereUpdatedAt($value)
  * @method static Builder|Order whereUserId($value)
  * @mixin Eloquent

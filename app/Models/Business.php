@@ -28,24 +28,29 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property string|null $passcode
  * @property string|null $slug
+ * @property string|null $type
  * @property int|null $creator_id
- * @property-read Collection<int, Category> $categories
+ * @property-read Collection<int, \App\Models\Branch> $branches
+ * @property-read int|null $branches_count
+ * @property-read Collection<int, \App\Models\Category> $categories
  * @property-read int|null $categories_count
- * @property-read Collection<int, Contact> $contacts
+ * @property-read Collection<int, \App\Models\Contact> $contacts
  * @property-read int|null $contacts_count
- * @property-read Collection<int, Content> $contents
+ * @property-read Collection<int, \App\Models\Content> $contents
  * @property-read int|null $contents_count
- * @property-read Collection<int, Discount> $discounts
+ * @property-read Collection<int, \App\Models\Discount> $discounts
  * @property-read int|null $discounts_count
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read Collection<int, Order> $orders
+ * @property-read Collection<int, \App\Models\Menu> $menus
+ * @property-read int|null $menus_count
+ * @property-read Collection<int, \App\Models\Order> $orders
  * @property-read int|null $orders_count
- * @property-read Collection<int, Setting> $settings
+ * @property-read Collection<int, \App\Models\Setting> $settings
  * @property-read int|null $settings_count
- * @property-read User $user
+ * @property-read \App\Models\User $user
  * @method static Builder|Business newModelQuery()
  * @method static Builder|Business newQuery()
  * @method static Builder|Business query()
@@ -55,14 +60,9 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Business whereName($value)
  * @method static Builder|Business wherePasscode($value)
  * @method static Builder|Business whereSlug($value)
+ * @method static Builder|Business whereType($value)
  * @method static Builder|Business whereUpdatedAt($value)
  * @method static Builder|Business whereUserId($value)
- * @property string|null $type
- * @method static Builder|Business whereType($value)
- * @property-read Collection<int, \App\Models\Branch> $branches
- * @property-read int|null $branches_count
- * @property-read Collection<int, \App\Models\Menu> $menus
- * @property-read int|null $menus_count
  * @mixin Eloquent
  */
 class Business extends Model

@@ -23,10 +23,10 @@ use Illuminate\Support\Carbon;
  * @property int $mediable_id
  * @property int $user_id
  * @property string|null $slug
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Model|Eloquent $mediable
- * @property-read User $user
+ * @property-read Model|\Eloquent $mediable
+ * @property-read \App\Models\User $user
  * @method static Builder|Media newModelQuery()
  * @method static Builder|Media newQuery()
  * @method static Builder|Media query()

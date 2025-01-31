@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * @property string $value
  * @property string $contactable_type
  * @property int $contactable_id
- * @property-read Model|Eloquent $contactable
+ * @property-read Model|\Eloquent $contactable
  * @method static Builder|Contact newModelQuery()
  * @method static Builder|Contact newQuery()
  * @method static Builder|Contact query()

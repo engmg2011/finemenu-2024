@@ -32,48 +32,53 @@ use Spatie\Permission\Traits\HasRoles;
  *
  * @property int $id
  * @property string $name
- * @property string|null $email
- * @property Carbon|null $email_verified_at
+ * @property string $email
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property string|null $two_factor_confirmed_at
  * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * @property string|null $phone
- * @property-read Collection<int, Category> $categories
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $provider
+ * @property string|null $provider_id
+ * @property int|null $business_id
+ * @property-read Collection<int, \App\Models\Business> $business
+ * @property-read int|null $business_count
+ * @property-read Collection<int, \App\Models\Category> $categories
  * @property-read int|null $categories_count
- * @property-read Collection<int, Client> $clients
- * @property-read int|null $clients_count
- * @property-read Collection<int, Contact> $contacts
+ * @property-read Collection<int, \App\Models\Contact> $contacts
  * @property-read int|null $contacts_count
- * @property-read Collection<int, Device> $devices
+ * @property-read Collection<int, \App\Models\Device> $devices
  * @property-read int|null $devices_count
- * @property-read int|null $hotels_count
- * @property-read Collection<int, Item> $items
+ * @property-read Collection<int, \App\Models\Item> $items
  * @property-read int|null $items_count
- * @property-read Collection<int, Media> $media
+ * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read Collection<int, Permission> $permissions
  * @property-read int|null $permissions_count
- * @property-read Collection<int, Business> $business
- * @property-read int|null $business_count
+ * @property-read string $profile_photo_url
  * @property-read Collection<int, Role> $roles
  * @property-read int|null $roles_count
- * @property-read Collection<int, Service> $services
+ * @property-read Collection<int, \App\Models\Service> $services
  * @property-read int|null $services_count
- * @property-read Collection<int, Setting> $settings
+ * @property-read Collection<int, \App\Models\Setting> $settings
  * @property-read int|null $settings_count
- * @property-read Collection<int, Subscription> $subscriptions
+ * @property-read Collection<int, \App\Models\Subscription> $subscriptions
  * @property-read int|null $subscriptions_count
- * @property-read Collection<int, Token> $tokens
+ * @property-read Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
- * @method static UserFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
  * @method static Builder|User permission($permissions, $without = false)
  * @method static Builder|User query()
  * @method static Builder|User role($roles, $guard = null, $without = false)
+ * @method static Builder|User whereBusinessId($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
  * @method static Builder|User whereEmailVerifiedAt($value)
@@ -81,7 +86,12 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static Builder|User whereName($value)
  * @method static Builder|User wherePassword($value)
  * @method static Builder|User wherePhone($value)
+ * @method static Builder|User whereProvider($value)
+ * @method static Builder|User whereProviderId($value)
  * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereTwoFactorConfirmedAt($value)
+ * @method static Builder|User whereTwoFactorRecoveryCodes($value)
+ * @method static Builder|User whereTwoFactorSecret($value)
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User withoutPermission($permissions)
  * @method static Builder|User withoutRole($roles, $guard = null)

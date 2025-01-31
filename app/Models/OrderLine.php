@@ -25,28 +25,35 @@ use Illuminate\Support\Carbon;
  * @property int|null $count
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, Addon> $addons
+ * @property float $total_price
+ * @property float $subtotal_price
+ * @property array|null $data
+ * @property-read Collection<int, \App\Models\Addon> $addons
  * @property-read int|null $addons_count
- * @property-read Collection<int, Discount> $discounts
+ * @property-read Collection<int, \App\Models\Discount> $discounts
  * @property-read int|null $discounts_count
- * @property-read Item|null $item
- * @property-read Collection<int, Price> $prices
+ * @property-read \App\Models\Item|null $item
+ * @property-read Collection<int, \App\Models\Locales> $locales
+ * @property-read int|null $locales_count
+ * @property-read Collection<int, \App\Models\Price> $prices
  * @property-read int|null $prices_count
- * @property-read User|null $user
+ * @property-read \App\Models\Reservation|null $reservation
+ * @property-read \App\Models\User|null $user
  * @method static Builder|OrderLine newModelQuery()
  * @method static Builder|OrderLine newQuery()
  * @method static Builder|OrderLine query()
  * @method static Builder|OrderLine whereContentId($value)
  * @method static Builder|OrderLine whereCount($value)
  * @method static Builder|OrderLine whereCreatedAt($value)
+ * @method static Builder|OrderLine whereData($value)
  * @method static Builder|OrderLine whereId($value)
  * @method static Builder|OrderLine whereItemId($value)
  * @method static Builder|OrderLine whereNote($value)
  * @method static Builder|OrderLine whereOrderId($value)
+ * @method static Builder|OrderLine whereSubtotalPrice($value)
+ * @method static Builder|OrderLine whereTotalPrice($value)
  * @method static Builder|OrderLine whereUpdatedAt($value)
  * @method static Builder|OrderLine whereUserId($value)
- * @property-read Collection<int, \App\Models\Locales> $locales
- * @property-read int|null $locales_count
  * @mixin Eloquent
  */
 class OrderLine extends Model

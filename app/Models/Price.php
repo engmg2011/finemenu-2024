@@ -21,9 +21,10 @@ use Illuminate\Support\Carbon;
  * @property string $priceable_type
  * @property int $priceable_id
  * @property int $user_id
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read User $user
+ * @property-read Model|\Eloquent $priceable
+ * @property-read \App\Models\User $user
  * @method static Builder|Price newModelQuery()
  * @method static Builder|Price newQuery()
  * @method static Builder|Price query()

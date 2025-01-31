@@ -21,11 +21,11 @@ use Illuminate\Support\Carbon;
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, Locales> $locales
+ * @property-read Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
- * @property-read Collection<int, Order> $orders
+ * @property-read Collection<int, \App\Models\Order> $orders
  * @property-read int|null $orders_count
- * @property-read Collection<int, Price> $prices
+ * @property-read Collection<int, \App\Models\Price> $prices
  * @property-read int|null $prices_count
  * @method static Builder|Package newModelQuery()
  * @method static Builder|Package newQuery()

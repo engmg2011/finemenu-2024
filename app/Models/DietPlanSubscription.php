@@ -12,43 +12,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Models\Subscription
+ * App\Models\DietPlanSubscription
  *
  * @property int $id
- * @property int|null $package_id
+ * @property int|null $diet_plan_id
  * @property int|null $creator_id
  * @property int|null $user_id
- * @property string $status
- * @property string|null $from
- * @property string|null $to
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection<int, Locales> $locales
- * @property-read int|null $locales_count
- * @property-read Package|null $package
- * @property-read User|null $user
- * @method static Builder|Subscription newModelQuery()
- * @method static Builder|Subscription newQuery()
- * @method static Builder|Subscription query()
- * @method static Builder|Subscription whereCreatedAt($value)
- * @method static Builder|Subscription whereCreatorId($value)
- * @method static Builder|Subscription whereFrom($value)
- * @method static Builder|Subscription whereId($value)
- * @method static Builder|Subscription wherePackageId($value)
- * @method static Builder|Subscription whereStatus($value)
- * @method static Builder|Subscription whereTo($value)
- * @method static Builder|Subscription whereUpdatedAt($value)
- * @method static Builder|Subscription whereUserId($value)
- * @property-read DietPlan|null $plan
- * @property int|null $diet_plan_id
  * @property int $business_id
+ * @property string $status
  * @property string $payment_status
  * @property array $selected_meals
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read \App\Models\DietPlan|null $dietPlan
+ * @property-read Collection<int, \App\Models\Locales> $locales
+ * @property-read int|null $locales_count
+ * @property-read \App\Models\User|null $user
+ * @method static Builder|DietPlanSubscription newModelQuery()
+ * @method static Builder|DietPlanSubscription newQuery()
+ * @method static Builder|DietPlanSubscription query()
  * @method static Builder|DietPlanSubscription whereBusinessId($value)
+ * @method static Builder|DietPlanSubscription whereCreatedAt($value)
+ * @method static Builder|DietPlanSubscription whereCreatorId($value)
  * @method static Builder|DietPlanSubscription whereDietPlanId($value)
+ * @method static Builder|DietPlanSubscription whereId($value)
  * @method static Builder|DietPlanSubscription wherePaymentStatus($value)
  * @method static Builder|DietPlanSubscription whereSelectedMeals($value)
+ * @method static Builder|DietPlanSubscription whereStatus($value)
+ * @method static Builder|DietPlanSubscription whereUpdatedAt($value)
+ * @method static Builder|DietPlanSubscription whereUserId($value)
  * @mixin Eloquent
  */
 class DietPlanSubscription extends Model
