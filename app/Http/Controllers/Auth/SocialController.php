@@ -13,7 +13,7 @@ class SocialController extends Controller
      */
     public function redirectToProvider($provider)
     {
-        $callBack = request()->get('CallBack', false);
+        $callBack = request()->get('CallbackURL', false);
         if($callBack)
             session(['callback' => $callBack]);
         return Socialite::driver($provider)->redirect();
