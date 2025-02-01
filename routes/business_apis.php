@@ -15,6 +15,16 @@ use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
+if (!function_exists('businessRoles')) {
+    function businessRoles(): string
+    {
+        return RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' .
+            RolesConstants::BRANCH_MANAGER . '|' . RolesConstants::KITCHEN . '|' .
+            RolesConstants::SUPERVISOR . '|' . RolesConstants::CASHIER . '|' .
+            RolesConstants::DRIVER;
+    }
+}
+
 // Admin and business users
 Route::group(['middleware' => [
     'auth:sanctum', 'role:' . businessRoles()
@@ -34,7 +44,7 @@ Route::group(['middleware' => [
             Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
         });
 
-        Route::group(['prefix' => '{businessId}' ], function () {
+        Route::group(['prefix' => '{businessId}'], function () {
 
             Route::group(['prefix' => 'menus'], function () {
                 Route::get('/', [MenusController::class, 'index']);
@@ -113,7 +123,7 @@ Route::group(['middleware' => [
 
             });
 
-            Route::group(['prefix' => 'items' ], function () {
+            Route::group(['prefix' => 'items'], function () {
                 Route::get('/', [ItemsController::class, 'index']);
                 Route::get('/{id}', [ItemsController::class, 'show']);
                 Route::post('/', [ItemsController::class, 'create']);
@@ -152,11 +162,3 @@ Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]],
 
 
 });
-
-function businessRoles(): string
-{
-    return RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' .
-        RolesConstants::BRANCH_MANAGER . '|' . RolesConstants::KITCHEN . '|' .
-        RolesConstants::SUPERVISOR . '|' . RolesConstants::CASHIER . '|' .
-        RolesConstants::DRIVER;
-}
