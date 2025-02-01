@@ -16,8 +16,8 @@ class PaymentController extends Controller
     public function hesabeCheckout($referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        $this->paymentService->checkout($referenceNumber);
-        exit;
+        $checkoutLink = $this->paymentService->checkout($referenceNumber);
+        return redirect($checkoutLink);
     }
 
     public function hesabeCompleted(Request $request ,$referenceNumber)
@@ -29,9 +29,9 @@ class PaymentController extends Controller
     public function success()
     {
         $data = ["msg" => "Completed Successfully", "color" =>"green"];
-        $callback = session('payment-callback');
+        $callback = session('paymentCallback');
         if(isset($callback) && $callback !== ''){
-            session()->forget('payment-callback');
+            session()->forget('paymentCallback');
             return redirect($callback . '?success=true' );
         }
         return view('payment.success', $data);

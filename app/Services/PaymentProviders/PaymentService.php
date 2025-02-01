@@ -11,9 +11,10 @@ class PaymentService
 
     public function checkout($referenceNumber)
     {
+        // TODO :: Check solution without editing Hesabe package
         $callBack = request()->get('CallbackURL', false);
         if($callBack)
-            session(['payment-callback' => $callBack]);
+            session(['paymentCallback' => $callBack]);
         return $this->provider->checkout($referenceNumber);
     }
 

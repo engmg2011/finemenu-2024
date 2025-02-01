@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\PaymentController;
 
-Route::group(['prefix' => 'payment', 'as' => 'payment.'], function () {
+Route::group(['middleware' => ['web'],
+    'prefix' => 'payment', 'as' => 'payment.'], function () {
     Route::get('success', [PaymentController::class, 'success'])->name('success');
     Route::get('failed', [PaymentController::class, 'failed'])->name('failed');
     Route::get('hesabe/checkout/{referenceId}', [PaymentController::class, 'hesabeCheckout'])->name('hesabe-checkout');
