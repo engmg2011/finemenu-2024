@@ -71,7 +71,6 @@ Route::group(['middleware' => [
 
                     Route::group(['prefix' => 'orders'], function () {
                         Route::get('/', [OrdersController::class, 'branchOrders']);
-                        //                Route::get('/', [OrdersController::class, 'index']);
                         Route::get('/{id}', [OrdersController::class, 'show']);
                         Route::post('/', [OrdersController::class, 'create']);
                         Route::post('/{id}', [OrdersController::class, 'update']);
@@ -80,7 +79,6 @@ Route::group(['middleware' => [
                     Route::group(['prefix' => 'reservations'], function () {
                         Route::get('/', [ReservationsController::class, 'index']);
                         Route::get('/filter', [ReservationsController::class, 'filter']);
-                        //                Route::get('/', [ReservationsController::class, 'index']);
                         Route::get('/{id}', [ReservationsController::class, 'show']);
                         Route::post('/', [ReservationsController::class, 'create']);
                         Route::post('/{id}', [ReservationsController::class, 'update']);
@@ -89,7 +87,6 @@ Route::group(['middleware' => [
                     Route::group(['prefix' => 'invoices'], function () {
                         Route::get('/', [InvoicesController::class, 'index']);
                         Route::get('/filter', [InvoicesController::class, 'filter']);
-                        //                Route::get('/', [InvoicesController::class, 'index']);
                         Route::get('/{id}', [InvoicesController::class, 'show']);
                         Route::post('/', [InvoicesController::class, 'create']);
                         Route::post('/{id}', [InvoicesController::class, 'update']);

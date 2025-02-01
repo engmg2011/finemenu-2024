@@ -176,7 +176,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     public function filter(Request $request)
     {
         $branchId = request()->route('branchId');
-        $businessId = request()->route('branchId');
+        $businessId = request()->route('businessId');
         $query = $this->model->query()->with(InvoiceRepository::Relations);
         if ($request->has('status'))
             $query->where('status', $request->status);
