@@ -11,6 +11,9 @@ class PaymentService
 
     public function checkout($referenceNumber)
     {
+        $callBack = request()->get('CallBack', false);
+        if($callBack)
+            session(['payment-callback' => $callBack]);
         return $this->provider->checkout($referenceNumber);
     }
 

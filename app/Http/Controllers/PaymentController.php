@@ -29,12 +29,22 @@ class PaymentController extends Controller
     public function success()
     {
         $data = ["msg" => "Completed Successfully", "color" =>"green"];
+        $callback = session('payment-callback');
+        if(isset($callback) && $callback !== ''){
+            session()->forget('payment-callback');
+            return redirect($callback . '?success=true' );
+        }
         return view('payment.success', $data);
     }
 
     public function failed()
     {
         $data = ["msg" => "Error: Invalid data received", "color" =>"red"];
+        $callback = session('payment-callback');
+        if(isset($callback) && $callback !== ''){
+            session()->forget('payment-callback');
+            return redirect($callback . '?success=false' );
+        }
         return view('payment.failed', $data);
     }
 

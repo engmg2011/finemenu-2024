@@ -13,6 +13,9 @@ class SocialController extends Controller
      */
     public function redirectToProvider($provider)
     {
+        $callBack = request()->get('CallBack', false);
+        if($callBack)
+            session(['callback' => $callBack]);
         return Socialite::driver($provider)->redirect();
     }
 
@@ -53,9 +56,13 @@ class SocialController extends Controller
             );
 
         }
-
         // Generate a token for API authentication
         $token = $user->createToken('Register API Token')->plainTextToken;
+        $callback = session('callback');
+        if(isset($callback) && $callback !== ''){
+            session()->forget('callback');
+            return redirect($callback . '?token=' . $token);
+        }
         return redirect('/auth/app-token?token=' . $token);
     }
 
