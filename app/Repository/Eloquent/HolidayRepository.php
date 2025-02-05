@@ -60,7 +60,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
 
     public function destroy($businessId, $id): ?bool
     {
-        $this->model->locales->map(fn($locale) => $locale->delete());
+        $this->model->where(['business_id' => $businessId])->find($id)->locales->map(fn($locale) => $locale->delete());
         return $this->delete($id);
     }
 
