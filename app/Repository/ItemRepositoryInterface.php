@@ -27,4 +27,8 @@ interface ItemRepositoryInterface
 
     public function destroy($id): ?bool;
 
+    public function listHolidays($businessId ,$itemId);
+
+    public function syncHolidays($businessId ,$itemId);
+
 }

@@ -140,6 +140,8 @@ Route::group(['middleware' => [
                 Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
                 Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
                 Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+                Route::get('/{id}/holidays', [ItemsController::class, 'listHolidays']);
+                Route::post('/{id}/holidays/sync', [ItemsController::class, 'syncHolidays']);
             });
 
         });

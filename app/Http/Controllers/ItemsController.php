@@ -75,4 +75,15 @@ class ItemsController extends Controller
     {
         return response()->json($this->repository->sort($request->all()));
     }
+
+    public function listHolidays($businessId ,$itemId)
+    {
+        return response()->json($this->repository->listHolidays($businessId, $itemId));
+
+    }
+    public function syncHolidays($businessId ,$itemId)
+    {
+        return response()->json($this->repository->syncHolidays($businessId, $itemId));
+
+    }
 }

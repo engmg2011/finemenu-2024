@@ -12,9 +12,17 @@ class Holiday extends Model
     use HasFactory, Localizable;
     protected $guarded = ['id'];
 
+    protected $hidden = ['pivot']; // Hide pivot data from response
+
+    protected $appends = ['price']; // Add a computed attribute
 
     public function items(): BelongsToMany
     {
         return $this->belongsToMany(Item::class)->withPivot('price');
+    }
+
+    public function getPriceAttribute()
+    {
+        return $this->pivot->price ?? null; // Get price from pivot table
     }
 }

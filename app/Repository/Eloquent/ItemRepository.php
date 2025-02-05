@@ -129,4 +129,24 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         return $this->delete($id);
     }
 
+    public function listHolidays($businessId ,$itemId){
+        return $this->model->with('holidays.locales')->find($itemId);
+    }
+
+    public function syncHolidays($businessId ,$itemId){
+        $request = request();
+        $request->validate([
+            'holidays' => 'required|array',
+            'holidays.*.holidayId' => 'required|exists:holidays,id',
+            'holidays.*.price' => 'required|numeric|min:0',
+        ]);
+
+        $holidaysData = collect($request->holidays)->mapWithKeys(function ($holiday) {
+            return [$holiday['holidayId'] => ['price' => $holiday['price']]];
+        })->toArray();
+
+        $item = $this->model->find($itemId);
+        $item->holidays()->sync($holidaysData);
+        return ['message' => 'Holidays synced successfully.'];
+    }
 }

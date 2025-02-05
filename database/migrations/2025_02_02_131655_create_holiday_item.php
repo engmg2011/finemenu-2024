@@ -16,6 +16,8 @@ return new class extends Migration
             $table->decimal('price', 8,3)->unsigned()->default(0);
             $table->unsignedBigInteger("item_id");
             $table->foreign("item_id")->references("id")->on('items')->onDelete("cascade");
+            $table->unsignedBigInteger("holiday_id");
+            $table->foreign("holiday_id")->references("id")->on('holidays')->onDelete("cascade");
             $table->unsignedBigInteger("user_id")->nullable();
             $table->foreign("user_id")->references("id")->on('users')->onDelete("SET NULL");
             $table->unsignedBigInteger("branch_id")->nullable();
