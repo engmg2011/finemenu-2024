@@ -22,6 +22,7 @@ use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\FloorRepository;
+use App\Repository\Eloquent\HolidayRepository;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
@@ -38,6 +39,7 @@ use App\Repository\Eloquent\TableRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\EloquentRepositoryInterface;
 use App\Repository\FloorRepositoryInterface;
+use App\Repository\HolidayRepositoryInterface;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
@@ -89,6 +91,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
         $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepository::class);
         $this->app->bind(ChaletRepositoryInterface::class, ChaletRepository::class);
+        $this->app->bind(HolidayRepositoryInterface::class, HolidayRepository::class);
     }
 
     /**

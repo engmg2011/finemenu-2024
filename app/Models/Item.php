@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -91,4 +92,8 @@ class Item extends Model
         return $this->morphTo();
     }
 
+    public function holidays(): BelongsToMany
+    {
+        return $this->belongsToMany(Holiday::class)->withPivot('price');
+    }
 }

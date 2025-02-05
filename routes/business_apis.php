@@ -4,6 +4,7 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
+use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\MenusController;
@@ -52,6 +53,14 @@ Route::group(['middleware' => [
                 Route::post('/', [MenusController::class, 'createModel']);
                 Route::post('/{id}/delete', [MenusController::class, 'destroy']);
                 Route::post('/{id}', [MenusController::class, 'update']);
+            });
+
+            Route::group(['prefix' => 'holidays'], function () {
+                Route::get('/', [HolidaysController::class, 'index']);
+                Route::get('/{id}', [HolidaysController::class, 'show']);
+                Route::post('/', [HolidaysController::class, 'createModel']);
+                Route::post('/{id}/delete', [HolidaysController::class, 'destroy']);
+                Route::post('/{id}', [HolidaysController::class, 'update']);
             });
 
             // Business branches
