@@ -12,7 +12,7 @@ class Holiday extends Model
     use HasFactory, Localizable;
     protected $guarded = ['id'];
 
-    protected $hidden = ['pivot']; // Hide pivot data from response
+    protected $hidden = ['pivot','created_at','updated_at']; // Hide pivot data from response
 
     protected $appends = ['price']; // Add a computed attribute
 
