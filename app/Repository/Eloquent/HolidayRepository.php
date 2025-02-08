@@ -38,8 +38,23 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
         }
     }
 
+    public function validatHoliday($data)
+    {
+        if(!isset($data['from']) || !isset($data['to']))
+            throw new \Exception('Invalid Date Format');
+
+        $datesConflict = Holiday::where('business_id', $data['business_id'])
+            ->whereBetween('from', [$data['from'], $data['to']])
+            ->orWhereBetween('to', [$data['from'], $data['to']])
+            ->first();
+        if($datesConflict)
+            throw new \Exception('Holiday already exists');
+    }
+
     public function createModel($businessId, array $data): Model
     {
+        $this->validatHoliday($data);
+
         $entity = $this->model->create($this->process($businessId, $data));
         $this->relations($entity, $data);
         return $this->model->with(HolidayRepository::$modelRelations)->find($entity->id);
