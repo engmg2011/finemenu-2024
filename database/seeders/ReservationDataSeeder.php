@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Constants\PaymentConstants;
 use App\Models\Reservation;
 use Illuminate\Database\Seeder;
 
@@ -15,19 +16,22 @@ class ReservationDataSeeder extends Seeder
         // ['prices','media','locales']
         Reservation::with('invoices',
             'reservable.locales',
-            'reservable.media' ,
+            'reservable.media',
             'reservedFor',
             'reservedBy'
         )->each(function ($reservation) {
 
             $price = 0;
             foreach ($reservation->invoices as $invoice) {
-                $price+=$invoice->amount;
+                if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
+                    $price += $invoice->amount;
+                if ($invoice->type === PaymentConstants::INVOICE_DEBIT)
+                    $price -= $invoice->amount;
             }
 
             $cachedData = [];
             $cachedData += [
-                "reservable" => $reservation->reservable ,
+                "reservable" => $reservation->reservable,
                 "reserved_for" => $reservation->reservedFor,
                 "reserved_by" => $reservation->reservedBy,
                 "invoices" => $reservation->invoices,

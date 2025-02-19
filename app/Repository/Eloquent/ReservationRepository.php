@@ -186,6 +186,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function setReservationCashedData($reservationId)
     {
+        /**
+         * note: prices & discounts on orders table
+         * as they are coming from mobiles not dashboard
+         */
         $reservation = Reservation::with('invoices',
             'reservable.locales',
             'reservable.media',

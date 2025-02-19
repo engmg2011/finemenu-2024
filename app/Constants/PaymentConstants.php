@@ -16,6 +16,11 @@ class PaymentConstants
     const INVOICE_CANCELED = "canceled";
     const INVOICE_REFUNDED = "refunded";
 
+    const RESERVATION_PAID = "paid";
+    const RESERVATION_NOT_PAID = 'not_paid';
+    const RESERVATION_PARTIALLY_PAID = "partially_paid";
+
+
     const TYPE_CASH = "cash";
     const TYPE_ONLINE = "online";
     const TYPE_CHECK = "check";

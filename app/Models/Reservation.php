@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Constants\PaymentConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -58,11 +59,14 @@ class Reservation extends Model
 
     protected $guarded = ['id'];
 
-    protected $hidden = ['reservable_id','reservable_type', 'reserved_by_id', 'reserved_for_id' ];
+    protected $hidden = ['reservable_id', 'reservable_type', 'reserved_by_id', 'reserved_for_id'];
 
     protected $casts = ['data' => 'json'];
 
-    public function reservable(){
+    protected $appends = ['payment_status'];
+
+    public function reservable()
+    {
         return $this->morphTo();
     }
 
@@ -76,11 +80,13 @@ class Reservation extends Model
         return $this->belongsTo(OrderLine::class);
     }
 
-    public function reservedBy(){
+    public function reservedBy()
+    {
         return $this->belongsTo(User::class, 'reserved_by_id');
     }
 
-    public function reservedFor(){
+    public function reservedFor()
+    {
         return $this->belongsTo(User::class, 'reserved_for_id');
     }
 
@@ -97,6 +103,32 @@ class Reservation extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function getPaymentStatusAttribute()
+    {
+        $reservationData = $this->data;
+        if (!$reservationData) return null;
+
+        $total = $reservationData['total_price'];
+        if(!$total) return null;
+
+        $paidAmount = 0;
+        $invoices = $reservationData['invoices'] ?? [];
+        foreach ($invoices as &$invoice) {
+            if (isset($invoice['type']) && isset($invoice['status'])){
+                if ($invoice['type'] === PaymentConstants::INVOICE_CREDIT
+                    && $invoice['status'] === PaymentConstants::INVOICE_PAID) {
+                    $paidAmount = $paidAmount + $invoice['amount'];
+                }
+            }
+        }
+
+        return match (true) {
+            $paidAmount >= $total => PaymentConstants::RESERVATION_PAID,
+            $paidAmount > 0 => PaymentConstants::RESERVATION_PARTIALLY_PAID,
+            default => PaymentConstants::RESERVATION_NOT_PAID,
+        };
     }
 
 }
