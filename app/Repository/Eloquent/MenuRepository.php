@@ -2,9 +2,6 @@
 
 namespace App\Repository\Eloquent;
 
-
-use App\Constants\BusinessTypes;
-use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;

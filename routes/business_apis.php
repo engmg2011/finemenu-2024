@@ -144,21 +144,32 @@ Route::group(['middleware' => [
                 Route::post('/{id}/holidays/sync', [ItemsController::class, 'syncHolidays']);
             });
 
+            Route::group(['prefix' => 'users',], function () {
+                Route::get('/', [UsersController::class, 'index']);
+                Route::post('/', [UsersController::class, 'create']);
+                Route::post('/search', [UsersController::class, 'search']);
+                Route::post('/{id}', [UsersController::class, 'update']);
+            });
+
         });
 
 
     });
 
 });
+//'auth:sanctum', 'role:' . businessRoles()
 
 // TODO :: put admin only roles (Business owner)
-Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
+Route::group(['prefix' => 'business', 'middleware' =>
+    [
+        'auth:sanctum',
+        'role:' . businessRoles(),
+        SetRequestModel::class
+    ]], function () {
 
     Route::group(['prefix' => '{businessId}/'], function () {
 
-        Route::group(['prefix' => 'users',], function () {
-            Route::post('/search', [UsersController::class, 'search']);
-        });
+        // putting here for settings {modelId}
         Route::group(['prefix' => 'branches/{modelId}'], function () {
             Route::get('settings', [SettingsController::class, 'listSettings']);
             Route::post('settings/set', [SettingsController::class, 'setSetting']);

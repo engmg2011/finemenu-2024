@@ -40,7 +40,8 @@ class ReservationsController extends Controller
             'to' => 'required|date|after_or_equal:from',
         ]);
         $data = $request->all();
-        return \response()->json($this->repository->currentReservation($data, $businessId, $branchId));
+        $currentReservation = $this->repository->currentReservation($data, $businessId, $branchId);
+        return \response()->json((bool)$currentReservation);
     }
 
     public function userReservations()

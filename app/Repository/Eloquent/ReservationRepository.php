@@ -117,7 +117,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        if (!$this->currentReservation($data, $businessId, $branchId))
+        if ($this->currentReservation($data, $businessId ,$branchId))
             throw new \Exception("Not available now, please choose different dates or try again later");
 
         $model = $this->model->create($this->process($data));

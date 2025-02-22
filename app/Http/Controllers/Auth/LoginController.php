@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Actions\UserAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Repository\Eloquent\UserRepository;
+use App\Repository\UserRepositoryInterface;
 use Hash;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct( private UserAction $userAction)
+    public function __construct( private UserRepositoryInterface $userRepository)
     {
         $this->middleware('guest')->except('logout');
     }
@@ -74,7 +74,7 @@ class LoginController extends Controller
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 400);
         $token = $user->createToken('Login Token');
-        $device = $this->userAction->userDevice($request, $user, $token);
+        $device = $this->userRepository->userDevice($request, $user, $token);
         $user['token'] = $token->plainTextToken;
         $user['device'] = $device;
         return response()->json($user);

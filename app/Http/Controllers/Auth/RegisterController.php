@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Actions\SubscriptionAction;
-use App\Actions\UserAction;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Controller;
 use App\Models\InitRegister;
 use App\Models\IpTries;
-use App\Models\Package;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\PermissionRepository;
+use App\Repository\UserRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
@@ -49,10 +48,10 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct(private BusinessRepository   $businessRepository,
-                                private UserAction           $userAction,
-                                private PermissionRepository $permissionRepository,
-                                private SubscriptionAction   $subscriptionAction)
+    public function __construct(private BusinessRepository      $businessRepository,
+                                private UserRepositoryInterface $userRepository,
+                                private PermissionRepository    $permissionRepository,
+                                private SubscriptionAction      $subscriptionAction)
     {
         $this->middleware('guest');
     }
@@ -89,23 +88,6 @@ class RegisterController extends Controller
                 'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
             ], [
             'phone_required' => "phone or email required"
-        ]);
-    }
-
-
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param array $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'password' => Hash::make($data['password']),
         ]);
     }
 
@@ -220,7 +202,7 @@ class RegisterController extends Controller
         if ($reset) {
             $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
             $token = $user->createToken('authToken');
-            $device = $this->userAction->userDevice($request, $user, $token);
+            $device = $this->userRepository->userDevice($request, $user, $token);
             $user['token'] = $token->plainTextToken;
             $user['device'] = $device;
             return response()->json($user);
@@ -268,11 +250,11 @@ class RegisterController extends Controller
         $data['type'] = "";
         $data['email_verified_at'] = Carbon::now();
 
-        if(!isset($data['email']) || empty($data['email']))
-            $data['email'] = $data['phone'].'@menu-ai.net';
+        if (!isset($data['email']) || empty($data['email']))
+            $data['email'] = $data['phone'] . '@menu-ai.net';
 
         // Create user && assign general role
-        $user = $this->userAction->create($data);
+        $user = $this->userRepository->createModel($data);
         $token = $user->createToken('API Token');
 
         if (isset($data['businessName']) && isset($data['businessType'])) {
@@ -283,7 +265,7 @@ class RegisterController extends Controller
         // Create subscription
         // $this->createSubscription($user);
 
-        $device = $this->userAction->userDevice($request, $user, $token);
+        $device = $this->userRepository->userDevice($request, $user, $token);
         $user['device'] = $device;
 
         // TODO:: Notify user on his accounts
