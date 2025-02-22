@@ -86,12 +86,12 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function isAvailable($data, $businessId, $branchId)
+    public function currentReservation($data, $businessId, $branchId)
     {
         $startDate = $data['from'];
         $endDate = $data['to'];
         $reservable_id = $data['reservable_id'];
-        $isAvailable = Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
+        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('reservable_id', $reservable_id)
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
             ->where(function ($query) use ($startDate, $endDate) {
@@ -102,7 +102,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                             ->where('to', '>=', $endDate);
                     });
             })->first();
-        return $isAvailable ? false : true;
     }
 
     public function listModel($businessId, $branchId, $conditions = null)
@@ -118,7 +117,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        if (!$this->isAvailable($data, $businessId, $branchId))
+        if (!$this->currentReservation($data, $businessId, $branchId))
             throw new \Exception("Not available now, please choose different dates or try again later");
 
         $model = $this->model->create($this->process($data));

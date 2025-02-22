@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 
 use App\Actions\DiscountAction;
 use App\Constants\OrderStatus;
+use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
@@ -121,11 +122,20 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->validateCategoriesInBranch($data['order_lines']);
         $this->validatePrices($data['order_lines']);
         $reservationData = $data['order_lines'][0]['reservation'];
+        $sameUserReservation = null;
         if( isset($reservationData)){
             $reservationData['reservable_id'] = $data['order_lines'][0]['item_id'];
-            if(!$this->reservationRepository->isAvailable($reservationData, $businessId ,$branchId))
-                throw new \Exception("Not available now, please choose different dates or try again later");
+            $currentReservation = $this->reservationRepository->currentReservation($reservationData, $businessId ,$branchId);
+            if($currentReservation){
+                if(  $currentReservation->status === PaymentConstants::RESERVATION_COMPLETED  ||
+                    $currentReservation->reserved_for_id =! auth()->user()->id ){
+                    throw new \Exception("Not available now, please choose different dates or try again later");
+                }
+                $sameUserReservation = $currentReservation;
+            }
         }
+        if($sameUserReservation)
+            return $this->get($sameUserReservation->order_id);
 
         $model = $this->model->create($this->process($data));
         $data['total_price'] = 0;
