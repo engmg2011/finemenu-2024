@@ -126,7 +126,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
     {
         $dietPlan = DietPlan::find($data['diet_plan_id']);
         if (is_null($dietPlan))
-            throw new Exception("No plan found for the same id");
+            abort(400, "No plan found for the same id");
     }
 
     /**
@@ -137,7 +137,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
     private function checkValidDates($data): void
     {
         if (!(isset($data['selected_meals']) && count($data['selected_meals'])))
-            throw new Exception("You have to choose the meals");
+            abort(400, "You have to choose the meals");
 
         $selected_meals = $data['selected_meals'];
 
@@ -147,7 +147,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
             foreach ($selected_meals as $selectedMeal) {
                 $dayName = Carbon::parse($selectedMeal['day'])->format('D');
                 if (!in_array($dayName, $workDays))
-                    throw new Exception("Selected days are not matching the working days");
+                    abort(400, "Selected days are not matching the working days");
                 if (!in_array($dayName, $selectedDays))
                     $selectedDays[] = $dayName;
             }
@@ -171,7 +171,7 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
             $countExist = $plan->items->whereIn('id', $mealIds)->count();
             if ($countExist < count(array_unique($mealIds)))
-                throw new \Exception('Wrong meals');
+                abort(400,'Wrong meals');
         }
     }
 

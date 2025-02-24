@@ -43,7 +43,7 @@ class PusherAuthController extends Controller
             $auth = $pusher->socket_auth($channelName, $socketId);
             return response($auth);
         }
-        throw new \Exception("user {$user->id} doesn't have access to business {$businessNumber}");
+        abort(400,"user {$user->id} doesn't have access to business {$businessNumber}");
 
     }
 }

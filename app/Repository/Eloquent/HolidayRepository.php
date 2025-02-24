@@ -33,7 +33,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
     {
         if (isset($data['locales'])) {
             if (!$this->validateLocalesRelated($model, $data))
-                throw new \Exception('Invalid Locales Data');
+                abort(400,'Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
     }
@@ -41,7 +41,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
     public function validateHoliday($data)
     {
         if(!isset($data['from']) || !isset($data['to']))
-            throw new \Exception('Invalid Date Format');
+            abort(400,'Invalid Date Format' );
 
         $datesConflict = Holiday::where('business_id', $data['business_id'])
             ->where(function ($query) use ($data) {
@@ -50,7 +50,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             })
             ->first();
         if($datesConflict)
-            throw new \Exception('Holiday already exists');
+            abort(400,'Holiday already exists');
     }
 
     public function createModel($businessId, array $data): Model

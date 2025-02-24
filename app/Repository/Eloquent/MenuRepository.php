@@ -36,7 +36,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     {
         if (isset($data['locales'])) {
             if (!$this->validateLocalesRelated($model, $data))
-                throw new \Exception('Invalid Locales Data');
+                abort(400,'Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
     }

@@ -96,7 +96,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $setting = $this->model->where($deleteData)->find($data['id']);
         if ($setting)
             return $setting->delete();
-        throw new \Exception("No data found!");
+        abort(400,"No data found!");
     }
 
     public function set($model, $data)

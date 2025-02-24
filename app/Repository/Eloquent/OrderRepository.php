@@ -92,7 +92,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $menuId = Branch::find($branchId)->menu_id;
         $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->toArray();
         if (count($menuIds) > 1 || $menuId !== $menuIds[0])
-            throw new \Exception("Wrong Data");
+            abort(400,"Wrong Data");
     }
 
     public function validatePrices(&$orderLines)
@@ -101,7 +101,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             if($orderLine['price_id']){
                 $priceable = Price::find($orderLine['price_id'])->priceable;
                 if(!$priceable || get_class($priceable) !== Item::class || $orderLine['item_id'] !== $priceable->id)
-                    throw new \Exception("Wrong Data");
+                    abort(400,"Wrong Data");
             }
         }
     }
@@ -117,7 +117,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['orderable_type'] = get_class(new Branch());
 
         if(!count($data['order_lines']))
-            throw new \Exception("Please add order content");
+            abort(400,"Please add order content");
 
         $this->validateCategoriesInBranch($data['order_lines']);
         $this->validatePrices($data['order_lines']);
@@ -129,7 +129,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             if($currentReservation){
                 if(  $currentReservation->status === PaymentConstants::RESERVATION_COMPLETED  ||
                     $currentReservation->reserved_for_id =! auth()->user()->id ){
-                    throw new \Exception("Not available now, please choose different dates or try again later");
+                    abort(400,"Not available now, please choose different dates or try again later");
                 }
                 $sameUserReservation = $currentReservation;
             }
@@ -176,7 +176,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $user = User::find($userId);
         $order = Order::find($id);
         if (!$user->hasAnyPermission($this->getOrderRequiredPermission($order)))
-            return throw new \Exception('You Don\'t have permission', 403);
+            abort(403,'You Don\'t have permission');
 
         // TODO:: check if data['paid']
         $model = tap($this->model->find($id))

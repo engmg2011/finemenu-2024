@@ -38,7 +38,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     {
         if (isset($data['locales'])) {
             if (!$this->validateLocalesRelated($model, $data))
-                throw new \Exception('Invalid Locales Data');
+                abort(400,'Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
     }
@@ -54,7 +54,7 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     {
         $model = $this->floor($businessId, $branchId)->find($id);
         if(!$model)
-            throw new \Exception("Error: no floor exists with the same id");
+            abort(400,"Error: no floor exists with the same id");
         $model->update($this->process($businessId, $branchId, $data));
         $this->relations($model, $data);
         return $this->model->with(FloorRepository::$modelRelations)->find($model->id);

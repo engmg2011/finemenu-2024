@@ -45,7 +45,7 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
 
         if (isset($data['locales'])) {
             if (!$this->validateLocalesRelated($model, $data))
-                throw new \Exception('Invalid Locales Data');
+                abort(400,'Invalid Locales Data');
 
             $this->localeAction->setLocales($model, $data['locales']);
         }
@@ -62,7 +62,7 @@ class TableRepository extends BaseRepository implements TableRepositoryInterface
     {
         $model = $this->table($floorId)->find($id);
         if (!$model)
-            throw new \Exception("Error: no table exists with the same id");
+            abort(400,'Error: no table exists with the same id');
         $model->update($this->process($floorId, $data));
         $this->relations($model, $data);
         return $this->model->with(TableRepository::$modelRelations)->find($model->id);

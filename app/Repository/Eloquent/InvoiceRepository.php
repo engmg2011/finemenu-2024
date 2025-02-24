@@ -80,7 +80,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $invoice = $this->model->findOrFail($id);
         if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $invoice->branch_id,
             PermissionsConstants::Business . '.' . $invoice->business_id]))
-            return throw new \Exception('You Don\'t have permission', 403);
+            return abort(403,'You Don\'t have permission');
         if (isset($data['status']) && $data['status'] != $invoice->status) {
             $data['status_changed_at'] = now();
             if ($data['status'] === PaymentConstants::INVOICE_PAID) {

@@ -24,7 +24,7 @@ class CategoriesMenuIdSeeder extends Seeder
         foreach (Business::with('user')->get() as &$business) {
             $menuSlug = $this->menuRepository->createMenuId($business->name, $business->user->email);
             if(!$menuSlug)
-                throw new \Exception("error restID ". $business->id);
+                abort(400,"error restID ". $business->id);
             $data = [
                 'slug' => $menuSlug,
                 'business_id' => $business->id,

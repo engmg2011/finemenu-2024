@@ -118,7 +118,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
         if ($this->currentReservation($data, $businessId ,$branchId))
-            throw new \Exception("Not available now, please choose different dates or try again later");
+            abort(400,"Not available now, please choose different dates or try again later");
 
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
@@ -142,7 +142,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $reservation->branch_id,
             PermissionsConstants::Business . '.' . $reservation->business_id]))
-            return throw new \Exception('You Don\'t have permission', 403);
+            return throw new \Exception(403,'You Don\'t have permission');
 
         // TODO:: check if data['paid']
         $model = tap($this->model->find($id))

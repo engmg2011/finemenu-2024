@@ -36,7 +36,7 @@ class SettingsController extends Controller
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)
-            throw new Exception("no data found");
+            abort(400, "no data found");
         return \response()->json($this->repository->createSetting($model, $request->all()));
     }
 
@@ -46,7 +46,7 @@ class SettingsController extends Controller
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)
-            throw new Exception("no data found");
+            abort(400, "no data found");
         return \response()->json(
             $this->repository->setSettings($model, $request->all())
         );
@@ -63,7 +63,7 @@ class SettingsController extends Controller
         $modelName = $request->get('model');
         $model = app($modelName)->find($modelId);
         if (!$model)
-            throw new \Exception("no data found");
+            abort(400,"no data found");
         return \response()->json($this->repository->listSettings($model));
     }
 
@@ -91,7 +91,7 @@ class SettingsController extends Controller
         $model = app($modelName)->find($modelId);
         $request->request->add(['id' => $settingId]);
         if (!$model)
-            throw new Exception("no data found");
+            abort(400, "no data found");
         return \response()->json($this->repository->updateSetting($model, $request->all()));
     }
 
@@ -118,7 +118,7 @@ class SettingsController extends Controller
         $modelName = \request()->get('model');
         $relationModel = app($modelName)->find($modelId);
         if (!$relationModel)
-            throw new Exception("no data found");
+            abort(400, "no data found");
         \request()->request->add(['id' => $settingId]);
         return \response()->json($this->repository->deleteSetting($relationModel, \request()->all()));
     }
