@@ -39,6 +39,18 @@ class UsersController extends Controller
     public function create(Request $request)
     {
         $data = $request->all();
+        $validator = Validator::make($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'password' => 'required|confirmed|min:8',
+            'email' => ['string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+            'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+        ], [
+            'phone_required' => "phone or email required"
+        ]);
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
+
         $data['business_id'] = $request->route('businessId');
         return \response()->json($this->userRepository->createModel($data));
     }
