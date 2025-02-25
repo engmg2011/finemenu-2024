@@ -35,7 +35,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return array_only($data, [
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
-            "business_id", "branch_id", "created_at", "updated_at"
+            "business_id", "branch_id", "created_at", "updated_at", 'notes'
         ]);
     }
 

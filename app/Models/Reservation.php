@@ -61,7 +61,7 @@ class Reservation extends Model
 
     protected $hidden = ['reservable_id', 'reservable_type', 'reserved_by_id', 'reserved_for_id'];
 
-    protected $casts = ['data' => 'json'];
+    protected $casts = ['data' => 'json', 'notes' => 'json'];
 
     protected $appends = ['payment_status'];
 
@@ -111,12 +111,12 @@ class Reservation extends Model
         if (!$reservationData) return null;
 
         $total = $reservationData['total_price'];
-        if(!$total) return null;
+        if (!$total) return null;
 
         $paidAmount = 0;
         $invoices = $reservationData['invoices'] ?? [];
         foreach ($invoices as &$invoice) {
-            if (isset($invoice['type']) && isset($invoice['status'])){
+            if (isset($invoice['type']) && isset($invoice['status'])) {
                 if ($invoice['type'] === PaymentConstants::INVOICE_CREDIT
                     && $invoice['status'] === PaymentConstants::INVOICE_PAID) {
                     $paidAmount = $paidAmount + $invoice['amount'];
