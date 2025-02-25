@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Repository\ChaletRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
@@ -109,11 +110,11 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
     public function sort($data)
     {
-        $sort = 1;
-        foreach ($data['sortedIds'] as $id) {
-            $this->model->whereId($id)->update(['sort' => $sort, 'category_id' => $data['categoryId']]);
-            $sort++;
-        }
+        DB::transaction(function () use ($data) {
+            foreach ($data['sortedIds'] as $index => $id) {
+                Item::where('id', $id)->update(['sort' => $index + 1]);
+            }
+        });
         return true;
     }
 
