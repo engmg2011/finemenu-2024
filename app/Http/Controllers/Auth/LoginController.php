@@ -71,8 +71,13 @@ class LoginController extends Controller
 
         $user = User::where(array_only($data, ['email', 'phone']))
             ->with(UserRepository::LoginUserRelations)->first();
+
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 400);
+
+        if ($user && $request->input('dashboard') === true && count($user->business) === 0)
+            return response()->json(["message" => "User not allowed to login"], 400);
+
         $token = $user->createToken('Login Token');
         $device = $this->userRepository->userDevice($request, $user, $token);
         $user['token'] = $token->plainTextToken;
