@@ -29,9 +29,6 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
 
     public function process(array $data): array
     {
-        $data['invoice_by_id'] = auth('sanctum')->user()->id;
-        $data['invoice_for_id'] = request('reserved_for_id') ?? auth('sanctum')->user()->id;
-
         return array_only($data, [
             'amount', 'data', 'external_link', 'reference_id',
             'note', 'type', 'status', 'status_changed_at', 'payment_type',

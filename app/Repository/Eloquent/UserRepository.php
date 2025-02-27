@@ -41,10 +41,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function search($businessId , array $data)
     {
-        return User::where('business_id', $businessId)
-            ->where('name', 'like', "%{$data['search']}%")
+        return User::where('name', 'like', "%{$data['search']}%")
             ->orWhere('email', 'like', "%{$data['search']}%")
             ->orWhere('phone', 'like', "%{$data['search']}%")
+            ->where(function ($query) use ($businessId) {
+                return $query->whereNull('business_id')
+                    ->orWhere('business_id', $businessId);
+            })
             ->paginate(5);
     }
 

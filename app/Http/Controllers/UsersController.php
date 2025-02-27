@@ -63,7 +63,7 @@ class UsersController extends Controller
      */
     public function search(Request $request)
     {
-        $businessId = request()->route('business_id');
+        $businessId = request()->route('businessId');
         return \response()->json($this->userRepository->search($businessId, $request->all()));
     }
 
