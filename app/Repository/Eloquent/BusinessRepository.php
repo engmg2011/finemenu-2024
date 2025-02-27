@@ -39,15 +39,16 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
 
     public function process(&$data): array
     {
-        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
-        if (!isset($data['name']) && isset($data['locales']))
-            $data['name'] = $data['locales'][0]['name'];
-        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('sanctum')->user()->email ?? $data['email']);
         return array_only($data, ['name', 'user_id', 'passcode', 'creator_id', 'slug']);
     }
 
     public function createModel(array $data): Model
     {
+        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
+        if (!isset($data['name']) && isset($data['locales']))
+            $data['name'] = $data['locales'][0]['name'];
+        $data['slug'] = $this->menuRepository->createMenuId($data['name'], auth('sanctum')->user()->email ?? $data['email']);
+
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
 

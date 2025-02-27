@@ -18,7 +18,6 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
 
     public function process($businessId, array $data)
     {
-        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         return array_only($data, ['from', 'to', 'business_id', 'user_id']);
     }
 
@@ -57,6 +56,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
     {
         $this->validateHoliday($data);
 
+        $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         $entity = $this->model->create($this->process($businessId, $data));
         $this->relations($entity, $data);
         return $this->model->with(HolidayRepository::$modelRelations)->find($entity->id);

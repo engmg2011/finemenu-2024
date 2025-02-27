@@ -40,8 +40,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public function process(array $data): array
     {
-        $data['user_id'] = auth('sanctum')->user()->id;
-        $data['status'] = $data['status'] ?? OrderStatus::Pending;
         return array_only($data, ['user_id', 'note', 'orderable_id', 'total_price', 'subtotal_price',
             'orderable_type', 'scheduled_at', 'status', 'paid', 'device_id', 'delivery_address']);
     }
@@ -137,6 +135,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if($sameUserReservation)
             return $this->get($sameUserReservation->order_id);
 
+        $data['user_id'] = auth('sanctum')->user()->id;
+        $data['status'] = $data['status'] ?? OrderStatus::Pending;
         $model = $this->model->create($this->process($data));
         $data['total_price'] = 0;
         $data['subtotal_price'] = 0;

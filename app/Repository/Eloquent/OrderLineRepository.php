@@ -25,7 +25,6 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
 
     public function process(array $data): array
     {
-        $data['user_id'] = auth('sanctum')->user()->id;
         return array_only($data, ['user_id', 'note', 'order_id', 'item_id', 'count', 'price_id', 'data',
             'total_price', 'subtotal_price']);
     }
@@ -92,6 +91,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
 
     public function createModel(array $data)
     {
+        $data['user_id'] = auth('sanctum')->user()->id;
         $orderLine = $this->create($this->process($data));
         $this->processRelations($orderLine, $data, true);
         return $orderLine;

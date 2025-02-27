@@ -35,9 +35,6 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
 
     public function process(array $data): array
     {
-        $data['creator_id'] = auth('sanctum')->user()->id;
-        $data['user_id'] = request()->get('user_id') ?? auth('sanctum')->user()->id;
-
         return array_only($data, ['creator_id', 'user_id', 'business_id',
             'status', 'selected_meals', 'diet_plan_id', 'note']);
     }
@@ -108,6 +105,9 @@ class DietPlanSubscriptionRepository extends BaseRepository implements DietPlanS
         $this->checkValidPlan($data);
         $this->checkValidDates($data);
         $this->checkValidMeals($data);
+
+        $data['creator_id'] = auth('sanctum')->user()->id;
+        $data['user_id'] = request()->get('user_id') ?? auth('sanctum')->user()->id;
 
         $model = $this->model->create($this->process($data));
         if (isset($data['locales']))
