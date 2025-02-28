@@ -40,11 +40,7 @@ class SocialController extends Controller
             ]);
         } else {
             // Find or create a user
-            $user = User::updateOrCreate(
-                [
-                    'provider_id' => $socialUser->id,
-                    'provider' => $provider
-                ],
+            $user = User::create(
                 [
                     'name' => $socialUser->name,
                     'email' => $socialUser->email,

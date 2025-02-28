@@ -29,18 +29,19 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-    'middleware' => ['auth:sanctum', SetRequestModel::class , CheckUserModel::class]], function () {
-        Route::get('/', [UsersController::class, 'index']);
-        Route::post('/', [UsersController::class, 'update']);
-        Route::get('/items', [UsersController::class, 'userItems']);
-        Route::get('/settings', [SettingsController::class, 'listSettings']);
-        Route::post('/settings', [SettingsController::class, 'createSetting']);
-        Route::post('settings/set', [SettingsController::class, 'setSetting']);
+        'middleware' => ['auth:sanctum', SetRequestModel::class , CheckUserModel::class]], function () {
+    Route::get('/', [UsersController::class, 'index']);
+    Route::post('/', [UsersController::class, 'update']);
+    Route::get('/items', [UsersController::class, 'userItems']);
+    Route::get('/settings', [SettingsController::class, 'listSettings']);
+    Route::post('/settings', [SettingsController::class, 'createSetting']);
+    Route::post('settings/set', [SettingsController::class, 'setSetting']);
 //        Route::post('/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-        Route::get('/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-        Route::group(['prefix' => 'devices'], function () {
-            Route::post('/{id}', [DevicesController::class, 'update']);
-        });
+    Route::get('/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+    Route::group(['prefix' => 'devices'], function () {
+        Route::post('/', [DevicesController::class, 'create']);
+        Route::post('/{id}', [DevicesController::class, 'update']);
+    });
     Route::group(['prefix' => 'orders'], function () {
         Route::get('/', [OrdersController::class, 'userOrders']);
     });

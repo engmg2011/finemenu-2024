@@ -137,7 +137,8 @@ class UsersController extends Controller
             'business.locales',
             'business.menus.locales',
             'business.branches.locales',
-            'business.branches.floors.locales'
+            'business.branches.floors.locales',
+            'devices'
         ])->find($userId);
         $user['token'] = $user->createToken('authToken')->plainTextToken;
         return response()->json($user);

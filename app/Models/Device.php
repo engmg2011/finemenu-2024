@@ -49,6 +49,7 @@ class Device extends Model
 {
     use HasFactory, Notifiable;
     protected $guarded = ['id'];
+    protected $casts=['info' => 'json'];
 
     public function user() {
         return $this->belongsTo(User::class);

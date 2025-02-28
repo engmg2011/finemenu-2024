@@ -190,9 +190,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function userDevice(Request $request, $user, $authToken): Device
     {
-        $branchId = \request()->route('modelId');
-        $type = $request->input('type');
-
         $deviceName = $request->input('device_name');
         if (!$deviceName)
             $deviceName = strtolower(str_replace(' ', '_', $user->name)) . '-' . random_int(1000, 9999);
@@ -200,8 +197,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return Device::updateOrCreate(['device_name' => $deviceName], [
             'token_id' => $authToken->accessToken->id,
             'user_id' => $user->id,
-            'branch_id' => $branchId,
-            'type' => $type,
             'device_name' => $deviceName,
             'os' => request()->header('User-Agent'),
             'onesignal_token' => request()->input('onesignal_token'),

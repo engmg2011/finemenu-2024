@@ -18,12 +18,14 @@ class DeviceAction
 
     public function process(array $data): array
     {
-        return array_only($data, ['token_id', 'device_name', 'onesignal_token', 'last_sync', 'user_id', 'info']);
+        return array_only($data, ['token_id', 'device_name', 'last_active',
+            'onesignal_token', 'last_sync', 'user_id', 'info']);
     }
 
     public function create(array $data)
     {
-        return $this->repository->create($this->process($data));
+        $data['user_id'] = auth('sanctum')->id();
+        return Device::updateOrCreate(['device_name' => $data['device_name']],$this->process($data));
     }
 
     public function update($id, array $data): Model
