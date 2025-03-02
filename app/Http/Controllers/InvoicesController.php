@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
+use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use Illuminate\Http\Request;
 
@@ -64,8 +65,11 @@ class InvoicesController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy($businessId, $branchId, $id)
     {
-        //
+        $reservation_id = Invoice::find($id)->reservation_id;
+        $deleted = $this->repository->delete($id);
+        app(ReservationRepository::class)->setReservationInvoicesCashedData($reservation_id);
+        return \response()->json($deleted);
     }
 }

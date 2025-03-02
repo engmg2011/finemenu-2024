@@ -27,6 +27,18 @@ class ItemsController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function search()
+    {
+        $branchId = request()->get('branchId') ?? request()->route()->parameter('branchId');
+        $businessId = request()->route('businessId');
+        return DataResource::collection($this->repository->search($businessId, $branchId));
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request

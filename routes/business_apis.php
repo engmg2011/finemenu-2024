@@ -99,6 +99,7 @@ Route::group(['middleware' => [
                         Route::get('/{id}', [InvoicesController::class, 'show']);
                         Route::post('/', [InvoicesController::class, 'create']);
                         Route::post('/{id}', [InvoicesController::class, 'update']);
+                        Route::post('/{id}/delete', [InvoicesController::class, 'destroy']);
                     });
 
                     // Business Branch floors
@@ -131,6 +132,7 @@ Route::group(['middleware' => [
 
             Route::group(['prefix' => 'items'], function () {
                 Route::get('/', [ItemsController::class, 'index']);
+                Route::get('/search', [ItemsController::class, 'search']);
                 Route::get('/{id}', [ItemsController::class, 'show']);
                 Route::post('/', [ItemsController::class, 'create']);
                 Route::post('/{id}/delete', [ItemsController::class, 'destroy']);

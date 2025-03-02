@@ -54,6 +54,22 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function search($businessId, $branchId, $conditions = null)
+    {
+        $menuId = Branch::select('menu_id')->find($branchId)->menu_id;
+        $categoriesIds = Category::where('menu_id', $menuId)->pluck('id')->toArray();
+        $searchTerm = request('search');
+        return $this->model::with(self::$modelRelations)
+            ->whereIn('category_id', $categoriesIds)
+            ->whereHas('locales', function ($query) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', '%' . $searchTerm . '%')
+                            ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                    });
+            })
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
     public function relations($model, $data)
     {
         if (isset($data['locales']))

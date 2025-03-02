@@ -15,6 +15,8 @@ interface ItemRepositoryInterface
 
     public function listModel($businessId, $branchId, $conditions = null);
 
+    public function search($businessId, $branchId, $conditions = null);
+
     public function process(array $data);
 
     public function create(array $data): Model;

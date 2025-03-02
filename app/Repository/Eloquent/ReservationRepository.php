@@ -162,6 +162,14 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->update($this->process($data));
 
         $this->setModelRelations($model, $data);
+
+        // Update invoices cached data
+        $currentUser = auth('sanctum')->user();
+        if (isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
+            $this->invoiceRepository->setForReservation($model, $data['invoices']);
+            $this->setReservationInvoicesCashedData($model->id);
+        }
+
         event(new UpdateReservation($model->id));
         return $this->get($model->id);
     }
@@ -229,6 +237,34 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         ];
         $reservation->update(['data' => $cachedData]);
 
+    }
+
+    public function setReservationInvoicesCashedData($reservationId)
+    {
+        /**
+         * note: prices & discounts on orders table
+         * as they are coming from mobiles not dashboard
+         */
+        $reservation = Reservation::with('invoices')->find($reservationId);
+
+        $price = 0;
+        foreach ($reservation->invoices as $invoice) {
+            if($invoice->type === PaymentConstants::INVOICE_CREDIT)
+                $price += $invoice->amount;
+            if($invoice->type === PaymentConstants::INVOICE_DEBIT)
+                $price -= $invoice->amount;
+        }
+
+        $cachedData = $reservation->data;
+        unset($cachedData['invoices']);
+        unset($cachedData['subtotal_price']);
+        unset($cachedData['total_price']);
+        $cachedData += [
+            "invoices" => $reservation->invoices,
+            "subtotal_price" => $price,
+            "total_price" => $price
+        ];
+        $reservation->update(['data' => $cachedData]);
     }
 
 }
