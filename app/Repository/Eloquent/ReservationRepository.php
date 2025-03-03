@@ -69,7 +69,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         // TODO :: agree on default
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
-
             ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById) {
                 if (isset($itemId))
                     $query->where('reservable_id', $itemId);
@@ -96,7 +95,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function currentReservation($data, $businessId, $branchId)
+    public function currentReservation($data, $businessId, $branchId, $updateId = null)
     {
         $startDate = $data['from'];
         $endDate = $data['to'];
@@ -104,6 +103,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('reservable_id', $reservable_id)
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ( $updateId) {
+                // todo :: check for same id
+                if($updateId)
+                    $query->where('id', '!=', $updateId);
+            })
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('from', [$startDate, $endDate])
                     ->orWhereBetween('to', [$startDate, $endDate])
@@ -157,8 +161,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             PermissionsConstants::Business . '.' . $reservation->business_id]))
             return throw new \Exception(403,'You Don\'t have permission');
 
+        $data['reservable_id'] = $reservation->reservable_id;
+        if(isset($data['from']) && isset($data['to'])) {
+            if ($this->currentReservation($data, $reservation->business_id ,$reservation->branch_id, $id ))
+                abort(400, "Not available now, please choose different dates or try again later");
+        }
         // TODO:: check if data['paid']
-        $model = tap($this->model->find($id))
+        $model = tap($reservation)
             ->update($this->process($data));
 
         $this->setModelRelations($model, $data);
