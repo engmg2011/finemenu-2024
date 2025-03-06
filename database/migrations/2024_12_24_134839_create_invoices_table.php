@@ -24,9 +24,9 @@ return new class extends Migration {
                 ->default(PaymentConstants::INVOICE_CREDIT);
 
             $table->enum('status', [PaymentConstants::INVOICE_PENDING,
-                PaymentConstants::INVOICE_PAID, PaymentConstants::INVOICE_REFUNDED,
-                PaymentConstants::INVOICE_CANCELED])
+                PaymentConstants::INVOICE_PAID, PaymentConstants::INVOICE_CANCELED])
                 ->default(PaymentConstants::INVOICE_PENDING);
+
             $table->dateTime('status_changed_at')->nullable();
 
             $table->enum('payment_type', [PaymentConstants::TYPE_CASH, PaymentConstants::TYPE_ONLINE,

@@ -127,7 +127,7 @@ class ShalehiSeeder extends Seeder
             "type" => "debit",
             "amount" => $data['insurance'] ?? 0,
             "payment_type" => $data['insurancePaymentType'] ?? PaymentConstants::TYPE_KNET,
-            "status" => PaymentConstants::INVOICE_REFUNDED,
+            "status" => PaymentConstants::INVOICE_PAID,
             ...$commonData
         ]];
         \DB::table('invoices')->insert($paidInvoices);

@@ -14,7 +14,6 @@ class PaymentConstants
     const INVOICE_PENDING = "pending";
     const INVOICE_PAID = "paid";
     const INVOICE_CANCELED = "canceled";
-    const INVOICE_REFUNDED = "refunded";
 
     const RESERVATION_PAID = "paid";
     const RESERVATION_NOT_PAID = 'not_paid';
