@@ -174,12 +174,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $this->setModelRelations($model, $data);
 
-        // Update invoices cached data
-        $currentUser = auth('sanctum')->user();
-        if (isset($data['invoices']) && count($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
-            $this->invoiceRepository->setForReservation($model, $data['invoices']);
-        }
-
         $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
