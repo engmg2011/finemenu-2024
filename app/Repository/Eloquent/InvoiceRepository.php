@@ -86,7 +86,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
         app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation_id);
         event(new UpdateReservation($invoice->reservation_id));
-        $this->model->find($id)->update(array_only($data, ['status', 'status_changed_at']));
+        $this->model->find($id)->update($this->process($data));
         return Invoice::find($id);
     }
 

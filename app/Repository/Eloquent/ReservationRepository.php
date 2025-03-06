@@ -161,7 +161,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             PermissionsConstants::Business . '.' . $reservation->business_id]))
             return throw new \Exception(403,'You Don\'t have permission');
 
-        $data['reservable_id'] = $reservation->reservable_id;
+        if(!isset($data['reservable_id']))
+            $data['reservable_id'] = $reservation->reservable_id;
+
         if(isset($data['from']) && isset($data['to'])) {
             if ($this->currentReservation($data, $reservation->business_id ,$reservation->branch_id, $id ))
                 abort(400, "Not available now, please choose different dates or try again later");
@@ -174,10 +176,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         // Update invoices cached data
         $currentUser = auth('sanctum')->user();
-        if (isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
+        if (isset($data['invoices']) && count($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
             $this->invoiceRepository->setForReservation($model, $data['invoices']);
-            $this->setReservationInvoicesCashedData($model->id);
         }
+
+        $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
         return $this->get($model->id);
