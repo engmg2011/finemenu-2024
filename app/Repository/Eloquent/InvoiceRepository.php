@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent;
 
+use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Events\UpdateReservation;
@@ -10,6 +11,7 @@ use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
+use App\Services\AuditService;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +31,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
 
     public function process(array $data): array
     {
+        if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_ONLINE)
+            $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
         return array_only($data, [
             'amount', 'data', 'external_link', 'reference_id',
             'note', 'type', 'status', 'status_changed_at', 'payment_type',
@@ -61,9 +65,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $data['invoice_by_id'] = auth('sanctum')->user()->id;
         $data['invoice_for_id'] = $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id;
         $data['data'] = [];
-        if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_ONLINE)
-            $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
         $model = $this->model->create($this->process($data));
+
+        AuditService::log(AuditServices::Invoices, $model->id,"Created invoice " . $model->id,
+            $model->business_id, $model->branch_id);
         return $this->get($model->id);
     }
 
@@ -87,6 +92,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation_id);
         event(new UpdateReservation($invoice->reservation_id));
         $this->model->find($id)->update($this->process($data));
+
+        AuditService::log(AuditServices::Invoices, $id,"Updated invoice " . $invoice->id,
+            $invoice->business_id, $invoice->branch_id);
         return Invoice::find($id);
     }
 

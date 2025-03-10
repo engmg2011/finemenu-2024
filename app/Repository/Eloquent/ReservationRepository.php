@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent;
 
+use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
@@ -12,6 +13,7 @@ use App\Models\OrderLine;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\ReservationRepositoryInterface;
+use App\Services\AuditService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -78,10 +80,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 else
                     $query->where('status', '!=', PaymentConstants::RESERVATION_CANCELED);
 
-                if(isset($reservedForId))
+                if (isset($reservedForId))
                     $query->where('reserved_for_id', $reservedForId);
 
-                if(isset($reservedById))
+                if (isset($reservedById))
                     $query->where('reserved_by_id', $reservedById);
             })
             ->where(function ($query) use ($startDate, $endDate) {
@@ -103,9 +105,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('reservable_id', $reservable_id)
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
-            ->where(function ($query) use ( $updateId) {
+            ->where(function ($query) use ($updateId) {
                 // todo :: check for same id
-                if($updateId)
+                if ($updateId)
                     $query->where('id', '!=', $updateId);
             })
             ->where(function ($query) use ($startDate, $endDate) {
@@ -131,8 +133,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        if ($this->currentReservation($data, $businessId ,$branchId))
-            abort(400,"Not available now, please choose different dates or try again later");
+        if ($this->currentReservation($data, $businessId, $branchId))
+            abort(400, "Not available now, please choose different dates or try again later");
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -140,10 +142,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
 
-        if(!$model->data)
+        if (!$model->data)
             $this->setReservationCashedData($model->id);
 
         event(new NewReservation($model->id));
+        AuditService::log(AuditServices::Reservations, $model->id, "Created booking " . $model->id, $businessId, $branchId);
         return $this->get($model->id);
     }
 
@@ -159,13 +162,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $reservation->branch_id,
             PermissionsConstants::Business . '.' . $reservation->business_id]))
-            return throw new \Exception(403,'You Don\'t have permission');
+            return throw new \Exception(403, 'You Don\'t have permission');
 
-        if(!isset($data['reservable_id']))
+        if (!isset($data['reservable_id']))
             $data['reservable_id'] = $reservation->reservable_id;
 
-        if(isset($data['from']) && isset($data['to'])) {
-            if ($this->currentReservation($data, $reservation->business_id ,$reservation->branch_id, $id ))
+        if (isset($data['from']) && isset($data['to'])) {
+            if ($this->currentReservation($data, $reservation->business_id, $reservation->branch_id, $id))
                 abort(400, "Not available now, please choose different dates or try again later");
         }
         // TODO:: check if data['paid']
@@ -177,6 +180,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
+        AuditService::log(AuditServices::Reservations, $model->id,"Updated booking " . $model->id,
+            $reservation->business_id, $reservation->branch_id);
         return $this->get($model->id);
     }
 
@@ -226,9 +231,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $price = 0;
         foreach ($reservation->invoices as $invoice) {
-            if($invoice->type === PaymentConstants::INVOICE_CREDIT)
+            if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
                 $price += $invoice->amount;
-            if($invoice->type === PaymentConstants::INVOICE_DEBIT)
+            if ($invoice->type === PaymentConstants::INVOICE_DEBIT)
                 $price -= $invoice->amount;
         }
 
@@ -255,9 +260,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $price = 0;
         foreach ($reservation->invoices as $invoice) {
-            if($invoice->type === PaymentConstants::INVOICE_CREDIT)
+            if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
                 $price += $invoice->amount;
-            if($invoice->type === PaymentConstants::INVOICE_DEBIT)
+            if ($invoice->type === PaymentConstants::INVOICE_DEBIT)
                 $price -= $invoice->amount;
         }
 

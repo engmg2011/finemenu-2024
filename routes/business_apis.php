@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\RolesConstants;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\FloorsController;
@@ -121,6 +122,11 @@ Route::group(['middleware' => [
 
                     });
 
+                    // Audit Log
+                    Route::group(['prefix' => '/audits'], function () {
+                        Route::get('/', [AuditController::class, 'index']);
+                        Route::get('/filter', [AuditController::class, 'filter']);
+                    });
                 });
 
                 Route::group(['prefix' => 'kitchen'], function () {
