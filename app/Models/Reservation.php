@@ -90,6 +90,11 @@ class Reservation extends Model
         return $this->belongsTo(User::class, 'reserved_for_id');
     }
 
+    public function follower()
+    {
+        return $this->belongsTo(User::class, 'follower_id');
+    }
+
     public function branch()
     {
         return $this->belongsTo(Branch::class);

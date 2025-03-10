@@ -22,7 +22,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 {
 
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
-        'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings'];
+        'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings', 'follower'];
 
     public function __construct(Reservation $model, private InvoiceRepository $invoiceRepository)
     {
@@ -34,7 +34,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return array_only($data, [
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
-            "business_id", "branch_id", "created_at", "updated_at", 'notes'
+            "business_id", "branch_id", "created_at", "updated_at", 'notes', 'follower_id'
         ]);
     }
 
@@ -67,24 +67,18 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $status = $request->input('status');
         $reservedForId = $request->input('reserved_for_id');
         $reservedById = $request->input('reserved_by_id');
+        $followerId = $request->input('follower_id');
 
         // TODO :: agree on default
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
-            ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById) {
-                if (isset($itemId))
-                    $query->where('reservable_id', $itemId);
-
-                if (isset($status))
-                    $query->where('status', $status);
-                else
-                    $query->where('status', '!=', PaymentConstants::RESERVATION_CANCELED);
-
-                if (isset($reservedForId))
-                    $query->where('reserved_for_id', $reservedForId);
-
-                if (isset($reservedById))
-                    $query->where('reserved_by_id', $reservedById);
+            ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById, $followerId) {
+                if (isset($itemId)) $query->where('reservable_id', $itemId);
+                if (isset($reservedForId)) $query->where('reserved_for_id', $reservedForId);
+                if (isset($reservedById)) $query->where('reserved_by_id', $reservedById);
+                if (isset($followerId)) $query->where('follower_id', $followerId);
+                if (isset($status)) $query->where('status', $status);
+                else $query->where('status', '!=', PaymentConstants::RESERVATION_CANCELED);
             })
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('from', [$startDate, $endDate])
@@ -180,7 +174,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
-        AuditService::log(AuditServices::Reservations, $model->id,"Updated booking " . $model->id,
+        AuditService::log(AuditServices::Reservations, $model->id, "Updated booking " . $model->id,
             $reservation->business_id, $reservation->branch_id);
         return $this->get($model->id);
     }
@@ -242,6 +236,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             "reservable" => $reservation->reservable,
             "reserved_for" => $reservation->reservedFor,
             "reserved_by" => $reservation->reservedBy,
+            "follower" => $reservation->follower,
             "invoices" => $reservation->invoices,
             "subtotal_price" => $price,
             "total_price" => $price
