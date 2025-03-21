@@ -65,6 +65,8 @@ class Invoice extends Model
 
     protected $casts = ['data' => 'json', 'amount'=>'float'];
 
+    protected $hidden = ['data'];
+
     public function reservation()
     {
         return $this->belongsTo(Reservation::class);

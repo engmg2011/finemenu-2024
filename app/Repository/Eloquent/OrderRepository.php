@@ -14,7 +14,6 @@ use App\Models\Business;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Order;
-use App\Models\Price;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
@@ -26,12 +25,12 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public const Relations = ['discounts.locales', 'orderlines.reservation', 'device', 'invoices'];
 
-    public function __construct(Order                              $model,
-                                private LocaleRepository           $localeRepository,
-                                private OrderLineRepository        $orderLineRepository,
-                                private PriceRepository            $priceAction,
-                                private DiscountAction             $discountAction,
-                                private InvoiceRepositoryInterface $invoiceRepository,
+    public function __construct(Order                                  $model,
+                                private LocaleRepository               $localeRepository,
+                                private OrderLineRepository            $orderLineRepository,
+                                private PriceRepository                $priceAction,
+                                private DiscountAction                 $discountAction,
+                                private InvoiceRepositoryInterface     $invoiceRepository,
                                 private ReservationRepositoryInterface $reservationRepository,
     )
     {
@@ -80,29 +79,20 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $categoryIds = [];
         foreach ($orderLines as &$orderLine) {
             $item = Item::select('category_id')->find($orderLine['item_id']);
-            if($item && $item->category_id )
+            if ($item && $item->category_id)
                 $categoryIds[] = $item->category_id;
         }
 
-        if(!count($categoryIds)) return false;
+        if (!count($categoryIds)) return false;
 
         $branchId = request()->route('branchId');
         $menuId = Branch::find($branchId)->menu_id;
         $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->toArray();
         if (count($menuIds) > 1 || $menuId !== $menuIds[0])
-            abort(400,"Wrong Data");
+            abort(400, "Wrong Data");
     }
 
-    public function validatePrices(&$orderLines)
-    {
-        foreach ($orderLines as &$orderLine) {
-            if($orderLine['price_id']){
-                $priceable = Price::find($orderLine['price_id'])->priceable;
-                if(!$priceable || get_class($priceable) !== Item::class || $orderLine['item_id'] !== $priceable->id)
-                    abort(400,"Wrong Data");
-            }
-        }
-    }
+
 
     /**
      * @throws \Exception
@@ -114,37 +104,31 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['orderable_id'] = $branchId;
         $data['orderable_type'] = get_class(new Branch());
 
-        if(!count($data['order_lines']))
-            abort(400,"Please add order content");
+        if (!count($data['order_lines']))
+            abort(400, "Please add order content");
 
         $this->validateCategoriesInBranch($data['order_lines']);
-        $this->validatePrices($data['order_lines']);
+
         $reservationData = $data['order_lines'][0]['reservation'];
-        $sameUserReservation = null;
-        if( isset($reservationData)){
-            $reservationData['reservable_id'] = $data['order_lines'][0]['item_id'];
-            $currentReservation = $this->reservationRepository->currentReservation($reservationData, $businessId ,$branchId);
-            if($currentReservation){
-                if(  $currentReservation->status === PaymentConstants::RESERVATION_COMPLETED  ||
-                    $currentReservation->reserved_for_id =! auth()->user()->id ){
-                    abort(400,"Not available now, please choose different dates or try again later");
-                }
-                $sameUserReservation = $currentReservation;
-            }
-        }
-        if($sameUserReservation)
+        $reservable_id = $data['order_lines'][0]['item_id'];
+        $sameUserReservation = $this->reservationRepository->checkSameReservation($reservationData, $reservable_id, $businessId, $branchId);
+        if ($sameUserReservation)
             return $this->get($sameUserReservation->order_id);
 
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
+
         $model = $this->model->create($this->process($data));
-        $data['total_price'] = 0;
-        $data['subtotal_price'] = 0;
+
         $orderLines = $this->orderLineRepository->createManyOLs($model->id, $data['order_lines']);
+        $totalPrice = 0;
+        $subtotalPrice = 0;
         foreach ($orderLines as &$orderLine) {
-            $data['total_price'] += $orderLine->total_price;
-            $data['subtotal_price'] += $orderLine->subtotal_price;
+            $totalPrice += $orderLine->total_price;
+            $subtotalPrice += $orderLine->subtotal_price;
         }
+        $data['total_price'] = $totalPrice;
+        $data['subtotal_price'] = $subtotalPrice;
 
         $this->setOrderData($model, $data);
         $model->update(['total_price' => $data['total_price'],
@@ -176,7 +160,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $user = User::find($userId);
         $order = Order::find($id);
         if (!$user->hasAnyPermission($this->getOrderRequiredPermission($order)))
-            abort(403,'You Don\'t have permission');
+            abort(403, 'You Don\'t have permission');
 
         // TODO:: check if data['paid']
         $model = tap($this->model->find($id))

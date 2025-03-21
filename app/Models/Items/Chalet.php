@@ -2,9 +2,13 @@
 
 namespace App\Models\Items;
 
+use App\Models\Item;
 use App\Traits\Itemable;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Items\Chalet
@@ -18,29 +22,30 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $bedrooms
  * @property int $item_id
  * @property int|null $owner_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Item|null $item
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet query()
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereBedrooms($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereFrontage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereInsurance($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereItemId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereLatitude($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereLongitude($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereOwnerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Chalet whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Item|null $item
+ * @method static Builder|Chalet newModelQuery()
+ * @method static Builder|Chalet newQuery()
+ * @method static Builder|Chalet query()
+ * @method static Builder|Chalet whereAddress($value)
+ * @method static Builder|Chalet whereBedrooms($value)
+ * @method static Builder|Chalet whereCreatedAt($value)
+ * @method static Builder|Chalet whereFrontage($value)
+ * @method static Builder|Chalet whereId($value)
+ * @method static Builder|Chalet whereInsurance($value)
+ * @method static Builder|Chalet whereItemId($value)
+ * @method static Builder|Chalet whereLatitude($value)
+ * @method static Builder|Chalet whereLongitude($value)
+ * @method static Builder|Chalet whereOwnerId($value)
+ * @method static Builder|Chalet whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class Chalet extends Model
 {
     use HasFactory, Itemable;
     protected $guarded=['id'];
     protected $casts = ['address' => 'json'];
+    protected $hidden = ['created_at','updated_at'];
 
 }

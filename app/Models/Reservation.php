@@ -115,7 +115,7 @@ class Reservation extends Model
         $reservationData = $this->data;
         if (!$reservationData) return null;
 
-        $total = $reservationData['total_price'];
+        $total = $reservationData['total_price'] ?? null;
         if (!$total) return null;
 
         $paidAmount = 0;

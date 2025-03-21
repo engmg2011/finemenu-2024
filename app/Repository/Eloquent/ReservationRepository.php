@@ -273,4 +273,21 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $reservation->update(['data' => $cachedData]);
     }
 
+    // checking if there is current reservation
+    public function checkSameReservation($reservationData, $reservable_id, $businessId, $branchId)
+    {
+        $sameUserReservation = null;
+        if (isset($reservationData)) {
+            $reservationData['reservable_id'] = $reservable_id;
+            $currentReservation = $this->currentReservation($reservationData, $businessId, $branchId);
+            if ($currentReservation) {
+                if ($currentReservation->status === PaymentConstants::RESERVATION_COMPLETED ||
+                    $currentReservation->reserved_for_id = !auth()->user()->id) {
+                    abort(400, "Not available now, please choose different dates or try again later");
+                }
+                $sameUserReservation = $currentReservation;
+            }
+        }
+        return $sameUserReservation;
+    }
 }
