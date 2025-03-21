@@ -214,37 +214,37 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
      * @param $reservation
      * @return array|false : return intersected holiday price
      */
-    public function getItemReservationPrice($itemId, $reservation)
+    public function getMatchedHoliday($itemId, $reservation)
     {
         // prepare requested reservation period
         $reservationPeriod = Period::make($reservation['from'], $reservation['to']);
         // get item holidays
         $item = Item::with('holidays')->find($itemId);
         $itemHolidays = $item->holidays;
-        $intersectedHoliday = null;
+        $matchedHoliday = null;
         // Check for intersection with the item holidays
         if (isset($item->holidays) && sizeof($itemHolidays) > 0) {
             foreach ($item->holidays as $itemHoliday) {
                 $itemHolidayPeriod = Period::make($itemHoliday->from, $itemHoliday->to);
                 $intersection = $reservationPeriod->overlap($itemHolidayPeriod);
                 if ($intersection) {
-                    $intersectedHoliday = $itemHoliday;
+                    $matchedHoliday = $itemHoliday;
                     break;
                 }
             }
         }
-        return $intersectedHoliday ?? false;
+        return $matchedHoliday ?? false;
     }
 
     public function setOrderLinePrices(&$orderLine)
     {
         // if reservation check holiday intersection
         if (isset($orderLine['reservation'])) {
-            $intersectedHoliday = $this->getItemReservationPrice($orderLine['item_id'], $orderLine['reservation']);
-            if ($intersectedHoliday) {
-                if ($orderLine['holiday_id'] !== $intersectedHoliday->id)
+            $matchedHoliday = $this->getMatchedHoliday($orderLine['item_id'], $orderLine['reservation']);
+            if ($matchedHoliday) {
+                if ($orderLine['holiday_id'] !== $matchedHoliday->id)
                     abort(400, "Timing matches holiday");
-                $price = $intersectedHoliday['price'];
+                $price = $matchedHoliday['price'];
             }
         }
         if (!isset($price))
