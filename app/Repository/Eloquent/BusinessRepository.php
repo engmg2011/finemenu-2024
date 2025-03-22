@@ -39,7 +39,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
 
     public function process(&$data): array
     {
-        return array_only($data, ['name', 'user_id', 'passcode', 'creator_id', 'slug']);
+        return array_only($data, ['name', 'user_id', 'passcode', 'creator_id', 'slug', 'type']);
     }
 
     public function createModel(array $data): Model

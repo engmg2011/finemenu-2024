@@ -86,7 +86,7 @@ class UsersController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $businessId, $id)
     {
         $data = $request->all();
         unset($data['email']);
@@ -94,7 +94,6 @@ class UsersController extends Controller
 
         if (isset($data['password']) && $data['password'] === "")
             unset($data['password']);
-
 
         $validator = Validator::make($data, [
             'email' => ['string', 'email', 'max:255',

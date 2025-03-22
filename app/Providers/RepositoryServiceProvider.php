@@ -11,6 +11,7 @@ use App\Repository\ContentRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
 use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
+use App\Repository\DiscountRepositoryInteface;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Eloquent\BookmarkRepository;
 use App\Repository\Eloquent\BranchRepository;
@@ -20,6 +21,7 @@ use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
 use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
+use App\Repository\Eloquent\DiscountRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\FloorRepository;
 use App\Repository\Eloquent\HolidayRepository;
@@ -92,6 +94,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepository::class);
         $this->app->bind(ChaletRepositoryInterface::class, ChaletRepository::class);
         $this->app->bind(HolidayRepositoryInterface::class, HolidayRepository::class);
+        $this->app->bind(DiscountRepositoryInteface::class, DiscountRepository::class);
     }
 
     /**

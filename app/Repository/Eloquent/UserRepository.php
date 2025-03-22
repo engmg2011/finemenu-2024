@@ -250,5 +250,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     }
 
+    public function destroy($id): ?bool
+    {
+        return $this->find($id)?->delete();
+    }
+
 
 }

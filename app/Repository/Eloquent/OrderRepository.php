@@ -3,9 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
-use App\Actions\DiscountAction;
 use App\Constants\OrderStatus;
-use App\Constants\PaymentConstants;
 use App\Constants\PermissionsConstants;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
@@ -15,9 +13,11 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\User;
+use App\Repository\DiscountRepositoryInteface;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
@@ -25,13 +25,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     public const Relations = ['discounts.locales', 'orderlines.reservation', 'device', 'invoices'];
 
-    public function __construct(Order                                  $model,
-                                private LocaleRepository               $localeRepository,
-                                private OrderLineRepository            $orderLineRepository,
-                                private PriceRepository                $priceAction,
-                                private DiscountAction                 $discountAction,
-                                private InvoiceRepositoryInterface     $invoiceRepository,
-                                private ReservationRepositoryInterface $reservationRepository,
+    public function __construct(Order                                           $model,
+                                private readonly LocaleRepository               $localeRepository,
+                                private readonly OrderLineRepository            $orderLineRepository,
+                                private readonly PriceRepository                $priceAction,
+                                private readonly DiscountRepositoryInteface     $discountRepository,
+                                private readonly InvoiceRepositoryInterface     $invoiceRepository,
+                                private readonly ReservationRepositoryInterface $reservationRepository,
     )
     {
         parent::__construct($model);
@@ -72,7 +72,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
     /**
-     * @throws \Exception
+     * @param $orderLines
+     * @return false|void
      */
     public function validateCategoriesInBranch(&$orderLines)
     {
@@ -93,9 +94,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     }
 
 
-
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(array $data): Model
     {
@@ -148,9 +148,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if (isset($data['prices']))
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['addons']))
-            $this->discountAction->set($model, $data['addons']);
+            $this->discountRepository->set($model, $data['addons']);
         if (isset($data['discounts']))
-            $this->discountAction->set($model, $data['discounts']);
+            $this->discountRepository->set($model, $data['discounts']);
     }
 
     public function update($id, array $data): Model

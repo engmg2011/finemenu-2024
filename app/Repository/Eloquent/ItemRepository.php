@@ -4,13 +4,13 @@ namespace App\Repository\Eloquent;
 
 
 use App\Actions\AddonAction;
-use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
 use App\Constants\BusinessTypes;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Item;
 use App\Repository\ChaletRepositoryInterface;
+use App\Repository\DiscountRepositoryInteface;
 use App\Repository\ItemRepositoryInterface;
 use DB;
 use Illuminate\Database\Eloquent\Model;
@@ -18,13 +18,13 @@ use Illuminate\Database\Eloquent\Model;
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
 
-    public function __construct(Item                              $model,
-                                private MediaAction               $mediaAction,
-                                private LocaleRepository          $localeAction,
-                                private PriceRepository           $priceAction,
-                                private AddonAction               $addonAction,
-                                private DiscountAction            $discountAction,
-                                private ChaletRepositoryInterface $chaletRepository)
+    public function __construct(Item                               $model,
+                                private MediaAction                $mediaAction,
+                                private LocaleRepository           $localeAction,
+                                private PriceRepository            $priceAction,
+                                private AddonAction                $addonAction,
+                                private DiscountRepositoryInteface $discountRepository,
+                                private ChaletRepositoryInterface  $chaletRepository)
     {
         parent::__construct($model);
     }
@@ -63,9 +63,9 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             ->whereIn('category_id', $categoriesIds)
             ->whereHas('locales', function ($query) use ($searchTerm) {
                 $query->where(function ($q) use ($searchTerm) {
-                        $q->where('name', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('description', 'like', '%' . $searchTerm . '%');
-                    });
+                    $q->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                });
             })
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
@@ -81,7 +81,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         if (isset($data['prices']))
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['discounts']))
-            $this->discountAction->set($model, $data['discounts']);
+            $this->discountRepository->set($model, $data['discounts']);
     }
 
     public function getBusinessType($categoryId)
@@ -146,11 +146,13 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         return $this->delete($id);
     }
 
-    public function listHolidays($businessId ,$itemId){
+    public function listHolidays($businessId, $itemId)
+    {
         return $this->model->with('holidays.locales')->find($itemId);
     }
 
-    public function syncHolidays($businessId ,$itemId){
+    public function syncHolidays($businessId, $itemId)
+    {
         $request = request();
         $request->validate([
             'holidays' => 'required|array',

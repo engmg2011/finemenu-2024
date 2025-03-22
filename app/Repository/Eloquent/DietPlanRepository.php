@@ -2,10 +2,10 @@
 
 namespace App\Repository\Eloquent;
 
-use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
 use App\Models\DietPlan;
 use App\Repository\DietPlanRepositoryInterface;
+use App\Repository\DiscountRepositoryInteface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -20,13 +20,13 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
      * @param MediaAction $mediaAction
      * @param LocaleRepository $localeAction
      * @param PriceRepository $priceAction
-     * @param DiscountAction $discountAction
+     * @param DiscountRepositoryInteface $discountRepository
      */
-    public function __construct(DietPlan                        $model,
-                                private readonly MediaAction    $mediaAction,
-                                private readonly LocaleRepository   $localeAction,
-                                private readonly PriceRepository    $priceAction,
-                                private readonly DiscountAction $discountAction)
+    public function __construct(DietPlan                                    $model,
+                                private readonly MediaAction                $mediaAction,
+                                private readonly LocaleRepository           $localeAction,
+                                private readonly PriceRepository            $priceAction,
+                                private readonly DiscountRepositoryInteface $discountRepository)
     {
         parent::__construct($model);
     }
@@ -42,11 +42,12 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
      */
     public function getModel(int $id, array $extraRelations = []): Builder|DietPlan|null
     {
-        $allRelations = array_merge($this->relations , $extraRelations);
+        $allRelations = array_merge($this->relations, $extraRelations);
         return DietPlan::with($allRelations)->find($id);
     }
 
-    public function relationsProcess(&$model, &$data): void{
+    public function relationsProcess(&$model, &$data): void
+    {
         if (isset($data['locales']))
             $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
@@ -54,7 +55,7 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
         if (isset($data['prices']))
             $this->priceAction->setPrices($model, $data['prices']);
         if (isset($data['discounts']))
-            $this->discountAction->set($model, $data['discounts']);
+            $this->discountRepository->set($model, $data['discounts']);
     }
 
     public function createModel(array $data): Model
@@ -64,19 +65,19 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
         $model = $this->model->create($this->processPlan($data));
         if (isset($data['item_ids']))
             $model->items()->attach($data['item_ids']);
-        $this->relationsProcess($model,$data);
+        $this->relationsProcess($model, $data);
         return $this->getModel($model->id);
     }
 
     public function updateModel($id, array $data): Model
     {
         $model = $this->model->find($id);
-        if(!$model)
+        if (!$model)
             throw new NotFoundHttpException("No plans found with id $id");
         $model->update($this->processPlan($data));
         if (isset($data['item_ids']))
             $model->items()->sync($data['item_ids']);
-        $this->relationsProcess($model,$data);
+        $this->relationsProcess($model, $data);
         return $this->getModel($model->id, ['items']);
     }
 
@@ -96,7 +97,8 @@ class DietPlanRepository extends BaseRepository implements DietPlanRepositoryInt
         return $plan->delete();
     }
 
-    public function getPlan(int $id){
+    public function getPlan(int $id)
+    {
         return $this->getModel($id, ['items.locales', 'items.media']);
     }
 }

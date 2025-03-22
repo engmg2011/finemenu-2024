@@ -3,11 +3,11 @@
 namespace App\Repository\Eloquent;
 
 //
-use App\Actions\DiscountAction;
 use App\Actions\MediaAction;
 use App\Constants\SettingConstants;
 use App\Models\Business;
 use App\Models\Setting;
+use App\Repository\DiscountRepositoryInteface;
 use App\Repository\SettingRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,10 +26,10 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
      * UserRepository constructor.
      * @param Setting $model
      */
-    public function __construct(Setting                           $model,
-                                private readonly MediaAction      $mediaAction,
-                                private readonly LocaleRepository $localeAction,
-                                private readonly DiscountAction   $discountAction
+    public function __construct(Setting                                     $model,
+                                private readonly MediaAction                $mediaAction,
+                                private readonly LocaleRepository           $localeAction,
+                                private readonly DiscountRepositoryInteface $discountRepository
     )
     {
         parent::__construct($model);
@@ -55,7 +55,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['discounts']))
-            $this->discountAction->set($model, $data['discounts']);
+            $this->discountRepository->set($model, $data['discounts']);
     }
 
     /**
@@ -96,7 +96,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $setting = $this->model->where($deleteData)->find($data['id']);
         if ($setting)
             return $setting->delete();
-        abort(400,"No data found!");
+        abort(400, "No data found!");
     }
 
     public function set($model, $data)
@@ -131,7 +131,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     public function setSettings($relationModel, array $data)
     {
         $settings = $data['settings'];
-        foreach ($settings as  $setting) {
+        foreach ($settings as $setting) {
             $keySetting = $relationModel->settings?->where('key', $setting['key'])->first();
             if ($keySetting)
                 $keySetting->update(['data' => $setting['data']]);
