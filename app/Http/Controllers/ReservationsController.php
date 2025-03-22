@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Item;
+use App\Models\Items\Chalet;
 use App\Models\Reservation;
 use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -40,8 +42,14 @@ class ReservationsController extends Controller
             'to' => 'required|date|after_or_equal:from',
         ]);
         $data = $request->all();
-        $currentReservation = $this->repository->currentReservation($data, $businessId, $branchId);
-        return \response()->json((bool)$currentReservation);
+        $currentReservations = $this->repository->currentReservations($data, $businessId, $branchId);
+        $item = Item::with('itemable')->find($data['reservable_id']);
+        if($item->itemable instanceof Chalet){
+            if (count($currentReservations) >=  $item->itemable->amount  ) {
+                return \response()->json(false);
+            }
+        }
+        return \response()->json(true);
     }
 
     public function userReservations()

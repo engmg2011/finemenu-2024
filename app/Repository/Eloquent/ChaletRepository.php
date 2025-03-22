@@ -18,7 +18,7 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
     public function process(array $data)
     {
         return array_only($data, [
-            'insurance', 'latitude', 'longitude', 'address',
+            'insurance', 'latitude', 'longitude', 'address', 'amount',
             'frontage', 'bedrooms', 'item_id', 'owner_id']);
     }
 
@@ -37,7 +37,7 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
 
     public function set(array $data): Model
     {
-        if(isset($data['id']))
+        if (isset($data['id']))
             return $this->updateModel($data['id'], $data);
         else
             return $this->create($data);

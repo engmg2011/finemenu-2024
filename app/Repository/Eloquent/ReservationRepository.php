@@ -9,6 +9,7 @@ use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
 use App\Models\Item;
+use App\Models\Items\Chalet;
 use App\Models\OrderLine;
 use App\Models\Reservation;
 use App\Models\User;
@@ -91,7 +92,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function currentReservation($data, $businessId, $branchId, $updateId = null)
+    public function currentReservations($data, $businessId, $branchId, $updateId = null)
     {
         $startDate = $data['from'];
         $endDate = $data['to'];
@@ -111,7 +112,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                         $query->where('from', '<=', $startDate)
                             ->where('to', '>=', $endDate);
                     });
-            })->first();
+            })->get();
     }
 
     public function listModel($businessId, $branchId, $conditions = null)
@@ -127,8 +128,14 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        if ($this->currentReservation($data, $businessId, $branchId))
-            abort(400, "Not available now, please choose different dates or try again later");
+
+        $currentReservations = $this->currentReservations($data, $businessId, $branchId);
+        $item = Item::with('itemable')->find($data['reservable_id']);
+        if($item->itemable instanceof Chalet){
+            if (count($currentReservations) >=  $item->itemable->amount  ) {
+                abort(400, "Not available now, please choose different dates or try again later");
+            }
+        }
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -162,9 +169,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $data['reservable_id'] = $reservation->reservable_id;
 
         if (isset($data['from']) && isset($data['to'])) {
-            if ($this->currentReservation($data, $reservation->business_id, $reservation->branch_id, $id))
-                abort(400, "Not available now, please choose different dates or try again later");
+            $currentReservations = $this->currentReservations($data, $reservation->business_id, $reservation->branch_id, $id);
+            $item = Item::with('itemable')->find($data['reservable_id']);
+            if($item->itemable instanceof Chalet){
+                if (count($currentReservations) >=  $item->itemable->amount  ) {
+                    abort(400, "Not available now, please choose different dates or try again later");
+                }
+            }
         }
+
         // TODO:: check if data['paid']
         $model = tap($reservation)
             ->update($this->process($data));
@@ -279,14 +292,23 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $sameUserReservation = null;
         if (isset($reservationData)) {
             $reservationData['reservable_id'] = $reservable_id;
-            $currentReservation = $this->currentReservation($reservationData, $businessId, $branchId);
-            if ($currentReservation) {
-                if ($currentReservation->status === PaymentConstants::RESERVATION_COMPLETED ||
-                    $currentReservation->reserved_for_id = !auth()->user()->id) {
-                    abort(400, "Not available now, please choose different dates or try again later");
+            $currentReservations = $this->currentReservations($reservationData, $businessId, $branchId);
+            $item = Item::with('itemable')->find($reservationData['reservable_id']);
+            if($item->itemable instanceof Chalet){
+                if(count($currentReservations)){
+                    foreach ($currentReservations as $currentReservation){
+                        if ($currentReservation->status === PaymentConstants::RESERVATION_PENDING &&
+                            $currentReservation->reserved_for_id == auth()->user()->id) {
+                            $sameUserReservation = $currentReservation;
+                            break;
+                        }
+                    }
+                    if ($sameUserReservation == null && count($currentReservations) >=  $item->itemable->amount  ) {
+                        abort(400, "Not available now, please choose different dates or try again later");
+                    }
                 }
-                $sameUserReservation = $currentReservation;
             }
+
         }
         return $sameUserReservation;
     }
