@@ -38,6 +38,16 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
             }])
             ->with(['discounts' => function ($query) use ($data) {
                 $query->whereIn('id', $data['discount_ids']);
+                if(isset($data['reservation'])){
+                    $startDate = $data['reservation']['from'];
+                    $endDate = $data['reservation']['to'];
+                    $query->whereBetween('from', [$startDate, $endDate])
+                        ->orWhereBetween('to', [$startDate, $endDate])
+                        ->orWhere(function ($query) use ($startDate, $endDate) {
+                            $query->where('from', '<=', $startDate)
+                                ->where('to', '>=', $endDate);
+                        });
+                }
             }]);
 
         if (isset($data['holiday_id'])) {
@@ -98,7 +108,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     public function applyDiscounts(&$orderLine, $item)
     {
         // apply item discounts
-        $discounts = $item['discounts'] ?? [];
+        $discounts = $item->discounts ?? [];
         $discountAmount = 0;
         $itemPrice = $orderLine['total_price'];
         if (!count($discounts)) return;
