@@ -28,6 +28,29 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
+    public function filter($businessId)
+    {
+        $request = request();
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+        $startDate = $request->input('from');
+        $endDate = $request->input('to');
+
+        return $this->model::with(['locales'])
+            ->where('business_id', $businessId)
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('from', [$startDate, $endDate])
+                    ->orWhereBetween('to', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('from', '<=', $startDate)
+                            ->where('to', '>=', $endDate);
+                    });
+            })
+            ->orderByDesc('id')->paginate(request('per-page', 15));
+    }
+
     public function relations($model, $data)
     {
         if (isset($data['locales'])) {

@@ -58,6 +58,7 @@ Route::group(['middleware' => [
 
             Route::group(['prefix' => 'holidays'], function () {
                 Route::get('/', [HolidaysController::class, 'index']);
+                Route::get('/filter', [HolidaysController::class, 'filter']);
                 Route::get('/{id}', [HolidaysController::class, 'show']);
                 Route::post('/', [HolidaysController::class, 'createModel']);
                 Route::post('/{id}/delete', [HolidaysController::class, 'destroy']);

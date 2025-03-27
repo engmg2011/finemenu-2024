@@ -23,6 +23,15 @@ class HolidaysController extends Controller
     {
         return DataResource::collection($this->repository->listModel($businessId));
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return JsonResponse
+     */
+    public function filter($businessId)
+    {
+        return response()->json($this->repository->filter($businessId));
+    }
 
     /**
      * Store a newly created resource in storage.

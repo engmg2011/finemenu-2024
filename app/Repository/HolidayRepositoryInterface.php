@@ -11,6 +11,8 @@ interface HolidayRepositoryInterface
      */
     public function listModel($businessId);
 
+    public function filter($businessId);
+
     public function process($businessId, array $data);
 
     public function createModel($businessId, array $data): Model;
