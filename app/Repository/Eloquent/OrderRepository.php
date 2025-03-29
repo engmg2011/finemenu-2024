@@ -109,11 +109,21 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         $this->validateCategoriesInBranch($data['order_lines']);
 
-        $reservationData = $data['order_lines'][0]['reservation'];
-        $reservable_id = $data['order_lines'][0]['item_id'];
-        $sameUserReservation = $this->reservationRepository->checkSameReservation($reservationData, $reservable_id, $businessId, $branchId);
-        if ($sameUserReservation)
-            return $this->get($sameUserReservation->order_id);
+        // checking if exists reservation
+        // assume reservation will be in the first ol
+        if(isset($data['order_lines'][0]['reservation'])){
+            $reservationData = $data['order_lines'][0]['reservation'];
+            $reservable_id = $data['order_lines'][0]['item_id'];
+
+            // check if user created same reservation before and not paid
+            $sameUserReservation = $this->reservationRepository->getSameReservation($reservationData, $reservable_id, $businessId, $branchId);
+            if ($sameUserReservation)
+                return $this->get($sameUserReservation->order_id);
+
+            // check if item exceeds the allowed amount
+            $reservationData['reservable_id'] = $reservable_id;
+            $this->reservationRepository->checkAllowedReservationAmount($reservationData, $businessId, $branchId);
+        }
 
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;

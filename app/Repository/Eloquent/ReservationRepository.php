@@ -9,14 +9,17 @@ use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
 use App\Models\Item;
-use App\Models\Items\Chalet;
 use App\Models\OrderLine;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\ReservationRepositoryInterface;
 use App\Services\AuditService;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Spatie\Period\Period;
+use Spatie\Period\PeriodCollection;
 
 
 class ReservationRepository extends BaseRepository implements ReservationRepositoryInterface
@@ -92,29 +95,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 1200));
     }
 
-    public function currentReservations($data, $businessId, $branchId, $updateId = null)
-    {
-        $startDate = $data['from'];
-        $endDate = $data['to'];
-        $reservable_id = $data['reservable_id'];
-        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
-            ->where('reservable_id', $reservable_id)
-            ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
-            ->where(function ($query) use ($updateId) {
-                // todo :: check for same id
-                if ($updateId)
-                    $query->where('id', '!=', $updateId);
-            })
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('from', [$startDate, $endDate])
-                    ->orWhereBetween('to', [$startDate, $endDate])
-                    ->orWhere(function ($query) use ($startDate, $endDate) {
-                        $query->where('from', '<=', $startDate)
-                            ->where('to', '>=', $endDate);
-                    });
-            })->get();
-    }
-
     public function listModel($businessId, $branchId, $conditions = null)
     {
         return Reservation::with(ReservationRepository::Relations)
@@ -129,13 +109,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
 
-        $currentReservations = $this->currentReservations($data, $businessId, $branchId);
-        $item = Item::with('itemable')->find($data['reservable_id']);
-        if($item->itemable instanceof Chalet){
-            if (count($currentReservations) >=  $item->itemable->amount  ) {
-                abort(400, "Not available now, please choose different dates or try again later");
-            }
-        }
+        $this->checkAllowedReservationAmount($data, $businessId, $branchId);
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -169,13 +143,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $data['reservable_id'] = $reservation->reservable_id;
 
         if (isset($data['from']) && isset($data['to'])) {
-            $currentReservations = $this->currentReservations($data, $reservation->business_id, $reservation->branch_id, $id);
-            $item = Item::with('itemable')->find($data['reservable_id']);
-            if($item->itemable instanceof Chalet){
-                if (count($currentReservations) >=  $item->itemable->amount  ) {
-                    abort(400, "Not available now, please choose different dates or try again later");
-                }
-            }
+
+            $this->checkAllowedReservationAmount($data, $reservation->business_id, $reservation->branch_id, $id);
+
         }
 
         // TODO:: check if data['paid']
@@ -287,29 +257,78 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     }
 
     // checking if there is current reservation
-    public function checkSameReservation($reservationData, $reservable_id, $businessId, $branchId)
+    public function getSameReservation($reservationData, $reservable_id, $businessId, $branchId)
     {
-        $sameUserReservation = null;
-        if (isset($reservationData)) {
-            $reservationData['reservable_id'] = $reservable_id;
-            $currentReservations = $this->currentReservations($reservationData, $businessId, $branchId);
-            $item = Item::with('itemable')->find($reservationData['reservable_id']);
-            if($item->itemable instanceof Chalet){
-                if(count($currentReservations)){
-                    foreach ($currentReservations as $currentReservation){
-                        if ($currentReservation->status === PaymentConstants::RESERVATION_PENDING &&
-                            $currentReservation->reserved_for_id == auth()->user()->id) {
-                            $sameUserReservation = $currentReservation;
-                            break;
-                        }
-                    }
-                    if ($sameUserReservation == null && count($currentReservations) >=  $item->itemable->amount  ) {
-                        abort(400, "Not available now, please choose different dates or try again later");
-                    }
-                }
-            }
-
-        }
-        return $sameUserReservation;
+        return Reservation::where('reserved_for_id', auth()->user()->id)
+            ->where('reservable_id', $reservable_id)
+            ->where('from', $reservationData['from'])
+            ->where('to', $reservationData['to'])
+            ->where('business_id', $businessId)
+            ->where('branch_id', $branchId)
+            ->where('status', PaymentConstants::RESERVATION_PENDING)
+            ->first();
     }
+
+    // get current intersected reservations with the required period
+    public function currentReservations($data, $businessId, $branchId, $updateId = null)
+    {
+        $startDate = $data['from'];
+        $endDate = $data['to'];
+        $reservable_id = $data['reservable_id'];
+        return Reservation::
+        select(['from', 'to'])
+            ->where(['branch_id' => $branchId, 'business_id' => $businessId])
+            ->where('reservable_id', $reservable_id)
+            ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ($updateId) {
+                // todo :: check for same id
+                if ($updateId)
+                    $query->where('id', '!=', $updateId);
+            })
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('from', [$startDate, $endDate])
+                    ->orWhereBetween('to', [$startDate, $endDate])
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->where('from', '<=', $startDate)
+                            ->where('to', '>=', $endDate);
+                    });
+            })->get();
+    }
+
+    public function checkAllowedReservationAmount($data, $businessId, $branchId, $updateId = null)
+    {
+        $currentReservations = $this->currentReservations($data, $businessId, $branchId, $updateId)->toArray();
+        $item = Item::with('itemable')->find($data['reservable_id']);
+
+        $periodMap = array_map(function ($period) {
+            return Period::make($period['from'], $period['to']);
+        }, $currentReservations);
+        // Add the requested period to the map
+        $periodMap[] = Period::make(Carbon::parse($data['from']), Carbon::parse($data['to']));
+        $collection = new PeriodCollection(...$periodMap);
+
+        // Carbon period for the will created / updated reservation
+        $period = CarbonPeriod::create($data['from'], $data['to']);
+        $daysIntersections = [];
+        // every day in the period
+        foreach ($period as $date) {
+            $day = $date->format('Y-m-d');
+            // Convert the day to a single-day Period
+            $dayPeriod = Period::make(
+                Carbon::parse($day)->startOfDay(),
+                Carbon::parse($day)->endOfDay()
+            );
+
+            // Count intersections
+            $intersectionCount = $collection
+                ->filter(fn(Period $period) => $period->overlapsWith($dayPeriod))
+                ->count();
+
+            $daysIntersections[$day] = $intersectionCount;
+
+            if ($intersectionCount > $item->itemable->amount)
+                abort(400, "Not available now, please choose different dates or try again later");
+        }
+    }
+
 }

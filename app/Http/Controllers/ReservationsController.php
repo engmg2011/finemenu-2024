@@ -42,13 +42,7 @@ class ReservationsController extends Controller
             'to' => 'required|date|after_or_equal:from',
         ]);
         $data = $request->all();
-        $currentReservations = $this->repository->currentReservations($data, $businessId, $branchId);
-        $item = Item::with('itemable')->find($data['reservable_id']);
-        if($item->itemable instanceof Chalet){
-            if (count($currentReservations) >=  $item->itemable->amount  ) {
-                return \response()->json(false);
-            }
-        }
+        $this->repository->checkAllowedReservationAmount($data, $businessId, $branchId);
         return \response()->json(true);
     }
 

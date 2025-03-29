@@ -34,19 +34,24 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         $itemQuery = Item::query();
         $itemQuery = $itemQuery->with('locales', 'itemable')
             ->with(['addons' => function ($query) use ($data) {
-                $query->whereIn('id', $data['addon_ids']);
+                if (isset($data['addon_ids'])) {
+                    $query->whereIn('id', $data['addon_ids']);
+                };
             }])
             ->with(['discounts' => function ($query) use ($data) {
-                $query->whereIn('id', $data['discount_ids']);
-                if(isset($data['reservation'])){
-                    $startDate = $data['reservation']['from'];
-                    $endDate = $data['reservation']['to'];
-                    $query->whereBetween('from', [$startDate, $endDate])
-                        ->orWhereBetween('to', [$startDate, $endDate])
-                        ->orWhere(function ($query) use ($startDate, $endDate) {
-                            $query->where('from', '<=', $startDate)
-                                ->where('to', '>=', $endDate);
-                        });
+                if (isset($data['discount_ids'])) {
+                    $query->whereIn('id', $data['discount_ids']);
+                    if (isset($data['reservation'])) {
+                        $startDate = $data['reservation']['from'];
+                        $endDate = $data['reservation']['to'];
+                        // discounts between dates
+                        $query->whereBetween('from', [$startDate, $endDate])
+                            ->orWhereBetween('to', [$startDate, $endDate])
+                            ->orWhere(function ($query) use ($startDate, $endDate) {
+                                $query->where('from', '<=', $startDate)
+                                    ->where('to', '>=', $endDate);
+                            });
+                    }
                 }
             }]);
 
