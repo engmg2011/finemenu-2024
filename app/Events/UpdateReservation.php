@@ -6,7 +6,6 @@ use App\Models\Business;
 use App\Models\Device;
 use App\Models\Reservation;
 use App\Notifications\OneSignalNotification;
-use App\Repository\Eloquent\ReservationRepository;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -25,7 +24,7 @@ class UpdateReservation implements ShouldBroadcast
      */
     public function __construct($reservationId)
     {
-        $this->reservation = Reservation::with(ReservationRepository::Relations)->find($reservationId);
+        $this->reservation = Reservation::find($reservationId);
         $this->notifyAdmins();
     }
 
