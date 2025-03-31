@@ -200,7 +200,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
          */
         $reservation = Reservation::with('invoices',
             'reservable.locales',
-            'reservable.media',
             'reservable.itemable',
             'reservedFor',
             'reservedBy'
