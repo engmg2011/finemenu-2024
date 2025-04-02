@@ -28,7 +28,7 @@ class PermissionsSeeder extends Seeder
          * - Make orders
          * - See his orders history
          *
-         *  Create all roles and permissions for every new business and branches
+         *  Create all roles for every new business and branches
          *  If we will apply custom permission for like "orders apis"
          *      in branch 1 it should be "branch.1.orders"  this could be applied in /orders routes
          * - BusinessOwner (Role)

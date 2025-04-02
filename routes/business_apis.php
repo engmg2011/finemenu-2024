@@ -10,6 +10,7 @@ use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
@@ -128,6 +129,14 @@ Route::group(['middleware' => [
                         Route::get('/', [AuditController::class, 'index']);
                         Route::get('/filter', [AuditController::class, 'filter']);
                     });
+
+                    Route::group(['prefix' => 'permissions'], function () {
+                        Route::get('/services', [PermissionsController::class, 'services']);
+                        Route::get('/actions', [PermissionsController::class, 'actions']);
+                        Route::get('user/{userId}', [PermissionsController::class, 'getUserPermissions']);
+                        Route::post('user/{userId}/set', [PermissionsController::class, 'setUserPermissions']);
+                    });
+
                 });
 
                 Route::group(['prefix' => 'kitchen'], function () {
