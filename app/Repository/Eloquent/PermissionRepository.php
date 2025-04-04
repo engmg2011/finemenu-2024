@@ -45,7 +45,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     public function createBranchPermission($branchId, $assignUser = null)
     {
-        $permissionName = PermissionsConstants::Branch.'.' . $branchId;
+        $permissionName = PermissionsConstants::Branch . '.' . $branchId;
         Permission::findOrCreate($permissionName, 'web');
         if ($assignUser)
             $assignUser->givePermissionTo($permissionName);
@@ -56,15 +56,15 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     public function createBranchServicePermissions($branchId)
     {
         foreach (PermissionServices::getConstants() as $service) {
-            foreach(PermissionActions::getConstants() as $action) {
-                Permission::findOrCreate('branch.' . $branchId .'.'.$service.'.'.$action, 'web');
+            foreach (PermissionActions::getConstants() as $action) {
+                Permission::findOrCreate('branch.' . $branchId . '.' . $service . '.' . $action, 'web');
             }
         }
     }
 
     public function createBusinessPermission($branchId, $assignUser = null)
     {
-        $permissionName = PermissionsConstants::Business.'.' . $branchId;
+        $permissionName = PermissionsConstants::Business . '.' . $branchId;
         Permission::findOrCreate($permissionName, 'web');
         if ($assignUser)
             $assignUser->givePermissionTo($permissionName);
@@ -74,34 +74,84 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     {
         $user = User::find($userId);
         return $user->getAllPermissions()
-            ->filter(function($permission) use($branchId){
+            ->filter(function ($permission) use ($branchId) {
                 return str_starts_with($permission->name, "branch.$branchId.");
             })
             ->pluck('name');
     }
 
+    /**
+     * Set control data
+     * "control": [{
+     *      "branch_ids": [ "2" , "5"],
+     *      "business_id": "2"
+     * }],
+     * @return void
+     */
+    public function setControlData($branchId,$user, )
+    {
+        $dashboardAccess = request()->get('dashboard_access', false);
+        if (!$dashboardAccess) {
+            // all services permissions will be revoked
+            $permissions = [];
+            $user->update(['control' => null]);
+        } else {
+            $controlData = $user->control;
+            $businessId = request()->route('businessId');
+            $isFound = false;
+            if (is_array($controlData)) {
+                foreach ($controlData as &$control) {
+                    if (intval($control['business_id']) === intval($businessId)) {
+                        $branchIds = $control['branch_ids'];
+                        if(is_array($branchIds)){
+                            $branchIds[] = $branchId;
+                            $control['branch_ids'] = array_unique($branchIds);
+                        }else{
+                            $control['branch_ids'] = [$branchId];
+                        }
+                        $isFound = true;
+                    }
+                }
+            }
+            if (!$isFound) {
+                $controlData[] = [
+                    'business_id' => request()->route('businessId'),
+                    'branch_ids' => [$branchId]
+                ];
+            }
+            $user->update(['control' => $controlData]);
+        }
+
+    }
+
     public function setUserPermissions($branchId, $userId, $permissions)
     {
         $user = User::find($userId);
+        $businessId = (int) request()->route('businessId');
+
+        if ($user->business_id !== $businessId) {
+            abort(403, "Not permitted");
+        }
 
         $actions = PermissionActions::getConstants();
         $services = PermissionServices::getConstants();
 
+        $this->setControlData($branchId,$user);
+
         $newPermissions = [];
         $removedPermissions = [];
-        if(isset($permissions)){
-            foreach ($services as $service){
-                foreach ($actions as $action){
+        if (isset($permissions)) {
+            foreach ($services as $service) {
+                foreach ($actions as $action) {
                     $prem = "branch.$branchId.$service.$action";
-                    if(in_array("$service.$action", $permissions)){
+                    if (in_array("$service.$action", $permissions)) {
                         $newPermissions[] = $prem;
-                    }else{
+                    } else {
                         $removedPermissions[] = $prem;
                     }
                 }
             }
             $user->syncPermissions($newPermissions);
-
             $user->revokePermissionTo($removedPermissions);
         }
         return $this->getUserPermissions($branchId, $userId);

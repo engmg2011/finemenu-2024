@@ -73,8 +73,9 @@ class UsersController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show()
     {
+        $id = request()->route('userId');
         return \response()->json($this->userRepository->get($id));
     }
 
