@@ -95,13 +95,6 @@ Route::group(['middleware' => ['auth:sanctum',
         Route::post('/{id}', [EventsController::class, 'update']);
     });
 
-    Route::group(['prefix' => 'reservations'], function () {
-        Route::get('/', [ReservationsController::class, 'index']);
-        Route::get('/{id}', [ReservationsController::class, 'show']);
-        Route::post('/', [ReservationsController::class, 'create']);
-        Route::post('/{id}', [ReservationsController::class, 'update']);
-    });
-
     Route::group(['prefix' => 'contents'], function () {
         Route::get('/', [ContentsController::class, 'index']);
         Route::get('/{id}', [ContentsController::class, 'show']);

@@ -128,7 +128,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     /**
      * @throws \Exception
      */
-    public function update($id, array $data): Model
+    public function updateModel($id, array $data): Model
     {
         // Check the user has the authority to make this order paid (admin | owner | user )
         $userId = auth('sanctum')->user()->id;
