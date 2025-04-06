@@ -137,7 +137,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $reservation->branch_id,
             PermissionsConstants::Business . '.' . $reservation->business_id]))
-            return throw new \Exception(403, 'You Don\'t have permission');
+            return throw new \Exception('You Don\'t have permission',403);
 
         if (!isset($data['reservable_id']))
             $data['reservable_id'] = $reservation->reservable_id;
