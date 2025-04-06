@@ -9,6 +9,7 @@ use App\Models\OrderLine;
 use App\Models\Price;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Period\Period;
 
@@ -232,7 +233,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     public function getMatchedHoliday($itemId, $reservation)
     {
         // prepare requested reservation period
-        $reservationPeriod = Period::make($reservation['from'], $reservation['to']);
+        $reservationPeriod = Period::make(Carbon::parse($reservation['from']), Carbon::parse($reservation['to']));
         // get item holidays
         $item = Item::with('holidays')->find($itemId);
         $itemHolidays = $item->holidays;

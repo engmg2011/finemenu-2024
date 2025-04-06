@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\PermissionActions;
+use App\Constants\PermissionServices;
 use App\Http\Resources\DataResource;
-use App\Models\Item;
-use App\Models\Items\Chalet;
 use App\Models\Reservation;
 use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -72,6 +72,8 @@ class ReservationsController extends Controller
         $data = $request->all();
         $data['branch_id'] = request()->route('branchId');
         $data['business_id']  = request()->route('businessId');
+        checkUserPermission(auth('sanctum')->id(), $data['branch_id'] ,
+            PermissionServices::Reservations , PermissionActions::Create);
         return \response()->json($this->repository->create($data));
     }
 

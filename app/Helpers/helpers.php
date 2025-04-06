@@ -7,7 +7,7 @@
  */
 
 use App\Models\Menu;
-use App\Models\Business;
+use App\Models\User;
 
 if(!function_exists('array_only')){
     function array_only (Array $array , Array $keys): Array {
@@ -30,7 +30,14 @@ if(!function_exists('slug')){
     }
 }
 
-
+if(!function_exists('checkUserPermission')){
+    function checkUserPermission ($userId,$branchId, $service, $action){
+        $user = User::find($userId);
+        if(!$user->hasPermissionTo("branch.$branchId.$service.$action")){
+            abort(403, "You are not authorized to perform this action.");
+        }
+    }
+}
 
 
 
