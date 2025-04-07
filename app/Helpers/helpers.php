@@ -31,8 +31,7 @@ if(!function_exists('slug')){
 }
 
 if(!function_exists('checkUserPermission')){
-    function checkUserPermission ($userId,$branchId, $service, $action){
-        $user = User::find($userId);
+    function checkUserPermission (User $user,$branchId, $service, $action){
         if(!$user->hasPermissionTo("branch.$branchId.$service.$action")){
             abort(403, "You are not authorized to perform this action.");
         }

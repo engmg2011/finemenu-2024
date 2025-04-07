@@ -72,7 +72,7 @@ class ReservationsController extends Controller
         $data = $request->all();
         $data['branch_id'] = request()->route('branchId');
         $data['business_id'] = request()->route('businessId');
-        checkUserPermission(auth('sanctum')->id(), $data['branch_id'],
+        checkUserPermission(auth('sanctum')->user(), $data['branch_id'],
             PermissionServices::Reservations, PermissionActions::Create);
         return \response()->json($this->repository->create($data));
     }
@@ -95,6 +95,9 @@ class ReservationsController extends Controller
     public function update(Request $request)
     {
         $id = \request()->route('id');
+        $data['branch_id'] = request()->route('branchId');
+        checkUserPermission(auth('sanctum')->user(), $data['branch_id'],
+            PermissionServices::Reservations, PermissionActions::Update);
         return \response()->json($this->repository->updateModel($id, $request->all()));
     }
 

@@ -4,7 +4,6 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
-use App\Constants\PermissionsConstants;
 use App\Events\UpdateReservation;
 use App\Models\Invoice;
 use App\Models\Order;
@@ -80,9 +79,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $invoice = $this->model->findOrFail($id);
-        if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $invoice->branch_id,
-            PermissionsConstants::Business . '.' . $invoice->business_id]))
-            return abort(403,'You Don\'t have permission');
+//        if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $invoice->branch_id,
+//            PermissionsConstants::Business . '.' . $invoice->business_id]))
+//            return abort(403,'You Don\'t have permission');
         if (isset($data['status']) && $data['status'] != $invoice->status) {
             $data['status_changed_at'] = now();
             if ($data['status'] === PaymentConstants::INVOICE_PAID) {

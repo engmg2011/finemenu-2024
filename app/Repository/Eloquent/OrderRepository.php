@@ -4,7 +4,9 @@ namespace App\Repository\Eloquent;
 
 
 use App\Constants\OrderStatus;
+use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
+use App\Constants\PermissionServices;
 use App\Events\NewOrder;
 use App\Events\UpdateOrder;
 use App\Models\Branch;
@@ -169,7 +171,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $order = Order::find($id);
-        if (!$user->hasAnyPermission($this->getOrderRequiredPermission($order)))
+        if (!$user->hasAnyPermission([$this->getOrderRequiredPermission($order),
+            "branch.".$order->orderable_id.".".PermissionServices::Orders.".".PermissionActions::Update
+            ]))
             abort(403, 'You Don\'t have permission');
 
         // TODO:: check if data['paid']

@@ -4,7 +4,9 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
+use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
+use App\Constants\PermissionServices;
 use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
@@ -135,8 +137,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $user = User::find($userId);
         $reservation = $this->model->findOrFail($id);
 
-        if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $reservation->branch_id,
-            PermissionsConstants::Business . '.' . $reservation->business_id]))
+        if (!$user->hasAnyPermission([
+            PermissionsConstants::Branch . '.' . $reservation->branch_id,
+            PermissionsConstants::Business . '.' . $reservation->business_id,
+            PermissionsConstants::Branch.'.'. $reservation->branch_id.'.'. PermissionServices::Reservations.'.'.PermissionActions::Update
+        ]))
             abort(403, 'You Don\'t have permission');
 
         if (!isset($data['reservable_id']))
