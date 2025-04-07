@@ -6,6 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
 use App\Constants\PermissionServices;
+use App\Models\Business;
 use App\Models\User;
 use App\Repository\PermissionRepositoryInterface;
 use Spatie\Permission\Models\Permission;
@@ -122,7 +123,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         $businessId = (int) request()->route('businessId');
 
         if ( auth('sanctum')->user()->email !== "eng.mg2011"."@gmail.com" &&
-            auth('sanctum')->user()->business_id !== $businessId) {
+            auth('sanctum')->user()->id !== Business::find($businessId)->user_id) {
             abort(403, "Not permitted");
         }
 
