@@ -74,11 +74,14 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     public function getUserPermissions($branchId, $userId)
     {
         $user = User::find($userId);
-        return $user->getAllPermissions()
+        $control = $user->control;
+        $dashboard_access = $user->dashboard_access;
+        $permissions = $user->getAllPermissions()
             ->filter(function ($permission) use ($branchId) {
                 return str_starts_with($permission->name, "branch.$branchId.");
             })
             ->pluck('name');
+        return compact('permissions','control', 'dashboard_access');
     }
 
     /**
