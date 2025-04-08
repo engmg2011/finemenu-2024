@@ -140,6 +140,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'business_control'
     ];
 
     public function items(): HasMany {
@@ -176,6 +177,20 @@ class User extends Authenticatable
         }
         return $playerIds;
     }*/
+
+    public function getBusinessControlAttribute()
+    {
+        if($this->dashboard_access && is_array($this->control)){
+            $businessList = [];
+            foreach ($this->control as $control){
+                $businessList[] = Business::with(['locales',
+                    'branches' => function ($q) use ($control) {
+                        $q->with('locales')->whereIn('id', $control['branch_ids']);
+                    }])->find($control['business_id']);
+            }
+            return $businessList;
+        }
+    }
 
 
 }

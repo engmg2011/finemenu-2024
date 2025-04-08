@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\MediaAction;
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Models\Category;
 use App\Models\User;
 use App\Repository\UserRepositoryInterface;
@@ -16,7 +17,8 @@ use Illuminate\Validation\Rule;
 class UsersController extends Controller
 {
 
-    public function __construct(public UserRepositoryInterface $userRepository, private MediaAction $mediaAction)
+    public function __construct(public UserRepositoryInterface $userRepository,
+                                private MediaAction $mediaAction)
     {
     }
 
@@ -87,8 +89,10 @@ class UsersController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $businessId, $id)
+    public function update(Request $request)
     {
+        $id = request()->route('modelId');
+
         $data = $request->all();
         unset($data['email']);
         unset($data['phone']);
@@ -140,6 +144,8 @@ class UsersController extends Controller
             'business.branches.floors.locales',
             'devices'
         ])->find($userId);
+
+
         $user['token'] = $user->createToken('authToken')->plainTextToken;
         return response()->json($user);
     }

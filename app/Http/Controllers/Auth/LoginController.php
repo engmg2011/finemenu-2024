@@ -75,8 +75,16 @@ class LoginController extends Controller
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 400);
 
-        if ($user && $request->input('dashboard') === true && count($user->business) === 0)
-            return response()->json(["message" => "User is not allowed to login"], 400);
+        if ($user && $request->input('dashboard') === true){
+            if( count($user->business) === 0){
+                if(!$user->dashboard_access)
+                    return response()->json(["message" => "User is not allowed to login"], 400);
+
+                if (!is_array($user->control) || count($user->control) === 0){
+                    return response()->json(["message" => "User is not allowed to login"], 400);
+                }
+            }
+        }
 
         $token = $user->createToken('Login Token');
         $device = $this->userRepository->userDevice($request, $user, $token);

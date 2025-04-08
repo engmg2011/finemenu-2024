@@ -31,11 +31,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function processUser(array $data)
     {
-        return array_only($data, ['name', 'email', 'phone', 'currency', 'password', 'email_verified_at', 'business_id']);
+        return array_only($data, ['name', 'email', 'phone', 'currency',
+            'password', 'email_verified_at', 'business_id', 'dashboard_access']);
     }
 
     public function createModel(array $data)
     {
+        if($data['password'])
+            $data['password'] = bcrypt($data['password']);
         return $this->model->create($this->processUser($data));
     }
 

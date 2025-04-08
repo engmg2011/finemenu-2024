@@ -6,6 +6,7 @@ namespace App\Repository\Eloquent;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
 use App\Constants\PermissionServices;
+use App\Constants\RolesConstants;
 use App\Models\Business;
 use App\Models\User;
 use App\Repository\PermissionRepositoryInterface;
@@ -118,6 +119,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
                 ];
             }
             $user->update(['control' => $controlData]);
+            $user->assignRole(RolesConstants::BRANCH_MANAGER);
     }
 
     public function setUserPermissions($branchId, $userId, $permissions)
@@ -156,6 +158,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         }
         $user->syncPermissions($newPermissions);
         $user->revokePermissionTo($removedPermissions);
+        $user->update(['dashboard_access' => $dashboardAccess]);
         return $this->getUserPermissions($branchId, $userId);
     }
 }

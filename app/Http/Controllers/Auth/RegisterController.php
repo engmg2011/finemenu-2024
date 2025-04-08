@@ -246,12 +246,14 @@ class RegisterController extends Controller
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
 
-        $data['password'] = bcrypt($request->password);
         $data['type'] = "";
         $data['email_verified_at'] = Carbon::now();
 
         if (!isset($data['email']) || empty($data['email']))
             $data['email'] = $data['phone'] . '@menu-ai.net';
+
+        if (isset($data['businessName']) && isset($data['businessType']))
+            $data['dashboard_access'] = true;
 
         // Create user && assign general role
         $user = $this->userRepository->createModel($data);

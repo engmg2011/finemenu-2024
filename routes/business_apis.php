@@ -167,7 +167,7 @@ Route::group(['middleware' => [
                 Route::get('/{userId}', [UsersController::class, 'show']);
                 Route::post('/', [UsersController::class, 'create']);
                 Route::post('/search', [UsersController::class, 'search']);
-                Route::post('/{id}', [UsersController::class, 'update']);
+                Route::post('/{modelId}', [UsersController::class, 'update']);
             });
 
         });
