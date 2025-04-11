@@ -27,16 +27,16 @@ class PusherAuthController extends Controller
         // Implement your authentication logic here
         // For example, check if the user is authenticated
         $businessNumber = 0;
-
-        if (preg_match('/(\d+)/', $channelName, $matches)) {
-            $businessNumber = $matches[0];
-            $branchNumber = $matches[1];
+        if (preg_match('/business-(\d+)-branch-(\d+)/', $channelName, $matches)) {
+            $businessNumber = $matches[1];
+            $branchNumber = $matches[2];
         }
 
         $user = $request->user();
         //"private-business-" + this.selectedBusinessId + "-branch-" + this.selectedBranchId + "-orders"
         //"private-business-" + this.selectedBusinessId + "-branch-" + this.selectedBranchId + "-reservations"
-        if ($user->hasRole('admin', 'web')
+        if (
+            $user->hasRole('admin', 'web')
             || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchNumber.'.'.PermissionServices::Reservations.'.'.PermissionActions::Read, 'web')
             || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchNumber.'.'.PermissionServices::Orders.'.'.PermissionActions::Read, 'web')
         ) {
