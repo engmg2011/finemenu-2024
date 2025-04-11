@@ -8,6 +8,7 @@ class PermissionServices
     const Users = "users";
     const Business = "business";
     const Menu = "menu";
+    const Menus = "menus";
     const Branches = "branches";
     const Roles = "roles";
     const Holidays = "holidays";

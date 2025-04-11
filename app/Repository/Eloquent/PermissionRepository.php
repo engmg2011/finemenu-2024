@@ -140,7 +140,11 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
             // reset permissions as all services permissions will be revoked
             $permissions = [];
             $user->update(['control' => null]);
+            $user->removeRole(PermissionsConstants::Branch . '.' . $branchId);
+            $user->revokePermissionTo(PermissionsConstants::Branch . '.' . $branchId);
         } else {
+            Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId , 'web');
+            $user->givePermissionTo(PermissionsConstants::Branch . '.' . $branchId);
             $this->setControlData($branchId,$user);
         }
 

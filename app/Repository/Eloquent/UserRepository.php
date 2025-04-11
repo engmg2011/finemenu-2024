@@ -5,13 +5,13 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\UserTypes;
 use App\Models\Branch;
+use App\Models\Business;
+use App\Models\Device;
 use App\Models\LoginSession;
 use App\Models\User;
 use App\Repository\UserRepositoryInterface;
 use App\Services\QrService;
 use Carbon\Carbon;
-use App\Models\Business;
-use App\Models\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,8 +24,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         'business.branches.media',
         'settings'];
 
-    public function __construct(User          $model,
-        private readonly PermissionRepository $permissionRepository) {
+    public function __construct(User                                  $model,
+                                private readonly PermissionRepository $permissionRepository)
+    {
         parent::__construct($model);
     }
 
@@ -37,19 +38,21 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function createModel(array $data)
     {
-        if($data['password'])
+        if ($data['password'])
             $data['password'] = bcrypt($data['password']);
         return $this->model->create($this->processUser($data));
     }
 
-    public function search($businessId , array $data)
+    public function search($businessId, array $data)
     {
-        return User::where('name', 'like', "%{$data['search']}%")
-            ->orWhere('email', 'like', "%{$data['search']}%")
-            ->orWhere('phone', 'like', "%{$data['search']}%")
-            ->where(function ($query) use ($businessId) {
-                return $query->whereNull('business_id')
-                    ->orWhere('business_id', $businessId);
+        return User::where(function ($query) use ($businessId) {
+                return $query->where('business_id', $businessId);
+//                    ->orWhereNull('business_id');
+            })
+            ->where(function ($query) use ($data) {
+                return $query->where('name', 'like', "%{$data['search']}%")
+                    ->orWhere('email', 'like', "%{$data['search']}%")
+                    ->orWhere('phone', 'like', "%{$data['search']}%");
             })
             ->paginate(5);
     }
@@ -88,7 +91,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function updateModel($id, array $data): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
     {
 
-        if(isset($data['password']) && $data['password'] !== "")
+        if (isset($data['password']) && $data['password'] !== "")
             $data['password'] = bcrypt($data['password']);
         else
             unset($data['password']);

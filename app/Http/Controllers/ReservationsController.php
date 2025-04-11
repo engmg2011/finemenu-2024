@@ -22,6 +22,9 @@ class ReservationsController extends Controller
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
+        $user = auth('sanctum')->user();
+        checkUserPermission($user, $branchId,
+            PermissionServices::Reservations, PermissionActions::Read);
         $ordersList = $this->repository->listModel($businessId, $branchId);
         return DataResource::collection($ordersList);
     }
@@ -72,8 +75,12 @@ class ReservationsController extends Controller
         $data = $request->all();
         $data['branch_id'] = request()->route('branchId');
         $data['business_id'] = request()->route('businessId');
-        checkUserPermission(auth('sanctum')->user(), $data['branch_id'],
+        $user = auth('sanctum')->user();
+        checkUserPermission($user, $data['branch_id'],
             PermissionServices::Reservations, PermissionActions::Create);
+        if(isset($data['invoices']))
+            checkUserPermission($user, $data['branch_id'],
+                PermissionServices::Invoices, PermissionActions::Create);
         return \response()->json($this->repository->create($data));
     }
 
@@ -96,8 +103,15 @@ class ReservationsController extends Controller
     {
         $id = \request()->route('id');
         $data['branch_id'] = request()->route('branchId');
-        checkUserPermission(auth('sanctum')->user(), $data['branch_id'],
+        $user = auth('sanctum')->user();
+
+        checkUserPermission($user, $data['branch_id'],
             PermissionServices::Reservations, PermissionActions::Update);
+
+        if(isset($data['invoices']))
+            checkUserPermission($user, $data['branch_id'],
+                PermissionServices::Invoices, PermissionActions::Update);
+
         return \response()->json($this->repository->updateModel($id, $request->all()));
     }
 
@@ -110,5 +124,8 @@ class ReservationsController extends Controller
     public function destroy($id)
     {
         //
+        $user = auth('sanctum')->user();
+        checkUserPermission($user, \request()->route('branchId') ,
+            PermissionServices::Reservations, PermissionActions::Delete);
     }
 }
