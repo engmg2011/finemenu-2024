@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
-use App\Constants\RolesConstants;
-use Exception;
+use App\Constants\PermissionServices;
 use Illuminate\Http\Request;
 use Pusher\Pusher;
 use Pusher\PusherException;
@@ -37,8 +37,8 @@ class PusherAuthController extends Controller
         //"private-business-" + this.selectedBusinessId + "-branch-" + this.selectedBranchId + "-orders"
         //"private-business-" + this.selectedBusinessId + "-branch-" + this.selectedBranchId + "-reservations"
         if ($user->hasRole('admin', 'web')
-            || $user->hasPermissionTo(PermissionsConstants::Business . "." . $businessNumber, 'web')
-            || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchNumber, 'web')
+            || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchNumber.'.'.PermissionServices::Reservations.'.'.PermissionActions::Read, 'web')
+            || $user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchNumber.'.'.PermissionServices::Orders.'.'.PermissionActions::Read, 'web')
         ) {
             $auth = $pusher->socket_auth($channelName, $socketId);
             return response($auth);

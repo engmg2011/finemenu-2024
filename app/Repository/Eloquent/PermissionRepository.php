@@ -136,32 +136,25 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         $services = PermissionServices::getConstants();
 
         $dashboardAccess = request()->get('dashboard_access', false);
+        $newPermissions = [];
         if (!$dashboardAccess) {
             // reset permissions as all services permissions will be revoked
             $permissions = [];
             $user->update(['control' => null]);
-            $user->removeRole(PermissionsConstants::Branch . '.' . $branchId);
-            $user->revokePermissionTo(PermissionsConstants::Branch . '.' . $branchId);
         } else {
             Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId , 'web');
-            $user->givePermissionTo(PermissionsConstants::Branch . '.' . $branchId);
             $this->setControlData($branchId,$user);
         }
 
-        $newPermissions = [];
-        $removedPermissions = [];
         foreach ($services as $service) {
             foreach ($actions as $action) {
                 $prem = "branch.$branchId.$service.$action";
                 if (in_array("$service.$action", $permissions)) {
                     $newPermissions[] = $prem;
-                } else {
-                    $removedPermissions[] = $prem;
                 }
             }
         }
         $user->syncPermissions($newPermissions);
-        $user->revokePermissionTo($removedPermissions);
         $user->update(['dashboard_access' => $dashboardAccess]);
         return $this->getUserPermissions($branchId, $userId);
     }

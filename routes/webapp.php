@@ -52,7 +52,7 @@ Route::group(['prefix' => 'webapp',
                     //reservations
                     Route::group(['prefix' => 'reservations'], function () {
                         Route::get('/', [ReservationsController::class, 'userReservations']);
-                        Route::get('/filter', [ReservationsController::class, 'filter']);
+                        Route::get('/filter', [ReservationsController::class, 'filterWebApp']);
                         Route::get('/{id}', [ReservationsController::class, 'showForReservationOwner']);
                         Route::post('/', [ReservationsController::class, 'create']);
                         Route::post('/check', [ReservationsController::class, 'isAvailable']);
