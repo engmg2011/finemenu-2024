@@ -46,7 +46,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function search($businessId, array $data)
     {
         return User::where(function ($query) use ($businessId) {
-                return $query->where('business_id', $businessId);
+                return $query->where('business_id', $businessId)
+                    ->orWhereHas('business', function ($query) use ($businessId) {
+                        $query->where('id', $businessId);
+                    });
 //                    ->orWhereNull('business_id');
             })
             ->where(function ($query) use ($data) {
