@@ -37,6 +37,7 @@ class OrdersController extends Controller
      */
     public function create(Request $request)
     {
+        // todo:: check if not exceeds BusinessSettings['EnableReservationsTill'] using getBusinessSettingByKey('EnableReservationsTill')
         return \response()->json($this->orderRepository->create($request->all()));
     }
 
@@ -59,7 +60,7 @@ class OrdersController extends Controller
      */
     public function showForCreator($id)
     {
-        if( Order::find($id)->user_id !==  auth('sanctum')->user()->id) {
+        if (Order::find($id)->user_id !== auth('sanctum')->user()->id) {
             return response()->json(['message' => 'Unauthorized'], \Symfony\Component\HttpFoundation\Response::HTTP_UNAUTHORIZED);
         }
         return \response()->json($this->orderRepository->get($id));

@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 //
 use App\Actions\MediaAction;
+use App\Constants\BusinessSettings;
 use App\Constants\SettingConstants;
 use App\Models\Business;
 use App\Models\Setting;
@@ -139,5 +140,13 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
                 $this->createSetting($relationModel, $setting);
         }
         return $this->listSettings($relationModel);
+    }
+
+    private function getBusinessSettingByKey($business_id, $key)
+    {
+        $business = Business::find($business_id);
+        return $business->settings
+            ->where('key', BusinessSettings::getConstants()[$key] )
+            ->first()?->data;
     }
 }
