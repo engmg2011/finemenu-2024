@@ -2,7 +2,6 @@
 
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
-use App\Http\Controllers\Auth\SocialController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
@@ -11,14 +10,12 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
-use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PricesController;
 use App\Http\Controllers\PusherAuthController;
-use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;

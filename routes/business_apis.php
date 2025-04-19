@@ -194,9 +194,11 @@ Route::group(['prefix' => 'business', 'middleware' =>
             Route::post('settings/set', [SettingsController::class, 'setSetting']);
             Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
             Route::get('create-login-qr', [UsersController::class, 'createLoginQr']);
-            Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
         });
     });
+});
 
-
+// no auth
+Route::group(['prefix' => 'business/{businessId}/branches/{modelId}'], function () {
+    Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
 });
