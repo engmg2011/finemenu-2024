@@ -146,7 +146,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $subUser = User::create(['email' => $userEmail,
             'name' => $userSlug,
             'type' => $userType,
-            'password' => $this->generateRandomString()
+            'password' => $this->generateRandomString(),
+            'business_id' => $branch->business_id,
         ]);
         $subUser->assignRole($userType);
         $this->permissionRepository->createBranchPermission($branchId, $subUser);
@@ -227,7 +228,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if ($validator->fails())
             return response()->json(['message' => 'Invalid QR code'], 401);
 
-        $branchId = \request()->route('modelId');
+        $branchId = \request()->route('branchId');
         $token = $request->input('token');
         $type = $request->input('type');
         $loginSession = LoginSession::where('login_session', $token)

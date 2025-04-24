@@ -199,6 +199,6 @@ Route::group(['prefix' => 'business', 'middleware' =>
 });
 
 // no auth
-Route::group(['middleware' => 'throttle:10,1', 'prefix' => 'business/{businessId}/branches/{modelId}'], function () {
+Route::group(['middleware' => 'throttle:10,1', 'prefix' => 'business/{businessId}/branches/{branchId}'], function () {
     Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
 });
