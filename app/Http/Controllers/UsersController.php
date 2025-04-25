@@ -179,7 +179,7 @@ class UsersController extends Controller
     public function createLoginQr()
     {
         $businessId = \request()->route('businessId');
-        $branchId = \request()->route('modelId');
+        $branchId = \request()->route('branchId');
         return $this->userRepository->createLoginQr($businessId, $branchId);
     }
 

@@ -193,6 +193,8 @@ Route::group(['prefix' => 'business', 'middleware' =>
             Route::get('settings', [SettingsController::class, 'listSettings']);
             Route::post('settings/set', [SettingsController::class, 'setSetting']);
             Route::get('reference-qr', [BranchesController::class, 'referenceQr']);
+        });
+        Route::group(['prefix' => 'branches/{branchId}'], function () {
             Route::get('create-login-qr', [UsersController::class, 'createLoginQr']);
         });
     });

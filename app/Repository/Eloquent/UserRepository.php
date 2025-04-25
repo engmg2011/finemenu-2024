@@ -115,7 +115,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         // Generate the QR code with the login token
         $content = route('login.qr', ['token' => $token,
-                'modelId' => $branchId,
+                'branchId' => $branchId,
                 'type' => UserTypes::SUPERVISOR,
             ] + compact('businessId'));
 

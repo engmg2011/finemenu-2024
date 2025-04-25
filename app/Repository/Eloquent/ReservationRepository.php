@@ -10,6 +10,7 @@ use App\Constants\PermissionServices;
 use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
+use App\Jobs\SendNewReservationNotification;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Reservation;
@@ -123,6 +124,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $this->setReservationCashedData($model->id);
 
         event(new NewReservation($model->id));
+        dispatch((new SendNewReservationNotification($model->id))->delay(now()->addMinutes(1)));
+
         AuditService::log(AuditServices::Reservations, $model->id, "Created booking " . $model->id, $businessId, $branchId);
         return $this->get($model->id);
     }
@@ -162,6 +165,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
+        dispatch((new SendNewReservationNotification($model->id))->delay(now()->addMinutes(1)));
+
         AuditService::log(AuditServices::Reservations, $model->id, "Updated booking " . $model->id,
             $reservation->business_id, $reservation->branch_id);
         return $this->get($model->id);
