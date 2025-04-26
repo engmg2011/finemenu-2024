@@ -3,6 +3,8 @@
 namespace App\Services\PaymentProviders;
 
 use App\Constants\PaymentConstants;
+use App\Events\UpdateReservation;
+use App\Jobs\SendNewReservationNotification;
 use App\Models\Invoice;
 use Hesabe\Payment\HesabeCrypt;
 use Hesabe\Payment\Payment;
@@ -76,6 +78,11 @@ class Hesabe implements PaymentProviderInterface
                     $invoice->update(['status' => PaymentConstants::INVOICE_PAID]);
                     if($invoice->reservation){
                         $invoice->reservation->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
+
+                        app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation->id);
+                        event(new UpdateReservation($invoice->reservation->id));
+                        // todo :: make it update
+                        dispatch((new SendNewReservationNotification($invoice->reservation->id))->delay(now()->addMinutes(1)));
                     }
 
                     return redirect()->route('payment.success');

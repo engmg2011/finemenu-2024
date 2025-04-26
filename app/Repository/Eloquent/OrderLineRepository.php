@@ -257,6 +257,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         // if reservation check holiday intersection
         if (isset($orderLine['reservation'])) {
             $matchedHoliday = $this->getMatchedHoliday($orderLine['item_id'], $orderLine['reservation']);
+            \Log::debug([$matchedHoliday, $orderLine]);
             if ($matchedHoliday) {
                 if ($orderLine['holiday_id'] !== $matchedHoliday->id)
                     abort(400, "Timing matches holiday");
