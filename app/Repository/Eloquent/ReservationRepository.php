@@ -101,6 +101,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function listModel($businessId, $branchId, $conditions = null)
     {
         return Reservation::with(ReservationRepository::Relations)
+            ->with('reservable.featuredImage')
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->orderByDesc('id')
