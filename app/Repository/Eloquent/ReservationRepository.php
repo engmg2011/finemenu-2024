@@ -48,10 +48,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function setModelRelations($model, $data)
     {
         $currentUser = auth('sanctum')->user();
-        if (isset($data['invoices']) && $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER])) {
-            $this->invoiceRepository->setForReservation($model, $data['invoices']);
+        $branchId = \request()->route("branchId") ?? $data['branch_id'] ?? null;
+        if (isset($data['invoices'])) {
+            $isAdmin = $currentUser->hasAnyRole([RolesConstants::ADMIN, RolesConstants::BUSINESS_OWNER,
+                RolesConstants::BRANCH_MANAGER, RolesConstants::CASHIER]);
+            $isBranchAdmin = $branchId && $currentUser->hasAnyPermission(PermissionsConstants::Branch . '.' . $branchId);
+            if ($isAdmin || $isBranchAdmin) {
+                $this->invoiceRepository->setForReservation($model, $data['invoices']);
+            }
         }
-
     }
 
     public function get($id)
@@ -143,7 +148,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if (!$user->hasAnyPermission([
             PermissionsConstants::Branch . '.' . $reservation->branch_id,
             PermissionsConstants::Business . '.' . $reservation->business_id,
-            PermissionsConstants::Branch.'.'. $reservation->branch_id.'.'. PermissionServices::Reservations.'.'.PermissionActions::Update
+            PermissionsConstants::Branch . '.' . $reservation->branch_id . '.' . PermissionServices::Reservations . '.' . PermissionActions::Update
         ]))
             abort(403, 'You Don\'t have permission');
 
