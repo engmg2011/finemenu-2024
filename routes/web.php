@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\MyEvent;
+use App\Jobs\ProcessPodcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -59,3 +61,10 @@ Route::get('auth/app-token', [SocialController::class, 'appToken']);
 Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
 Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
 
+Route::get('job', function (){
+    dispatch(new ProcessPodcast());
+});
+
+Route::get('event', function (){
+    event(new MyEvent('hello world'));
+});
