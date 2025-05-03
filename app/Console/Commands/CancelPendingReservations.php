@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Constants\PaymentConstants;
 use App\Events\UpdateReservation;
+use App\Models\Invoice;
 use App\Models\Reservation;
 use Illuminate\Console\Command;
 
@@ -36,6 +37,10 @@ class CancelPendingReservations extends Command
             Reservation::where('created_at', '<', now()->subMinutes(5))
                 ->where('status', PaymentConstants::RESERVATION_PENDING)
                 ->update(['status' => PaymentConstants::RESERVATION_CANCELED]);
+
+            Invoice::whereIn('reservation_id', $reservationIds)
+                ->where('status', PaymentConstants::INVOICE_PENDING)
+                ->update(['status' => PaymentConstants::INVOICE_CANCELED]);
 
             foreach ($reservationIds as $reservationId) {
                 app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($reservationId);
