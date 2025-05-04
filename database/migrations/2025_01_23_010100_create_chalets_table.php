@@ -25,6 +25,7 @@ return new class extends Migration
             $table->json('address')->nullable();  // [{'en':''},{'ar':''}
             $table->enum('frontage', ['sea_view', 'second_row'])->nullable();
             $table->integer("bedrooms")->nullable();
+            $table->unsignedInteger('amount')->default(1);
 
             // relations
             $table->unsignedBigInteger("item_id");

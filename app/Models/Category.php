@@ -80,7 +80,8 @@ class Category extends Model
                 'items.addons.locales',
                 'items.discounts.locales',
                 'items.media',
-                'items.prices.locales']);
+                'items.prices.locales',
+                'items.itemable']);
     }
 
     public function childrenNested()
