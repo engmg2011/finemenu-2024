@@ -62,7 +62,7 @@ class SendNewReservationNotification implements ShouldQueue
                     ->orderBy('id', 'desc')
                     ->first();
                 if ($device) {
-                    $firstItemName = $this->reservation->data->item->locales[0]?->name ?? "";
+                    $firstItemName = $this->reservation->data->reservable->locales[0]?->name ?? "";
                     $branchName = $this->reservation->branch->locales[0]->name ?? "";
                     try {
                         $subject = $business->locales[0]?->name ?? 'MenuAI';

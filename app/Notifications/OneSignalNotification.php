@@ -34,7 +34,7 @@ class OneSignalNotification extends Notification
     public function toOneSignal($notifiable)
     {
         return OneSignalMessage::create()
-            ->setSubject($notifiable->name . ', '. $this->subject)
+            ->setSubject($this->subject)
             ->setBody($this->message);
     }
 

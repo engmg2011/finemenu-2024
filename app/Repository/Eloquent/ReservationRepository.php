@@ -128,10 +128,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if (!$model->data)
             $this->setReservationCashedData($model->id);
 
-        event(new NewReservation($model->id));
-        dispatch((new SendNewReservationNotification($model->id))->delay(now()->addMinutes(1)));
-
         AuditService::log(AuditServices::Reservations, $model->id, "Created booking " . $model->id, $businessId, $branchId);
+
+        event(new NewReservation($model->id));
+        dispatch(new SendNewReservationNotification($model->id));
+
         return $this->get($model->id);
     }
 
@@ -170,7 +171,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $this->setReservationCashedData($model->id);
 
         event(new UpdateReservation($model->id));
-        dispatch((new SendNewReservationNotification($model->id))->delay(now()->addMinutes(1)));
+        dispatch(new SendNewReservationNotification($model->id));
 
         AuditService::log(AuditServices::Reservations, $model->id, "Updated booking " . $model->id,
             $reservation->business_id, $reservation->branch_id);
@@ -323,7 +324,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         // Carbon period for the will created / updated reservation
         $period = CarbonPeriod::create($data['from'], $data['to']);
-        $daysIntersections = [];
         // every day in the period
         foreach ($period as $date) {
             $day = $date->format('Y-m-d');
@@ -337,8 +337,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $intersectionCount = $collection
                 ->filter(fn(Period $period) => $period->overlapsWith($dayPeriod))
                 ->count();
-
-            $daysIntersections[$day] = $intersectionCount;
 
             if ($intersectionCount > $item->itemable->amount)
                 abort(400, "Not available now, please choose different dates or try again later");
