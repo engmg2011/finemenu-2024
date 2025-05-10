@@ -57,16 +57,26 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     public function createBranchServicePermissions($branchId)
     {
+        $permissionsToCreate = [];
         foreach (PermissionServices::getConstants() as $service) {
             foreach (PermissionActions::getConstants() as $action) {
-                Permission::findOrCreate('branch.' . $branchId . '.' . $service . '.' . $action, 'web');
+                $permissionName = 'branch.' . $branchId . '.' . $service . '.' . $action;
+                $permissionsToCreate[] = [
+                    'name' => $permissionName,
+                    'guard_name' => 'web',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
             }
+        }
+        if (!empty($permissionsToCreate)) {
+            Permission::insert($permissionsToCreate);
         }
     }
 
-    public function createBusinessPermission($branchId, $assignUser = null)
+    public function createBusinessPermission($businessId, $assignUser = null)
     {
-        $permissionName = PermissionsConstants::Business . '.' . $branchId;
+        $permissionName = PermissionsConstants::Business . '.' . $businessId;
         Permission::findOrCreate($permissionName, 'web');
         if ($assignUser)
             $assignUser->givePermissionTo($permissionName);
@@ -82,7 +92,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
                 return str_starts_with($permission->name, "branch.$branchId.");
             })
             ->pluck('name');
-        return compact('permissions','control', 'dashboard_access');
+        return compact('permissions', 'control', 'dashboard_access');
     }
 
     /**
@@ -93,41 +103,41 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
      * }],
      * @return void
      */
-    public function setControlData($branchId,$user)
+    public function setControlData($branchId, $user)
     {
-            $controlData = $user->control;
-            $businessId = request()->route('businessId');
-            $isFound = false;
-            if (is_array($controlData)) {
-                foreach ($controlData as &$control) {
-                    if (intval($control['business_id']) === intval($businessId)) {
-                        $branchIds = $control['branch_ids'];
-                        if(is_array($branchIds)){
-                            $branchIds[] = $branchId;
-                            $control['branch_ids'] = array_unique($branchIds);
-                        }else{
-                            $control['branch_ids'] = [$branchId];
-                        }
-                        $isFound = true;
+        $controlData = $user->control;
+        $businessId = request()->route('businessId');
+        $isFound = false;
+        if (is_array($controlData)) {
+            foreach ($controlData as &$control) {
+                if (intval($control['business_id']) === intval($businessId)) {
+                    $branchIds = $control['branch_ids'];
+                    if (is_array($branchIds)) {
+                        $branchIds[] = $branchId;
+                        $control['branch_ids'] = array_unique($branchIds);
+                    } else {
+                        $control['branch_ids'] = [$branchId];
                     }
+                    $isFound = true;
                 }
             }
-            if (!$isFound) {
-                $controlData[] = [
-                    'business_id' => request()->route('businessId'),
-                    'branch_ids' => [$branchId]
-                ];
-            }
-            $user->update(['control' => $controlData]);
-            $user->assignRole(RolesConstants::BRANCH_MANAGER);
+        }
+        if (!$isFound) {
+            $controlData[] = [
+                'business_id' => request()->route('businessId'),
+                'branch_ids' => [$branchId]
+            ];
+        }
+        $user->update(['control' => $controlData]);
+        $user->assignRole(RolesConstants::BRANCH_MANAGER);
     }
 
     public function setUserPermissions($branchId, $userId, $permissions)
     {
         $user = User::find($userId);
-        $businessId = (int) request()->route('businessId');
+        $businessId = (int)request()->route('businessId');
 
-        if ( auth('sanctum')->user()->email !== "eng.mg2011"."@gmail.com" &&
+        if (auth('sanctum')->user()->email !== "eng.mg2011" . "@gmail.com" &&
             auth('sanctum')->user()->id !== Business::find($businessId)->user_id) {
             abort(403, "Not permitted");
         }
@@ -142,8 +152,8 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
             $permissions = [];
             $user->update(['control' => null]);
         } else {
-            Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId , 'web');
-            $this->setControlData($branchId,$user);
+            Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId, 'web');
+            $this->setControlData($branchId, $user);
         }
 
         foreach ($services as $service) {
