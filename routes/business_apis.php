@@ -4,6 +4,7 @@ use App\Constants\RolesConstants;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
