@@ -56,23 +56,6 @@ Route::group(['middleware' => ['auth:sanctum',
         Route::post('/{id}/delete', [ContactController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
-        Route::get('/', [CategoriesController::class, 'index']);
-        Route::post('/', [CategoriesController::class, 'create']);
-        Route::post('/sort', [CategoriesController::class, 'updateSort']);
-        Route::group(['prefix' => '{modelId}'], function () {
-            Route::get('/', [CategoriesController::class, 'show']);
-            Route::post('/', [CategoriesController::class, 'update']);
-            Route::post('/delete', [CategoriesController::class, 'destroy']);
-
-            Route::group(["prefix" => "/settings"], function () {
-                Route::get('/', [SettingsController::class, 'listSettings']);
-                Route::post('/set', [SettingsController::class, 'setSetting']);
-                Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-            });
-        });
-    });
-
     Route::group(['prefix' => 'prices'], function () {
         Route::post('/{id}/delete', [PricesController::class, 'destroy']);
     });
