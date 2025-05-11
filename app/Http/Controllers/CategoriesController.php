@@ -17,6 +17,7 @@ class CategoriesController extends Controller
     {
         $this->action = $action;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,10 +42,10 @@ class CategoriesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($businessId, $id)
     {
         return response()->json($this->action->get($id));
     }
@@ -53,10 +54,10 @@ class CategoriesController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $businessId, $id)
     {
         return response()->json($this->action->update($id, $request->all()));
     }
@@ -64,10 +65,10 @@ class CategoriesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy($businessId, $id)
     {
         return response()->json($this->action->destroy($id));
     }

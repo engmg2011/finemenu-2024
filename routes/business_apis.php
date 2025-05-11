@@ -149,7 +149,7 @@ Route::group(['middleware' => [
 
             Route::group(['prefix' => 'categories', 'middleware' => [SetRequestModel::class]], function () {
                 Route::get('/', [CategoriesController::class, 'index']);
-                Route::post('/', [CategoriesController::class, 'create']);
+                Route::post('/', [CategoriesController::class, 'createModel']);
                 Route::post('/sort', [CategoriesController::class, 'updateSort']);
                 Route::group(['prefix' => '{modelId}'], function () {
                     Route::get('/', [CategoriesController::class, 'show']);
