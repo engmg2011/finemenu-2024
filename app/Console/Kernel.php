@@ -14,6 +14,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:cancel-pending-reservations')->everyMinute();
+        // Add queue worker (runs for 5 minutes, then stops)
+        $schedule->command('queue:work --stop-when-empty --max-time=300')
+            ->everyFiveMinutes()
+            ->withoutOverlapping() // Prevents duplicate workers
+            ->appendOutputTo(storage_path('logs/queue-worker.log')); // Logs output
     }
 
     /**
