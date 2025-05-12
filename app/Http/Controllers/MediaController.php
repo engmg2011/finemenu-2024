@@ -83,6 +83,9 @@ class MediaController extends Controller
         $file_name = rand(1000, 10000) . '_' . $file->getClientOriginalName();
         $savePath = $user_id . '/';
         $fixFileName = str_replace(' ', '_', $file_name);
+        $fixFileName = preg_replace('/\s+/', '_', $fixFileName);
+        // The array contains: regular space, no-break space (U+00A0), narrow no-break space (U+202F)
+        $fixFileName = str_replace([' ', ' ', ' '], '_', $fixFileName);
         $storagePath = "storage/" . $savePath . $fixFileName;
         if ($this->request->headers->has('convert-item')) {
             $fullPath = $this->request->header('full-path');
@@ -97,7 +100,8 @@ class MediaController extends Controller
                 'locale' => request()->header('locale')
             ];
 
-            UploadMenuQueue::dispatch($myFile, $user);
+            //UploadMenuQueue::dispatch($myFile, $user);
+            $this->action->smartMenuUploader($myFile, $user);
         }
 
         $this->action->uploadMedia($file, $fixFileName, "public/" . $savePath);
