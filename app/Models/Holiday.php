@@ -23,6 +23,6 @@ class Holiday extends Model
 
     public function getPriceAttribute()
     {
-        return $this->pivot->price ?? null; // Get price from pivot table
+        return ((float) $this->pivot?->price) ?? null; // Get price from pivot table
     }
 }

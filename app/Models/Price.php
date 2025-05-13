@@ -40,10 +40,15 @@ use Illuminate\Support\Carbon;
 class Price extends Model
 {
     use Localizable;
-    protected $guarded = ['id'];
-    protected $hidden = ['created_at', 'updated_at', 'priceable_id' , 'priceable_type'];
 
-    public function user() {
+    protected $guarded = ['id'];
+
+    protected $hidden = ['created_at', 'updated_at', 'priceable_id', 'priceable_type'];
+
+    protected $casts = ['price' => 'float'];
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
