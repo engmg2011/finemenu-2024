@@ -108,7 +108,7 @@ class CategoryAction
             $lastCatId = $categories->count() ? $categories->last()->id : null;
             // TODO :: choose first of user locales
             $created_category = $this->create([
-                "locales" => [["name" => $category_name, 'locale' => 'en']],
+                "locales" => [["name" => $category_name, 'locale' => 'en'], ["name" => $category_name, 'locale' => 'ar']],
                 "image" => $image_path,
                 "user_id" => $userId,
                 "business_id" => $menu->business_id,

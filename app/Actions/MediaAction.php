@@ -180,8 +180,12 @@ class MediaAction
                 $q->where('name',$othersName);
             })->first();
             if(!$savingCategory){
+                // TODO :: Pass first user locale , from user locales setting
                 $savingCategory = app(CategoryAction::class)->create([
-                    "locales" => [["name" => $othersName, 'locale' => $user['locale']]],
+                    "locales" => [
+                        ["name" => $othersName, 'locale' => 'ar'],
+                        ["name" => $othersName, 'locale' => 'en']
+                    ],
                     "image" => $myFile['uploadedFilePath'],
                     "user_id" => $user['userId'],
                     "business_id" => $menu->business_id,
@@ -190,9 +194,12 @@ class MediaAction
             }
 
         }
-        // TODO :: Pass first user locale
+        // TODO :: Pass first user locale , from user locales setting
         $item = app(ItemRepository::class)->create([
-            'locales' => [['name' => $item_name, 'locale' => $user['locale']]],
+            'locales' => [
+                ['name' => $item_name, 'locale' => 'en'],
+                ['name' => $item_name, 'locale' => 'ar'],
+            ],
             'category_id' => ($savingCategory->id),
             'user_id' => $user['userId'],
             "business_id" => $menu->business_id

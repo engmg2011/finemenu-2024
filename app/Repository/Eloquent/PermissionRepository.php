@@ -51,9 +51,8 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         Permission::findOrCreate($permissionName, 'web');
         if ($assignUser)
             $assignUser->givePermissionTo($permissionName);
-        $this->createBranchServicePermissions($branchId);
-
     }
+
 
     public function createBranchServicePermissions($branchId)
     {
