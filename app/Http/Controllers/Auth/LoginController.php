@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Constants\RolesConstants;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
@@ -75,13 +76,15 @@ class LoginController extends Controller
         if (!($user && Hash::check($data['password'], $user->password)))
             return response()->json(["message" => "Invalid user credentials"], 400);
 
-        if ($user && $request->input('dashboard') === true){
-            if( count($user->business) === 0){
-                if(!$user->dashboard_access)
-                    return response()->json(["message" => "User is not allowed to login"], 400);
+        if(!$user->hasRole(RolesConstants::BUSINESS_OWNER)){
+            if ($user && $request->input('dashboard') === true){
+                if( count($user->business) === 0){
+                    if(!$user->dashboard_access)
+                        return response()->json(["message" => "User is not allowed to login"], 400);
 
-                if (!is_array($user->control) || count($user->control) === 0){
-                    return response()->json(["message" => "User is not allowed to login"], 400);
+                    if (!is_array($user->control) || count($user->control) === 0){
+                        return response()->json(["message" => "User has no control"], 400);
+                    }
                 }
             }
         }

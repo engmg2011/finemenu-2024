@@ -43,7 +43,7 @@ class CategoryAction
         $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
-        return $model;
+        return $this->get($id);
     }
 
     public function updateSort($data)
