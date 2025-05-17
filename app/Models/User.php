@@ -6,10 +6,7 @@ namespace App\Models;
 use App\Traits\Contactable;
 use App\Traits\Mediable;
 use App\Traits\Settable;
-use Carbon\Carbon;
-use Database\Factories\UserFactory;
 use Eloquent;
-use http\Client;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +17,6 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
-use Laravel\Passport\Token;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -143,23 +139,28 @@ class User extends Authenticatable
         'business_control'
     ];
 
-    public function items(): HasMany {
+    public function items(): HasMany
+    {
         return $this->hasMany(Item::class)->orderBy('sort');
     }
 
-    public function categories(): HasMany {
-        return $this->hasMany(Category::class)->where('parent_id' , null)->orderBy('sort');
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class)->where('parent_id', null)->orderBy('sort');
     }
 
-    public function business(): HasMany {
+    public function business(): HasMany
+    {
         return $this->hasMany(Business::class);
     }
 
-    public function services(): HasMany {
+    public function services(): HasMany
+    {
         return $this->hasMany(Service::class);
     }
 
-    public function devices() {
+    public function devices()
+    {
         return $this->hasMany(Device::class);
     }
 
@@ -168,29 +169,29 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
 
     }
-/*
-    public function routeNotificationForOneSignal()
-    {
-        $playerIds = [];
-        foreach (User::find(1)->devices as $device){
-            $playerIds[] = $device->onesignal_token;
-        }
-        return $playerIds;
-    }*/
+
+    /*
+        public function routeNotificationForOneSignal()
+        {
+            $playerIds = [];
+            foreach (User::find(1)->devices as $device){
+                $playerIds[] = $device->onesignal_token;
+            }
+            return $playerIds;
+        }*/
 
     public function getBusinessControlAttribute()
     {
-        if($this->dashboard_access && is_array($this->control)){
+        if ($this->dashboard_access && is_array($this->control)) {
             $businessList = [];
-            foreach ($this->control as $control){
-                $businessList[] = Business::with(['locales',
+            foreach ($this->control as $control) {
+                $businessList[] = Business::with(['locales', 'menus.locales',
                     'branches' => function ($q) use ($control) {
-                        $q->with('locales')->whereIn('id', $control['branch_ids']);
+                        $q->with(['locales'])->whereIn('id', $control['branch_ids']);
                     }])->find($control['business_id']);
             }
             return $businessList;
         }
     }
-
 
 }
