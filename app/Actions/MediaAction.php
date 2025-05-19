@@ -108,6 +108,11 @@ class MediaAction
 
     public function uploadMedia($file, $file_name, $savePath)
     {
+        $directory = storage_path('app/' . $savePath);
+        if (!is_dir($directory))
+            mkdir($directory, 0755, true);
+        else
+            chmod($directory, 0755);
         Storage::putFileAs($savePath, $file, $file_name);
         return $savePath . $file_name;
     }
