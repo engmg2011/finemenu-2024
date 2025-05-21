@@ -103,7 +103,8 @@ class UsersController extends Controller
         $validator = Validator::make($data, [
             'email' => ['string', 'email', 'max:255',
                 Rule::unique('users')->ignore($id)],
-            'phone' => ['string', 'min:8', 'max:15', 'unique:users'],
+            'phone' => ['string', 'min:8', 'max:15',
+                Rule::unique('users')->ignore($id)],
             'name' => ['string', 'max:255'],
             'password' => ['sometimes', 'string', 'confirmed', 'min:8'],
         ]);
