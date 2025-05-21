@@ -25,6 +25,13 @@ class SetRequestModel
             return $next($request);
         }
 
+        // segments 0  / 1 / 2     /3 / 4       /5 /6
+        // https://.. /api/business/1/categories/24/settings/set
+        if($request->segment(4) === 'categories' && $request->segment(6) === 'settings' ){
+            \request()->merge(['model' => Category::class]);
+            return $next($request);
+        }
+
         switch ($request->segment(2)){
             case 'items':
                 \request()->merge(['model' => Item::class]);
