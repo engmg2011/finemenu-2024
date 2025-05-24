@@ -55,7 +55,7 @@ class ReservationsController extends Controller
             'to' => 'required|date|after_or_equal:from',
         ]);
         $data = $request->all();
-        $this->repository->checkAllowedReservationAmount($data, $businessId, $branchId);
+        $this->repository->checkAllowedReservationUnits($data, $businessId, $branchId);
         return \response()->json(true);
     }
 

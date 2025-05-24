@@ -117,7 +117,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
 
-        $this->checkAllowedReservationAmount($data, $businessId, $branchId);
+        $this->checkAllowedReservationUnits($data, $businessId, $branchId);
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -158,7 +158,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         if (isset($data['from']) && isset($data['to'])) {
 
-            $this->checkAllowedReservationAmount($data, $reservation->business_id, $reservation->branch_id, $id);
+            $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
 
         }
 
@@ -310,10 +310,28 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             })->get();
     }
 
-    public function checkAllowedReservationAmount($data, $businessId, $branchId, $updateId = null)
+    public function isUnitAllowed($item, $reservations, int $requiredUnit = 1)
+    {
+        if ($item->itemable->units < $requiredUnit)
+            return false;
+        foreach ($reservations as $reservation) {
+            if ($reservation->unit === $requiredUnit)
+                return false;
+        }
+        return true;
+    }
+
+    public function checkAllowedReservationUnits($data, $businessId, $branchId, $updateId = null)
     {
         $currentReservations = $this->currentReservations($data, $businessId, $branchId, $updateId)->toArray();
+
         $item = Item::with('itemable')->find($data['reservable_id']);
+
+        if (!isset($data['unit']))
+            $data['unit'] = 1;
+
+        if (!$this->isUnitAllowed($item, $currentReservations, $data['unit']))
+            abort(400, "Unit isn't available, please choose different dates or try again later");
 
         $periodMap = array_map(function ($period) {
             return Period::make($period['from'], $period['to']);
@@ -338,8 +356,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 ->filter(fn(Period $period) => $period->overlapsWith($dayPeriod))
                 ->count();
 
-            if ($intersectionCount > $item->itemable->amount)
-                abort(400, "Not available now, please choose different dates or try again later");
+            if ($intersectionCount > $item->itemable->units)
+                abort(400, "Not available, please choose different dates or try again later");
         }
     }
 

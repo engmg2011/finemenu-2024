@@ -124,7 +124,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
             // check if item exceeds the allowed amount
             $reservationData['reservable_id'] = $reservable_id;
-            $this->reservationRepository->checkAllowedReservationAmount($reservationData, $businessId, $branchId);
+            $this->reservationRepository->checkAllowedReservationUnits($reservationData, $businessId, $branchId);
         }
 
         $data['user_id'] = auth('sanctum')->user()->id;

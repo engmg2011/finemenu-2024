@@ -18,7 +18,7 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
     public function process(array $data)
     {
         return array_only($data, [
-            'insurance', 'latitude', 'longitude', 'address', 'amount',
+            'insurance', 'latitude', 'longitude', 'address', 'units',
             'frontage', 'bedrooms', 'item_id', 'owner_id']);
     }
 
