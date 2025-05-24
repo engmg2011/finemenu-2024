@@ -41,7 +41,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return array_only($data, [
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
-            "business_id", "branch_id", "created_at", "updated_at", 'notes', 'follower_id'
+            "business_id", "branch_id", "created_at", "updated_at", 'notes', 'follower_id',
+            "unit"
         ]);
     }
 
@@ -278,6 +279,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->where('reservable_id', $reservable_id)
             ->where('from', $reservationData['from'])
             ->where('to', $reservationData['to'])
+            ->where('unit', $reservationData['unit'])
             ->where('business_id', $businessId)
             ->where('branch_id', $branchId)
             ->where('status', PaymentConstants::RESERVATION_PENDING)
@@ -291,7 +293,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $endDate = $data['to'];
         $reservable_id = $data['reservable_id'];
         return Reservation::
-        select(['from', 'to'])
+        select(['from', 'to' , 'unit'])
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('reservable_id', $reservable_id)
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
@@ -312,10 +314,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function isUnitAllowed($item, $reservations, int $requiredUnit = 1)
     {
+        \Log::debug(['item units' => $item->itemable->units]);
         if ($item->itemable->units < $requiredUnit)
             return false;
         foreach ($reservations as $reservation) {
-            if ($reservation->unit === $requiredUnit)
+            if ($reservation['unit'] === $requiredUnit)
                 return false;
         }
         return true;
@@ -327,10 +330,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $item = Item::with('itemable')->find($data['reservable_id']);
 
+        \Log::debug(['data'=>$data]);
+        \Log::debug(['curr' => $currentReservations]);
         if (!isset($data['unit']))
             $data['unit'] = 1;
-
-        if (!$this->isUnitAllowed($item, $currentReservations, $data['unit']))
+        $all = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
+        \Log::debug(['allowed' => $all]);
+        if (!$all)
             abort(400, "Unit isn't available, please choose different dates or try again later");
 
         $periodMap = array_map(function ($period) {
