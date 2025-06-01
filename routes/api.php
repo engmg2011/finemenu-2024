@@ -34,6 +34,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Don't move down
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
+    Route::group(['prefix' => 'media'], function () {
+        Route::post('upload', [MediaController::class, 'postUpload']);
+    });
+});
+
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:sanctum',
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER. '|' . RolesConstants::BRANCH_MANAGER]
@@ -86,7 +94,6 @@ Route::group(['middleware' => ['auth:sanctum',
         Route::get('/', [MediaController::class, 'index']);
         Route::get('/{id}', [MediaController::class, 'show']);
         Route::post('/', [MediaController::class, 'create']);
-        Route::post('upload', [MediaController::class, 'postUpload']);
         Route::post('/{id}', [MediaController::class, 'update']);
         Route::post('/{id}/delete', [MediaController::class, 'destroy']);
     });
@@ -166,9 +173,6 @@ Route::group(['middleware' => ['auth:sanctum',
 
 });
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
-});
 
 Route::get('qr-app-version', [WebAppController::class , 'QRAppVersion']);
 Route::get('tablet-app-version', [WebAppController::class , 'TabletAppVersion']);
