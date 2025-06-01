@@ -111,10 +111,9 @@ class UsersController extends Controller
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
-        if (isset($data['media']) && count($data['media']) > 0) {
-            $data['media'][0]['slug'] = 'profile-picture';
+        if (isset($data['photo'])) {
             $user = User::find($id);
-            $this->mediaAction->setMedia($user, $data['media']);
+            $user->updateProfilePhoto($data['photo']);
         }
         return \response()->json($this->userRepository->updateModel($id, $request->all()));
     }
