@@ -5,6 +5,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
@@ -186,6 +187,12 @@ Route::group(['middleware' => [
                 Route::post('/', [UsersController::class, 'create']);
                 Route::post('/search', [UsersController::class, 'search']);
                 Route::post('/{modelId}', [UsersController::class, 'update']);
+            });
+
+
+            Route::group(['prefix' => 'config'], function () {
+                Route::get('/', [ConfigurationsController::class, 'getBusinessConfig']);
+                Route::post('/', [ConfigurationsController::class, 'setBusinessConfig']);
             });
 
         });

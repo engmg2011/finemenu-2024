@@ -4,6 +4,7 @@
 namespace App\Models;
 
 
+use App\Traits\Configurable;
 use App\Traits\Contactable;
 use App\Traits\Contentable;
 use App\Traits\Discountable;
@@ -67,7 +68,7 @@ use Illuminate\Support\Carbon;
  */
 class Business extends Model
 {
-    use Localizable, Settable, Contactable, Orderable, Mediable, Discountable, Contentable;
+    use Localizable, Settable, Contactable, Orderable, Mediable, Discountable, Contentable, Configurable;
 
     protected $guarded = ['id'];
     protected $table = "business";
