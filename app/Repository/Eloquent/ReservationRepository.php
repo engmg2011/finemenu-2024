@@ -38,6 +38,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function process(array $data): array
     {
+        if(empty($data['unit'])) {
+            $data['unit'] = 1;
+            \Log::debug("empty or null unit id");
+        }
         return array_only($data, [
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
