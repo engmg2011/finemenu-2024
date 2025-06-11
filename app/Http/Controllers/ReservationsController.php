@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionServices;
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Models\Reservation;
 use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -91,6 +92,12 @@ class ReservationsController extends Controller
         if(isset($data['invoices']))
             checkUserPermission($user, $data['branch_id'],
                 PermissionServices::Invoices, PermissionActions::Create);
+
+        $business = Business::find($data['business_id']);
+
+        $data['from']  = businessToUtcConverter($data['from'], $business);
+        $data['to']   = businessToUtcConverter($data['to'], $business);
+
         return \response()->json($this->repository->create($data));
     }
 

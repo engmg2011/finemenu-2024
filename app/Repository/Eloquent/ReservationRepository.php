@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Constants\AuditServices;
+use App\Constants\ConfigurationConstants;
 use App\Constants\PaymentConstants;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
@@ -11,6 +12,7 @@ use App\Constants\RolesConstants;
 use App\Events\NewReservation;
 use App\Events\UpdateReservation;
 use App\Jobs\SendNewReservationNotification;
+use App\Models\Business;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Reservation;
@@ -123,6 +125,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $businessId = request()->route('businessId');
 
         $this->checkAllowedReservationUnits($data, $businessId, $branchId);
+
+        \Log::debug("create reservation model " . json_encode($data));
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -293,8 +297,19 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     // get current intersected reservations with the required period
     public function currentReservations($data, $businessId, $branchId, $updateId = null)
     {
-        $startDate = $data['from'];
-        $endDate = $data['to'];
+        $business = Business::find($businessId);
+
+        // Reservation Margin Before and after any reservation
+        $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
+
+        \Log::debug(["ddd" => $data]);
+
+        // Change to UTC
+        $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
+        $endDate = (clone $data['to'])->addSeconds($reservationMargin);
+
+        \Log::debug(['startDate' => $startDate, 'endDate' => $endDate, 'businessId' => $businessId, 'branchId' => $branchId]);
+
         $reservable_id = $data['reservable_id'];
         return Reservation::
         select(['from', 'to' , 'unit'])
@@ -318,7 +333,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function isUnitAllowed($item, $reservations, int $requiredUnit = 1)
     {
-        \Log::debug(['item units' => $item->itemable->units]);
         if ($item->itemable->units < $requiredUnit)
             return false;
         foreach ($reservations as $reservation) {
@@ -333,13 +347,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $currentReservations = $this->currentReservations($data, $businessId, $branchId, $updateId)->toArray();
 
         $item = Item::with('itemable')->find($data['reservable_id']);
-
-        \Log::debug(['data'=>$data]);
-        \Log::debug(['curr' => $currentReservations]);
         if (!isset($data['unit']))
             $data['unit'] = 1;
         $all = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
-        \Log::debug(['allowed' => $all]);
         if (!$all)
             abort(400, "Unit isn't available, please choose different dates or try again later");
 

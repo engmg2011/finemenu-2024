@@ -95,6 +95,34 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             abort(400, "Wrong Data");
     }
 
+    public function checkAllowedReservationsOrDie(&$data, $business, $branchId)
+    {
+        if (isset($data['order_lines']) && is_array($data['order_lines'])) {
+            for ($i = 0; $i <= count($data['order_lines']); $i++) {
+
+                if (isset($data['order_lines'][$i]['reservation'])) {
+                    $data['order_lines'][$i]['reservation']['from'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['from'], $business);
+                    $data['order_lines'][$i]['reservation']['to'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['to'], $business);
+
+                    $reservationData = $data['order_lines'][$i]['reservation'];
+                    $reservable_id = $data['order_lines'][$i]['item_id'];
+
+                    // check if user created same reservation before and not paid
+                    $sameUserReservation = $this->reservationRepository->getSameReservation($reservationData, $reservable_id, $business->id, $branchId);
+                    if ($sameUserReservation)
+                        return $this->get($sameUserReservation->order_id);
+
+                    // check if item exceeds the allowed amount
+                    $reservationData['reservable_id'] = $reservable_id;
+                    \Log::debug(["ddd3" => $reservationData]);
+                    $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
+                }
+
+            }
+        }
+    }
 
     /**
      * @throws Exception
@@ -103,6 +131,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         $branchId = request()->route()->parameter('branchId');
         $businessId = request()->route('businessId');
+        $business = Business::find($businessId);
         $data['orderable_id'] = $branchId;
         $data['orderable_type'] = get_class(new Branch());
 
@@ -112,20 +141,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->validateCategoriesInBranch($data['order_lines']);
 
         // checking if exists reservation
-        // assume reservation will be in the first ol
-        if(isset($data['order_lines'][0]['reservation'])){
-            $reservationData = $data['order_lines'][0]['reservation'];
-            $reservable_id = $data['order_lines'][0]['item_id'];
-
-            // check if user created same reservation before and not paid
-            $sameUserReservation = $this->reservationRepository->getSameReservation($reservationData, $reservable_id, $businessId, $branchId);
-            if ($sameUserReservation)
-                return $this->get($sameUserReservation->order_id);
-
-            // check if item exceeds the allowed amount
-            $reservationData['reservable_id'] = $reservable_id;
-            $this->reservationRepository->checkAllowedReservationUnits($reservationData, $businessId, $branchId);
-        }
+        $this->checkAllowedReservationsOrDie($data, $business, $branchId);
 
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
@@ -148,7 +164,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         }
-        if(!isset($data['order_lines'][0]['reservation'])){
+        if (!isset($data['order_lines'][0]['reservation'])) {
             // Send new order event if no reservation
             event(new NewOrder($model->id));
         }
@@ -174,8 +190,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $user = User::find($userId);
         $order = Order::find($id);
         if (!$user->hasAnyPermission([$this->getOrderRequiredPermission($order),
-            "branch.".$order->orderable_id.".".PermissionServices::Orders.".".PermissionActions::Update
-            ]))
+            "branch." . $order->orderable_id . "." . PermissionServices::Orders . "." . PermissionActions::Update
+        ]))
             abort(403, 'You Don\'t have permission');
 
         // TODO:: check if data['paid']
