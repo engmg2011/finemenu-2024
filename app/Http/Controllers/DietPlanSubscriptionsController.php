@@ -35,7 +35,10 @@ class DietPlanSubscriptionsController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json($this->repository->create($request->all()));
+        $data = $request->all();
+        $data['business_id'] = request()->route('businessId');
+        $data['branch_id'] = request()->route('branchId');
+        return response()->json($this->repository->create($data));
     }
 
     /**
@@ -47,7 +50,10 @@ class DietPlanSubscriptionsController extends Controller
     public function subscribe(Request $request, $diet_plan_id)
     {
         $request->request->add(['diet_plan_id'=>$diet_plan_id]);
-        return response()->json($this->repository->create($request->all()));
+        $data = $request->all();
+        $data['business_id'] = request()->route('businessId');
+        $data['branch_id'] = request()->route('branchId');
+        return response()->json($this->repository->create($data));
     }
 
     /**

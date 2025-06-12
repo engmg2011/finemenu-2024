@@ -101,10 +101,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             for ($i = 0; $i <= count($data['order_lines']); $i++) {
 
                 if (isset($data['order_lines'][$i]['reservation'])) {
-                    $data['order_lines'][$i]['reservation']['from'] =
-                        businessToUtcConverter($data['order_lines'][$i]['reservation']['from'], $business);
-                    $data['order_lines'][$i]['reservation']['to'] =
-                        businessToUtcConverter($data['order_lines'][$i]['reservation']['to'], $business);
 
                     $reservationData = $data['order_lines'][$i]['reservation'];
                     $reservable_id = $data['order_lines'][$i]['item_id'];
@@ -116,7 +112,6 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
                     // check if item exceeds the allowed amount
                     $reservationData['reservable_id'] = $reservable_id;
-                    \Log::debug(["ddd3" => $reservationData]);
                     $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
                 }
 
@@ -127,12 +122,12 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     /**
      * @throws Exception
      */
-    public function create(array $data): Model
+    public function create(array $data, $business = null): Model
     {
-        $branchId = request()->route()->parameter('branchId');
-        $businessId = request()->route('businessId');
-        $business = Business::find($businessId);
-        $data['orderable_id'] = $branchId;
+        if (!$business)
+            $business = Business::find($data['business_id']);
+
+        $data['orderable_id'] = $data['branch_id'];
         $data['orderable_type'] = get_class(new Branch());
 
         if (!count($data['order_lines']))
@@ -141,7 +136,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $this->validateCategoriesInBranch($data['order_lines']);
 
         // checking if exists reservation
-        $this->checkAllowedReservationsOrDie($data, $business, $branchId);
+        $this->checkAllowedReservationsOrDie($data, $business, $data['branch_id']);
 
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;

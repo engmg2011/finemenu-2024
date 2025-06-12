@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Constants\RolesConstants;
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Models\Order;
 use App\Repository\OrderRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -38,7 +39,22 @@ class OrdersController extends Controller
     public function create(Request $request)
     {
         // todo:: check if not exceeds BusinessSettings['EnableReservationsTill'] using getBusinessSettingByKey('EnableReservationsTill')
-        return \response()->json($this->orderRepository->create($request->all()));
+        $data = $request->all();
+        $data['business_id'] = request()->route('businessId');
+        $data['branch_id'] = request()->route('branchId');
+        $business = Business::find($data['business_id']);
+        if (isset($data['order_lines']) && is_array($data['order_lines'])) {
+            for ($i = 0; $i <= count($data['order_lines']); $i++) {
+
+                if (isset($data['order_lines'][$i]['reservation'])) {
+                    $data['order_lines'][$i]['reservation']['from'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['from'], $business);
+                    $data['order_lines'][$i]['reservation']['to'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['to'], $business);
+                }
+            }
+        }
+        return \response()->json($this->orderRepository->create($data, $business));
     }
 
     /**

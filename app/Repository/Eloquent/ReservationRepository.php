@@ -126,8 +126,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $this->checkAllowedReservationUnits($data, $businessId, $branchId);
 
-        \Log::debug("create reservation model " . json_encode($data));
-
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
 
