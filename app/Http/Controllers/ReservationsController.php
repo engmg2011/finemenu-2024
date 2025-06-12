@@ -81,23 +81,28 @@ class ReservationsController extends Controller
         return \response()->json($this->repository->get($id));
     }
 
-    public function create(Request $request)
+    private function prepareData(&$data)
     {
-        $data = $request->all();
         $data['branch_id'] = request()->route('branchId');
         $data['business_id'] = request()->route('businessId');
         $user = auth('sanctum')->user();
+
         checkUserPermission($user, $data['branch_id'],
             PermissionServices::Reservations, PermissionActions::Create);
-        if(isset($data['invoices']))
+        if (isset($data['invoices']))
             checkUserPermission($user, $data['branch_id'],
                 PermissionServices::Invoices, PermissionActions::Create);
 
         $business = Business::find($data['business_id']);
 
-        $data['from']  = businessToUtcConverter($data['from'], $business);
-        $data['to']   = businessToUtcConverter($data['to'], $business);
+        $data['from'] = businessToUtcConverter($data['from'], $business);
+        $data['to'] = businessToUtcConverter($data['to'], $business);
+    }
 
+    public function create(Request $request)
+    {
+        $data = $request->all();
+        $this->prepareData($data);
         return \response()->json($this->repository->create($data));
     }
 
@@ -119,17 +124,9 @@ class ReservationsController extends Controller
     public function update(Request $request)
     {
         $id = \request()->route('id');
-        $data['branch_id'] = request()->route('branchId');
-        $user = auth('sanctum')->user();
-
-        checkUserPermission($user, $data['branch_id'],
-            PermissionServices::Reservations, PermissionActions::Update);
-
-        if(isset($data['invoices']))
-            checkUserPermission($user, $data['branch_id'],
-                PermissionServices::Invoices, PermissionActions::Update);
-
-        return \response()->json($this->repository->updateModel($id, $request->all()));
+        $data = $request->all();
+        $this->prepareData($data);
+        return \response()->json($this->repository->updateModel($id, $data));
     }
 
     /**
@@ -142,7 +139,7 @@ class ReservationsController extends Controller
     {
         //
         $user = auth('sanctum')->user();
-        checkUserPermission($user, \request()->route('branchId') ,
+        checkUserPermission($user, \request()->route('branchId'),
             PermissionServices::Reservations, PermissionActions::Delete);
     }
 }
