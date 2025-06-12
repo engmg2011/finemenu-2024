@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Repository\DiscountRepositoryInteface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,11 @@ class DiscountsController extends Controller
      */
     public function create(Request $request)
     {
-        return \response()->json($this->repository->createModel($request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business);
+        $data['to'] = businessToUtcConverter($data['to'], $business);
+        return \response()->json($this->repository->createModel($data));
     }
 
     /**
@@ -57,7 +62,11 @@ class DiscountsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->repository->updateModel($id, $request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business);
+        $data['to'] = businessToUtcConverter($data['to'], $business);
+        return \response()->json($this->repository->updateModel($id, $data));
     }
 
     /**
