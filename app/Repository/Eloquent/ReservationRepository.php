@@ -80,13 +80,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        $startDate = $request->input('from');
-        $endDate = $request->input('to');
         $itemId = $request->input('item_id');
         $status = $request->input('status');
         $reservedForId = $request->input('reserved_for_id');
         $reservedById = $request->input('reserved_by_id');
         $followerId = $request->input('follower_id');
+
+        $business = Business::find($businessId);
+        $startDate = businessToUtcConverter($request->input('from'), $business,'Y-m-d H:i:s');
+        $endDate = businessToUtcConverter($request->input('to'), $business,'Y-m-d H:i:s');
 
         // TODO :: agree on default
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
