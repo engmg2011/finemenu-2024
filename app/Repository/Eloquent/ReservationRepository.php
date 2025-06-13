@@ -300,13 +300,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         // Reservation Margin Before and after any reservation
         $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
 
-        \Log::debug(["ddd" => $data]);
-
         // Change to UTC
         $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
         $endDate = (clone $data['to'])->addSeconds($reservationMargin);
-
-        \Log::debug(['startDate' => $startDate, 'endDate' => $endDate, 'businessId' => $businessId, 'branchId' => $branchId]);
 
         $reservable_id = $data['reservable_id'];
         return Reservation::

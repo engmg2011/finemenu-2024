@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Repository\ItemRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,7 +47,9 @@ class ItemsController extends Controller
      */
     public function create(Request $request, $businessId )
     {
-        return response()->json($this->repository->create($request->all()));
+        $data = $request->all();
+        $this->setUtcDates($data, $businessId);
+        return response()->json($this->repository->create($data));
     }
 
     /**
@@ -69,6 +72,8 @@ class ItemsController extends Controller
      */
     public function update(Request $request, $businessId , $id)
     {
+        $data = $request->all();
+        $this->setUtcDates($data, $businessId);
         return response()->json($this->repository->update($id, $request->all()));
     }
 
@@ -97,5 +102,16 @@ class ItemsController extends Controller
     {
         return response()->json($this->repository->syncHolidays($businessId, $itemId));
 
+    }
+
+    public function setUtcDates(&$data, $businessId)
+    {
+        $business = Business::find($businessId);
+        if (isset($data['discounts']) && is_array($data['discounts'])) {
+            for ($i = 0; $i < count($data['discounts']); $i++) {
+                $data['discounts'][$i]['from'] = businessToUtcConverter($data['discounts'][$i]['from'], $business ,'Y-m-d H:i:s');
+                $data['discounts'][$i]['to'] = businessToUtcConverter($data['discounts'][$i]['to'], $business, 'Y-m-d H:i:s');
+            }
+        }
     }
 }

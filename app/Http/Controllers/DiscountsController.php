@@ -37,8 +37,8 @@ class DiscountsController extends Controller
     {
         $data = $request->all();
         $business = Business::find($data['business_id']);
-        $data['from'] = businessToUtcConverter($data['from'], $business);
-        $data['to'] = businessToUtcConverter($data['to'], $business);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
         return \response()->json($this->repository->createModel($data));
     }
 
@@ -64,8 +64,8 @@ class DiscountsController extends Controller
     {
         $data = $request->all();
         $business = Business::find($data['business_id']);
-        $data['from'] = businessToUtcConverter($data['from'], $business);
-        $data['to'] = businessToUtcConverter($data['to'], $business);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
         return \response()->json($this->repository->updateModel($id, $data));
     }
 

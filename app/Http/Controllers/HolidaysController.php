@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use App\Repository\HolidayRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,11 @@ class HolidaysController extends Controller
      */
     public function createModel(Request $request, $businessId)
     {
-        return response()->json($this->repository->createModel($businessId, $request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        return response()->json($this->repository->createModel($businessId, $data));
     }
 
     /**
@@ -64,7 +69,11 @@ class HolidaysController extends Controller
      */
     public function update(Request $request, $businessId, $id)
     {
-        return response()->json($this->repository->updateModel($businessId, $id, $request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        return response()->json($this->repository->updateModel($businessId, $id, $data));
     }
 
     /**

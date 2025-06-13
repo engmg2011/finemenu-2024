@@ -44,7 +44,7 @@ class OrdersController extends Controller
         $data['branch_id'] = request()->route('branchId');
         $business = Business::find($data['business_id']);
         if (isset($data['order_lines']) && is_array($data['order_lines'])) {
-            for ($i = 0; $i <= count($data['order_lines']); $i++) {
+            for ($i = 0; $i < count($data['order_lines']); $i++) {
 
                 if (isset($data['order_lines'][$i]['reservation'])) {
                     $data['order_lines'][$i]['reservation']['from'] =
