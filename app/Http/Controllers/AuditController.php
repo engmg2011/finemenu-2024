@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
 use App\Models\Audit;
+use App\Models\Business;
 use Illuminate\Http\Request;
 
 class AuditController extends Controller
@@ -37,9 +38,13 @@ class AuditController extends Controller
         if ($request->has('user_id'))
             $query->where('user_id', $request->user_id);
 
-        if ($request->has('from') && $request->has('to'))
-            $query->whereBetween('created_at',  [$request->from , $request->to ]);
-
+        if ($request->has('from') && $request->has('to')) {
+            $data = $request->all();
+            $business = Business::find($businessId);
+            $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+            $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+            $query->whereBetween('created_at', [$data['from'], $data['to']]);
+        }
         return $query->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->orderByDesc('id')
             ->paginate(request('per-page', 50));

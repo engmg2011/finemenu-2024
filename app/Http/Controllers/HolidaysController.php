@@ -43,7 +43,7 @@ class HolidaysController extends Controller
     public function createModel(Request $request, $businessId)
     {
         $data = $request->all();
-        $business = Business::find($data['business_id']);
+        $business = Business::find($businessId);
         $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
         $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
         return response()->json($this->repository->createModel($businessId, $data));
@@ -70,7 +70,7 @@ class HolidaysController extends Controller
     public function update(Request $request, $businessId, $id)
     {
         $data = $request->all();
-        $business = Business::find($data['business_id']);
+        $business = Business::find($businessId);
         $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
         $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
         return response()->json($this->repository->updateModel($businessId, $id, $data));

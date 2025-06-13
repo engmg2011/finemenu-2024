@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Models\Business;
 use App\Models\Holiday;
 use App\Repository\HolidayRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -35,8 +36,10 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             'from' => 'required|date',
             'to' => 'required|date|after_or_equal:from',
         ]);
-        $startDate = $request->input('from');
-        $endDate = $request->input('to');
+
+        $business = Business::find($businessId);
+        $startDate = businessToUtcConverter($request->input('from'), $business,'Y-m-d H:i:s');
+        $endDate = businessToUtcConverter($request->input('to'), $business,'Y-m-d H:i:s');
 
         return $this->model::with(['locales'])
             ->where('business_id', $businessId)

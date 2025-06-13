@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\PackageAction;
 use App\Actions\SubscriptionAction;
 use App\Http\Resources\DataResource;
+use App\Models\Business;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -34,7 +35,11 @@ class SubscriptionsController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json($this->action->create($request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        return response()->json($this->action->create($data));
     }
 
     /**
@@ -57,7 +62,11 @@ class SubscriptionsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return response()->json($this->action->update($id,$request->all()));
+        $data = $request->all();
+        $business = Business::find($data['business_id']);
+        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        return response()->json($this->action->update($id,$data));
     }
 
     /**
