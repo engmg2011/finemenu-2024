@@ -51,8 +51,15 @@ if (!function_exists('businessToUtcConverter')) {
         if (is_int($business))
             $business = Business::find($business);
         $businessTimezone = $business->getConfig(ConfigurationConstants::TIMEZONE, config('app.timezone'));
-        if (is_string($dateTime))
-            $dateTime = Carbon::createFromFormat($format, $dateTime, $businessTimezone);
+        if (is_string($dateTime)) {
+            try {
+                $dateTime = Carbon::createFromFormat($format, $dateTime, $businessTimezone);
+            } catch (\Exception $e) {
+                \Log::error("error in parsing ". $dateTime );
+                $dateTime = Carbon::parse($dateTime, $businessTimezone);
+                \Log::error($e);
+            }
+        }
         return $dateTime->setTimezone('UTC');
     }
 }
