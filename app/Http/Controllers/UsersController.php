@@ -188,4 +188,19 @@ class UsersController extends Controller
         return $this->userRepository->loginByQr($request);
     }
 
+    public function notificationsList(Request $request)
+    {
+        $user = $request->user();
+        $notifications = $user->notifications()->paginate(10);
+        return response()->json($notifications);
+    }
+
+    public function unreadNotificationsCount(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'unread_count' => $user->unreadNotifications()->count(),
+        ]);
+    }
+
 }

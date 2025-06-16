@@ -59,21 +59,24 @@ use Illuminate\Support\Carbon;
 class OrderLine extends Model
 {
     use HasFactory, Priceable, Addonable, Discountable, Localizable;
+
     protected $guarded = ['id'];
-    protected $casts = ['data'=>'json'];
+    protected $casts = ['data' => 'json'];
     protected $hidden = ['created_at', 'updated_at'];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function item() {
-       return $this->belongsTo(Item::class);
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
     }
 
     public function reservation()
     {
-        return $this->hasOne(Reservation::class,'order_line_id','id');
+        return $this->hasOne(Reservation::class, 'order_line_id', 'id');
     }
 
 }

@@ -2,17 +2,23 @@
 
 namespace App\Jobs;
 
+use App\Constants\ConfigurationConstants;
+use App\Constants\PermissionsConstants;
 use App\Constants\RolesConstants;
 use App\Models\Business;
 use App\Models\Device;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Notifications\NewOrderNotification;
+use App\Notifications\NewReservationNotification;
 use App\Notifications\OneSignalNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Notification;
+use Ramsey\Collection\Collection;
 
 class SendNewReservationNotification implements ShouldQueue
 {
@@ -33,45 +39,46 @@ class SendNewReservationNotification implements ShouldQueue
 
         $this->notifyBusinessOwner($business);
 
-        // Notify
-        $admins = User::where('business_id', $this->reservation->business_id)
-            ->whereHas('roles', function ($q) {
-                $q->whereIn('name', [RolesConstants::ADMIN, RolesConstants::SUPERVISOR,
-                    RolesConstants::CASHIER, RolesConstants::KITCHEN,
-                    RolesConstants::BRANCH_MANAGER, RolesConstants::DRIVER,]);
-            })->get();
 
-        if (count($admins)) {
+        $permissionName = PermissionsConstants::Branch . '.' . $this->reservation->branch_id;
+        $adminIds = User::permission($permissionName)->pluck('id');
 
-            $config = [
-                'app_id' => '59a15ebd-06f5-4da7-9083-c3837d2a66f1',
-                'rest_api_key' => 'os_v2_app_lgqv5pig6vg2peedyobx2ktg6gq4bs5iqkwewqnx36rfq2fyosvqb4tbkbhllewkvzrp7fdyoxkgizrmyeviiezsedggvmceo7q2k5a',
-                'user_auth_key' => 'os_v2_app_lgqv5pig6vg2peedyobx2ktg6gq4bs5iqkwewqnx36rfq2fyosvqb4tbkbhllewkvzrp7fdyoxkgizrmyeviiezsedggvmceo7q2k5a',
-            ];
 
+        // DB & Mail Notifications
+        $users = User::whereIn('id', $adminIds)->get();
+        $DBNotification = app()->makeWith(NewReservationNotification::class, ['reservationId' => $this->reservation->id]);
+        Notification::send($users, $DBNotification);
+
+
+
+        $devices = new Collection(Device::class);
+        foreach ($adminIds as $id) {
+            $device = Device::whereNotNull('onesignal_token')
+                ->where('user_id', $id)->orderBy('last_active', 'desc')->first();
+            if ($device)
+                $devices->add($device);
+        }
+
+
+
+        if (count($devices)) {
             // Set config dynamically
             config([
-                'onesignal.app_id' => $config['app_id'],
-                'onesignal.rest_api_key' => $config['rest_api_key'],
-                'onesignal.user_auth_key' => $config['user_auth_key'],
+                'onesignal.app_id' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_APP_ID),
+                'onesignal.rest_api_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_REST_API_KEY),
+                'onesignal.user_auth_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_USER_AUTH_KEY),
             ]);
 
-            foreach ($admins as $user) {
-                $device = Device::where('user_id', $user->id)
-                    ->whereNotNull('onesignal_token')
-                    ->orderBy('id', 'desc')
-                    ->first();
-                if ($device) {
-                    $firstItemName = $this->reservation->data->reservable->locales[0]?->name ?? "";
-                    $branchName = $this->reservation->branch->locales[0]->name ?? "";
-                    try {
-                        $subject = $business->locales[0]?->name ?? 'MenuAI';
-                        $msg = "Booking $firstItemName from $branchName ";
-                        $device->notify(new OneSignalNotification($subject, $msg));
-                    } catch (\Exception $exception) {
-                        \Log::error(json_encode(["msg" => "Couldn't send notification to device id " . $device->id,
-                            "ex" => $exception->getMessage()]));
-                    }
+            foreach ($devices as $device) {
+                $firstItemName = $this->order->orderlines[0]?->data['item']['locales'][0]['name'] ?? "";
+                $branchName = $this->reservation->branch->locales[0]->name ?? "";
+                try {
+                    $subject = $business->locales[0]?->name ?? 'MenuAI';
+                    $msg = "Booking $firstItemName from $branchName ";
+                    $device->notify(new OneSignalNotification($subject, $msg));
+                } catch (\Exception $exception) {
+                    \Log::error(json_encode(["msg" => "Couldn't send notification to device id " . $device->id,
+                        "ex" => $exception->getMessage()]));
                 }
             }
         }

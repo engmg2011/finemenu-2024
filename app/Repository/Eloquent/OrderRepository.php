@@ -159,8 +159,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         }
+
+        // Todo :: remove[0] and search for any
+        // Don't send if there is a reservation as it will be sent from NewReservation Event
         if (!isset($data['order_lines'][0]['reservation'])) {
-            // Send new order event if no reservation
             event(new NewOrder($model->id));
         }
         return $this->get($model->id);
