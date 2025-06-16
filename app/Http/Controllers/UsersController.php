@@ -192,6 +192,7 @@ class UsersController extends Controller
     {
         $user = $request->user();
         $notifications = $user->notifications()->paginate(10);
+        $user->unreadNotifications->markAsRead();
         return response()->json($notifications);
     }
 
