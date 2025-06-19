@@ -19,6 +19,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Notification;
 use Ramsey\Collection\Collection;
+use Spatie\Permission\Models\Permission;
 
 class SendNewReservationNotification implements ShouldQueue
 {
@@ -33,23 +34,26 @@ class SendNewReservationNotification implements ShouldQueue
         $this->reservation = Reservation::find($reservationId);
     }
 
-    public function notifyAdmins()
+    public function notifyBranchManagers()
     {
         $business = Business::with('locales')->find($this->reservation->business_id);
-
-        $this->notifyBusinessOwner($business);
-
+        $ownerId = $business->user_id;
 
         $permissionName = PermissionsConstants::Branch . '.' . $this->reservation->branch_id;
-        $adminIds = User::permission($permissionName)->pluck('id');
+        $branchAdmins = User::permission($permissionName)->pluck('id')->toArray();
 
+        $branchPermissions = Permission::where('name', 'like', $permissionName.'.%')->pluck('id');
+        $branchManagers = User::whereHas('permissions', function ($q) use ($branchPermissions) {
+            $q->whereIn('id', $branchPermissions);
+        })->pluck('id')->toArray();
+
+        // AllIds
+        $adminIds = array_merge([$ownerId], $branchAdmins, $branchManagers);
 
         // DB & Mail Notifications
         $users = User::whereIn('id', $adminIds)->get();
         $DBNotification = app()->makeWith(NewReservationNotification::class, ['reservationId' => $this->reservation->id]);
         Notification::send($users, $DBNotification);
-
-
 
         $devices = new Collection(Device::class);
         foreach ($adminIds as $id) {
@@ -58,8 +62,6 @@ class SendNewReservationNotification implements ShouldQueue
             if ($device)
                 $devices->add($device);
         }
-
-
 
         if (count($devices)) {
             // Set config dynamically
@@ -86,33 +88,12 @@ class SendNewReservationNotification implements ShouldQueue
 
     }
 
-    private function notifyBusinessOwner($business)
-    {
-        // send to business owner & branch admins
-        $userId = $business->user_id;
-        $device = Device::where('user_id', $userId)
-            ->whereNotNull('onesignal_token')
-            ->orderBy('id', 'desc')
-            ->first();
-        if ($device) {
-            $firstItemName = $this->reservation->data->item->locales[0]?->name ?? "";
-            $branchName = $this->reservation->branch->locales[0]->name ?? "";
-            try {
-                $device->notify(new OneSignalNotification('MenuAI', "Booking $firstItemName from $branchName "));
-            } catch (\Exception $exception) {
-                \Log::error(json_encode(["msg" => "Couldn't send notification to device id " . $device->id,
-                    "ex" => $exception->getMessage()]));
-            }
-        }
-
-    }
-
     /**
      * Execute the job.
      */
     public function handle(): void
     {
         //
-        $this->notifyAdmins();
+        $this->notifyBranchManagers();
     }
 }
