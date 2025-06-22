@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83417a2c96ff7261cf9afa84701862ca",
+    "content-hash": "0b6ef7c5b2ef8fec75310da68aef7cdc",
     "packages": [
         {
             "name": "arcanedev/log-viewer",
@@ -200,21 +200,21 @@
         },
         {
             "name": "berkayk/onesignal-laravel",
-            "version": "v2.1",
+            "version": "v2.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/berkayk/laravel-onesignal.git",
-                "reference": "292973c63914b7b6a6b788a7849c1060abfe9079"
+                "reference": "e140faac7e0811a37b6b90e23b252a4b8d32db40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/berkayk/laravel-onesignal/zipball/292973c63914b7b6a6b788a7849c1060abfe9079",
-                "reference": "292973c63914b7b6a6b788a7849c1060abfe9079",
+                "url": "https://api.github.com/repos/berkayk/laravel-onesignal/zipball/e140faac7e0811a37b6b90e23b252a4b8d32db40",
+                "reference": "e140faac7e0811a37b6b90e23b252a4b8d32db40",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.2|^7.4.1|^7.2",
-                "illuminate/support": "~5.5|~6.0|~7.0|~8.0|~9.0|^10.0|^11.0",
+                "illuminate/support": "~5.5|~6.0|~7.0|~8.0|~9.0|^10.0|^11.0|^12.0",
                 "php": ">=5.4.0",
                 "symfony/psr-http-message-bridge": "1.*|2.*|^7.0"
             },
@@ -224,12 +224,12 @@
             "type": "library",
             "extra": {
                 "laravel": {
-                    "providers": [
-                        "Berkayk\\OneSignal\\OneSignalServiceProvider"
-                    ],
                     "aliases": {
                         "OneSignal": "Berkayk\\OneSignal\\OneSignalFacade"
-                    }
+                    },
+                    "providers": [
+                        "Berkayk\\OneSignal\\OneSignalServiceProvider"
+                    ]
                 }
             },
             "autoload": {
@@ -262,9 +262,9 @@
             ],
             "support": {
                 "issues": "https://github.com/berkayk/laravel-onesignal/issues",
-                "source": "https://github.com/berkayk/laravel-onesignal/tree/v2.1"
+                "source": "https://github.com/berkayk/laravel-onesignal/tree/v2.4.2"
             },
-            "time": "2024-03-26T12:15:06+00:00"
+            "time": "2025-03-19T08:32:16+00:00"
         },
         {
             "name": "beyondcode/laravel-websockets",

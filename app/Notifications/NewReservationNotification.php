@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Repository\ReservationRepositoryInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -10,17 +9,12 @@ use Illuminate\Notifications\Notification;
 class NewReservationNotification extends Notification
 {
     use Queueable;
-
-    public $reservation, $firstItemName, $branchName;
-
     /**
      * Create a new notification instance.
      */
-    public function __construct(protected ReservationRepositoryInterface $reservationRepository, private $reservationId)
+    public function __construct(private                                  $subject,
+                                private                                  $msg)
     {
-        $this->reservation = $this->reservationRepository->get($this->reservationId);
-        $this->firstItemName = $this->reservable->locales[0]['name'] ?? "";
-        $this->branchName = $this->reservation->branch->locales[0]['name'] ?? "";
     }
 
     /**
@@ -31,7 +25,7 @@ class NewReservationNotification extends Notification
     public function via(object $notifiable): array
     {
         return [
-//            'mail',
+            //'mail',
             'database'
         ];
     }
@@ -42,8 +36,8 @@ class NewReservationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("New Booking")
-            ->line("Requested $this->firstItemName from $this->branchName ");
+            ->subject($this->subject)
+            ->line($this->msg);
 //                    ->action('Notification Action', url('/'))
 //                    ->line('Thank you for using our application!');
     }
@@ -52,9 +46,8 @@ class NewReservationNotification extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'en' => "Booking $this->firstItemName from $this->branchName ",
-            'ar' => "حجز $this->firstItemName من $this->branchName "
-
+            'en' => $this->msg,
+            'ar' => $this->msg
         ];
     }
 
