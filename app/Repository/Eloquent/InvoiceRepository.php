@@ -49,8 +49,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('branchId');
-        return Invoice::with(InvoiceRepository::Relations)
-            ->where(['branch_id' => $branchId, 'business_id' => $businessId])
+        return Invoice::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
             ->orderByDesc('id')
             ->paginate(request('per-page', 15));
@@ -181,7 +180,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
-        $query = $this->model->query()->with(InvoiceRepository::Relations);
+        $query = $this->model->query();
         if ($request->has('status'))
             $query->where('status', $request->status);
         if ($request->has('type'))
