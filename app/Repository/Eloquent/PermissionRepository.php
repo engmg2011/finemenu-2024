@@ -11,6 +11,7 @@ use App\Models\Business;
 use App\Models\User;
 use App\Repository\PermissionRepositoryInterface;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionRepository extends BaseRepository implements PermissionRepositoryInterface
 {
@@ -133,6 +134,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     public function setUserPermissions($branchId, $userId, $permissions)
     {
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
         $user = User::find($userId);
         $businessId = (int)request()->route('businessId');
 
@@ -151,13 +153,14 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
             $permissions = [];
             $user->update(['control' => null]);
         } else {
-            Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId, 'web');
+            // please don't put as the user will take all permissions with wildcard config
+            // Permission::findOrCreate(PermissionsConstants::Branch . '.' . $branchId, 'web');
             $this->setControlData($branchId, $user);
         }
 
         foreach ($services as $service) {
             foreach ($actions as $action) {
-                $prem = "branch.$branchId.$service.$action";
+                $prem = PermissionsConstants::Branch.".$branchId.$service.$action";
                 if (in_array("$service.$action", $permissions)) {
                     $newPermissions[] = $prem;
                 }
