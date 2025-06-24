@@ -191,7 +191,6 @@ Route::group(['middleware' => [
 
 
             Route::group(['prefix' => 'config'], function () {
-                Route::get('/', [ConfigurationsController::class, 'getBusinessConfig']);
                 Route::post('/', [ConfigurationsController::class, 'setBusinessConfig']);
             });
 
@@ -226,6 +225,10 @@ Route::group(['prefix' => 'business', 'middleware' =>
 });
 
 // no auth
-Route::group(['middleware' => 'throttle:10,1', 'prefix' => 'business/{businessId}/branches/{branchId}'], function () {
-    Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
+Route::group(['middleware' => 'throttle:10,1', 'prefix' => 'business/{businessId}/'], function () {
+    Route::get('config', [ConfigurationsController::class, 'getBusinessConfig']);
+    Route::group(['prefix' => 'branches/{branchId}'], function () {
+        Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
+    });
 });
+

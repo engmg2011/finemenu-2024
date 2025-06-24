@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Notifications\NewReservationNotification;
 use Notification;
+use OneSignal;
 use Ramsey\Collection\Collection;
 use Spatie\Permission\Models\Permission;
 
@@ -64,10 +65,15 @@ class NotificationService
         ]);
 
         if (count($devices)) {
-            \OneSignal::sendNotificationToUsers(
-                $msg,
-                $playerIds
-            );
+            OneSignal::sendNotificationCustom([
+                'include_player_ids' => $playerIds,
+                'contents' => [
+                    "en" => $msg
+                ],
+//                'headings' => [
+//                    "en" => "Optional Title"
+//                ],
+            ]);
         }
 
     }
