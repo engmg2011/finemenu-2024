@@ -43,7 +43,41 @@ class NotificationService
         Notification::send($users, $DBNotification);
     }
 
-    public function sendBulkOSNotifications($msg, $business, $userIds)
+    public function sendQrAppOSNotifications($msg, $business, $userIds)
+    {
+        $devices = new Collection(Device::class);
+        foreach ($userIds as $id) {
+            $device = Device::whereNotNull('onesignal_token')
+                ->where('user_id', $id)->orderBy('last_active', 'desc')->first();
+            if ($device)
+                $devices->add($device);
+        }
+
+        $playerIds = $devices->map(function ($device) {
+            return $device->onesignal_token;
+        })->toArray();
+
+        // Change config
+        config([
+            'onesignal.app_id' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_APP_ID),
+            'onesignal.rest_api_key' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_REST_API_KEY),
+            'onesignal.user_auth_key' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_USER_AUTH_KEY),
+        ]);
+
+        if (count($devices)) {
+            OneSignal::sendNotificationCustom([
+                'include_player_ids' => $playerIds,
+                'contents' => [
+                    "en" => $msg
+                ],
+//                'headings' => [
+//                    "en" => "Optional Title"
+//                ],
+            ]);
+        }
+
+    }
+    public function sendOrdersAppOSNotifications($msg, $business, $userIds)
     {
         $devices = new Collection(Device::class);
         foreach ($userIds as $id) {

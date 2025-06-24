@@ -87,8 +87,8 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                 Reservation::find($invoice->reservation_id)->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
             }
         }
-        app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation_id);
-        event(new UpdateReservation($invoice->reservation_id));
+//        app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation_id);
+//        event(new UpdateReservation($invoice->reservation_id));
         $this->model->find($id)->update($this->process($data));
 
         AuditService::log(AuditServices::Invoices, $id,"Updated invoice " . $invoice->id,

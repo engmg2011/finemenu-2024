@@ -48,7 +48,7 @@ class SendNewReservationNotification implements ShouldQueue
         $this->notificationService->sendDBNotifications($adminIds , $msg['subject'], $msg['message']);
 
         try {
-            $this->notificationService->sendBulkOSNotifications($msg, $business, $adminIds);
+            $this->notificationService->sendOrdersAppOSNotifications($msg, $business, $adminIds);
         } catch (\Exception $exception) {
             \Log::error(json_encode(["msg" => "Couldn't send notification to multiple devices " ,
                 "ex" => $exception->getMessage()]));

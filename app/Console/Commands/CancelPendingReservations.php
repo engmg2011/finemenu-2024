@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Constants\PaymentConstants;
 use App\Events\UpdateReservation;
+use App\Jobs\SendUpdateReservationNotification;
 use App\Models\Invoice;
 use App\Models\Reservation;
 use Illuminate\Console\Command;
@@ -45,6 +46,7 @@ class CancelPendingReservations extends Command
             foreach ($reservationIds as $reservationId) {
                 app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($reservationId);
                 event(new UpdateReservation($reservationId));
+                dispatch(new SendUpdateReservationNotification($reservationId, PaymentConstants::RESERVATION_CANCELED));
             }
 
         }catch (\Exception $e){

@@ -196,18 +196,14 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             ->update($this->process($data));
         $this->setOrderData($model, $data);
 
-        // Send evenxt
-        event(new UpdateOrder($model->id));
-
-        if (isset($data['status']) && $data['status'] === OrderStatus::Ready) {
-            $userDevices = User::find($model->user_id)->devices()->get();
-            /*foreach ($userDevices as $device) {
-                if($device->onesignal_token)
-                    $device->notify(new OneSignalNotification('MenuAI', 'Your order became ready 😋'));
-            }*/
-        }
         if (isset($data['order_lines']))
             $this->orderLineRepository->updateMany($data['order_lines']);
+
+        // Todo :: remove[0] and search for any
+        // Don't send if there is a reservation as it will be sent from NewReservation Event
+        if (!isset($data['order_lines'][0]['reservation'])) {
+            event(new UpdateOrder($model->id));
+        }
         return $this->get($model->id);
     }
 
