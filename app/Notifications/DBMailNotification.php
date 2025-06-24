@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewReservationNotification extends Notification
+class DBMailNotification extends Notification
 {
     use Queueable;
     /**

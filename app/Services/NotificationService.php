@@ -7,7 +7,7 @@ use App\Constants\PermissionsConstants;
 use App\Models\Device;
 use App\Models\Reservation;
 use App\Models\User;
-use App\Notifications\NewReservationNotification;
+use App\Notifications\DBMailNotification;
 use Notification;
 use OneSignal;
 use Ramsey\Collection\Collection;
@@ -39,7 +39,7 @@ class NotificationService
     {
         // DB & Mail Notifications
         $users = User::whereIn('id', $userIds)->get();
-        $DBNotification = new NewReservationNotification($subject, $msg);
+        $DBNotification = new DBMailNotification($subject, $msg);
         Notification::send($users, $DBNotification);
     }
 

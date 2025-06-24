@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 
-class SendNewReservationNotification implements ShouldQueue
+class SendUpdateReservationNotification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -34,7 +34,7 @@ class SendNewReservationNotification implements ShouldQueue
         $branchName = $this->reservation->branch->locales[0]->name ?? "";
         $msg = [];
         $msg['subject'] = $branchName ?? "MenuAI";
-        $msg['message'] = "Booking $firstItemName from $branchName ";
+        $msg['message'] = "Updated on booking [".$this->reservation->id."] for $firstItemName from $branchName ";
         return $msg;
     }
 
