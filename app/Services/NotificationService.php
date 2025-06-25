@@ -8,8 +8,8 @@ use App\Models\Device;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Notifications\DBMailNotification;
+use Berkayk\OneSignal\OneSignalClient;
 use Notification;
-use OneSignal;
 use Ramsey\Collection\Collection;
 use Spatie\Permission\Models\Permission;
 
@@ -57,23 +57,24 @@ class NotificationService
             return $device->onesignal_token;
         })->toArray();
 
-        // Change config
-        config([
-            'onesignal.app_id' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_APP_ID),
-            'onesignal.rest_api_key' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_REST_API_KEY),
-            'onesignal.user_auth_key' => $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_USER_AUTH_KEY),
-        ]);
 
         if (count($devices)) {
-            OneSignal::sendNotificationCustom([
-                'include_player_ids' => $playerIds,
-                'contents' => [
-                    "en" => $msg
-                ],
-//                'headings' => [
-//                    "en" => "Optional Title"
-//                ],
-            ]);
+            $oneSignal = new OneSignalClient(
+                $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_APP_ID),
+                $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_REST_API_KEY),
+                ''
+            );
+
+            $oneSignal->sendNotificationToUser(
+                $msg,
+                $playerIds,
+                $url = null,
+                $data = null,
+                $buttons = null,
+                $schedule = null,
+                $headings = "",
+                $subtitle = null
+            );
         }
 
     }
@@ -91,23 +92,24 @@ class NotificationService
             return $device->onesignal_token;
         })->toArray();
 
-        // Change config
-        config([
-            'onesignal.app_id' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_APP_ID),
-            'onesignal.rest_api_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_REST_API_KEY),
-            'onesignal.user_auth_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_USER_AUTH_KEY),
-        ]);
-
         if (count($devices)) {
-            OneSignal::sendNotificationCustom([
-                'include_player_ids' => $playerIds,
-                'contents' => [
-                    "en" => $msg
-                ],
-//                'headings' => [
-//                    "en" => "Optional Title"
-//                ],
-            ]);
+            // Orders config
+            $oneSignal = new OneSignalClient(
+                $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_APP_ID),
+                $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_REST_API_KEY),
+                ''
+            );
+
+            $oneSignal->sendNotificationToUser(
+                $msg,
+                $playerIds,
+                $url = null,
+                $data = null,
+                $buttons = null,
+                $schedule = null,
+                $headings = "",
+                $subtitle = null
+            );
         }
 
     }

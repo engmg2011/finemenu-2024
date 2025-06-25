@@ -1,8 +1,8 @@
 <?php
 
+use App\Constants\ConfigurationConstants;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
-use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentsController;
 use App\Http\Controllers\DevicesController;
@@ -20,8 +20,9 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\WebAppController;
-use App\Http\Middleware\SetRequestModel;
+use Berkayk\OneSignal\OneSignalClient;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------:------------
@@ -44,7 +45,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 // TODO :: put admin only roles
 Route::group(['middleware' => ['auth:sanctum',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER. '|' . RolesConstants::BRANCH_MANAGER]
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
 ], function () {
 
     Route::group(['prefix' => 'locales'], function () {
@@ -174,10 +175,33 @@ Route::group(['middleware' => ['auth:sanctum',
 });
 
 
-Route::get('qr-app-version', [WebAppController::class , 'QRAppVersion']);
-Route::get('tablet-app-version', [WebAppController::class , 'TabletAppVersion']);
-Route::get('orders-app-version', [WebAppController::class , 'OrdersAppVersion']);
+Route::get('qr-app-version', [WebAppController::class, 'QRAppVersion']);
+Route::get('tablet-app-version', [WebAppController::class, 'TabletAppVersion']);
+Route::get('orders-app-version', [WebAppController::class, 'OrdersAppVersion']);
 
-Route::get('business-types', [WebAppController::class , 'businessTypes']);
+Route::get('business-types', [WebAppController::class, 'businessTypes']);
 
-Route::get('send', [WebAppController::class , 'send']);
+Route::get('send', [WebAppController::class, 'send']);
+
+
+Route::get('sendOS', function () {
+    $playerIds = [
+        '41da9a85-51d1-4463-bb1f-d8190bf8ada2'
+    ];
+    $business = \App\Models\Business::find(4);
+    $oneSignal = new OneSignalClient(
+        $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_APP_ID),
+        $business->getConfig(ConfigurationConstants::QR_ONESIGNAL_REST_API_KEY),
+        ''
+    );
+    $oneSignal->sendNotificationToUser(
+        "Your notification message a2",
+        $playerIds,
+        $url = null,
+        $data = null,
+        $buttons = null,
+        $schedule = null,
+        $headings = "Notification Title",
+        $subtitle = null
+    );
+});
