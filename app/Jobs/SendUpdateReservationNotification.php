@@ -54,8 +54,8 @@ class SendUpdateReservationNotification implements ShouldQueue
             $msg['subject'], $msg['message']);
 
         try {
-            $this->notificationService->sendQrAppOSNotifications($msg, $business, [$this->reservation->reserved_for_id]);
-            $this->notificationService->sendOrdersAppOSNotifications($msg, $business, $adminIds);
+            $this->notificationService->sendQrAppOSNotifications($msg['message'], $business, [$this->reservation->reserved_for_id]);
+            $this->notificationService->sendOrdersAppOSNotifications($msg['message'], $business, $adminIds);
         } catch (\Exception $exception) {
             \Log::error(json_encode(["msg" => "Couldn't send notification to multiple devices ",
                 "ex" => $exception->getMessage()]));

@@ -2,8 +2,10 @@
 
 namespace App\Events;
 
+use App\Constants\ConfigurationConstants;
 use App\Constants\PermissionsConstants;
 use App\Models\Branch;
+use App\Models\Business;
 use App\Models\Device;
 use App\Models\Order;
 use App\Models\User;
@@ -62,6 +64,18 @@ class NewOrder implements ShouldBroadcast
             $users = User::whereIn('id', $adminIds)->get();
             $DBNotification = app()->makeWith(NewOrderNotification::class, ['orderId' => $this->order->id]);
             Notification::send($users, $DBNotification);
+
+
+            //sendOrdersAppOSNotifications
+
+            // Change config
+            $business_id = Branch::find($this->branchId)->business_id;
+            $business = Business::find($business_id);
+            config([
+                'onesignal.app_id' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_APP_ID),
+                'onesignal.rest_api_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_REST_API_KEY),
+                'onesignal.user_auth_key' => $business->getConfig(ConfigurationConstants::ORDERS_ONESIGNAL_USER_AUTH_KEY),
+            ]);
 
 
             // OneSignal
