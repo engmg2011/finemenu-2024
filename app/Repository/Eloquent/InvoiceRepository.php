@@ -195,8 +195,11 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('for_user_id', $request->for_user_id);
         if ($request->has('from') && $request->has('to'))
             $query->whereBetween('created_at',  [$request->from , $request->to ]);
+
+        $sortBy = request('sortBy', 'id');
+        $sortType = request('sortType', 'desc');
         return $query->where(['branch_id' => $branchId, 'business_id' => $businessId])
-            ->orderByDesc('id')
+            ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
 

@@ -68,3 +68,7 @@ Route::get('job', function (){
 Route::get('event', function (){
     event(new MyEvent('hello world'));
 });
+
+Route::get('cancel-pending-reservations', function (){
+    Artisan::call('app:cancel-pending-reservations');
+})->middleware(['throttle:10,5']);

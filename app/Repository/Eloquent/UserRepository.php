@@ -81,8 +81,25 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function listModel($businessId)
     {
-        return $this->model::where('business_id', $businessId)
-            ->orderByDesc('id')
+        $userId = \request('id', null);
+        $sortBy = request('sortBy', 'id');
+        $sortType = request('sortType', 'desc');
+        $name = request('name', null);
+        $email = request('email', null);
+        $phone = request('phone', null);
+        $query = $this->model->query();
+
+        if($userId)
+            $query->where('id', $userId);
+        if($name)
+            $query->where('name', 'like', "%{$name}%");
+        if($email)
+            $query->where('email', 'like', "%{$email}%");
+        if($phone)
+            $query->where('phone', 'like', "%{$phone}%");
+
+        return $query->where('business_id', $businessId)
+            ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
 
