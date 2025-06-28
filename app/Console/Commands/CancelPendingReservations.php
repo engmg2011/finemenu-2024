@@ -8,6 +8,7 @@ use App\Jobs\SendUpdateReservationNotification;
 use App\Models\Invoice;
 use App\Models\Reservation;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class CancelPendingReservations extends Command
 {
@@ -31,9 +32,10 @@ class CancelPendingReservations extends Command
     public function handle()
     {
         try {
+            // Code
             $reservationIds = Reservation::where('created_at', '<', now()->subMinutes(5))
-                    ->where('status', PaymentConstants::RESERVATION_PENDING)
-                    ->pluck('id');
+                ->where('status', PaymentConstants::RESERVATION_PENDING)
+                ->pluck('id');
 
             Reservation::where('created_at', '<', now()->subMinutes(5))
                 ->where('status', PaymentConstants::RESERVATION_PENDING)
@@ -49,9 +51,23 @@ class CancelPendingReservations extends Command
                 dispatch(new SendUpdateReservationNotification($reservationId, PaymentConstants::RESERVATION_CANCELED));
             }
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             echo $e->getMessage();
             \Log::error("checking pending reservations -  " . $e->getMessage());
         }
+
+        // todo :: remove this when Shalehi works fine
+        try {
+            $response = Http::get('https://api-shalehi.menu-ai.net/cancel-pending-reservations');
+            if ($response->successful()) {
+                \Log::info("Called cancel Shalehi pending reservations");
+            } else {
+                \Log::error("Couldn't cancel pending Shalehi reservations.");
+            }
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            \Log::error("Couldn't cancel pending Shalehi reservations -  " . $e->getMessage());
+        }
+
     }
 }
