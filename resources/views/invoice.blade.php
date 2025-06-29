@@ -8,15 +8,18 @@ use Carbon\Carbon;
     html {
         padding: 0 !important;
         margin: 0 !important;
-        font-size: 10px;
+        font-size: 8px;
         text-transform: uppercase;
     }
     body {
         font-family: DejaVu Sans, sans-serif;
-        margin: 0;
         padding: 0;
         width: 100%;
         max-width: 500px;
+        margin: 0 auto;
+    }
+    @media (min-width: 1024px){
+        html { font-size: 12px;}
     }
 </style>
 <body style="background-color:#fff;color:#000;text-align:left;">
@@ -27,8 +30,10 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
 ?>
     <!-- Booking details -->
 <div style="{{ $divStyle }}">
-    <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;">{{ $invoice->reservation->branch->locales[0]->name }}
-        INVOICE</h2>
+    <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
+        {{ $invoice->reservation->branch->locales[0]->name }}
+        INVOICE
+    </h2>
 {{--    <img
         src="https://barcode.tec-it.com/barcode.ashx?data={{ $invoice['reference_id'] }}&code=Code128&translate-esc=false"
         alt="" style="width:100%;max-height:80px;">--}}
