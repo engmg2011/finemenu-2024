@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\MyEvent;
+use App\Http\Controllers\InvoicesController;
 use App\Jobs\ProcessPodcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
@@ -72,3 +73,6 @@ Route::get('event', function (){
 Route::get('cancel-pending-reservations', function (){
     Artisan::call('app:cancel-pending-reservations');
 })->middleware(['throttle:10,5']);
+
+Route::get('invoice/{id}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
+Route::get('invoice/{id}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');

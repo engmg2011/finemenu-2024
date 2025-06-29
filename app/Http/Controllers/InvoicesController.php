@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Constants\AuditServices;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
+use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class InvoicesController extends Controller
 {
@@ -76,5 +79,26 @@ class InvoicesController extends Controller
             $invoice->business_id, $invoice->branch_id);
         app(ReservationRepository::class)->setReservationInvoicesCashedData($reservation_id);
         return \response()->json($deleted);
+    }
+
+    public function showInvoice($referenceId)
+    {
+        $invoice = Invoice::with(InvoiceRepository::Relations)
+            ->where('reference_id', $referenceId)->firstOrFail();
+        return view('invoice', compact('invoice'));
+    }
+
+    public function download($referenceId){
+        $invoice = Invoice::with(InvoiceRepository::Relations)
+            ->where('reference_id', $referenceId)->firstOrFail();
+
+        // Generate PDF content
+        $pdf = Pdf::loadView('invoice', compact('invoice'));
+
+        // Creation filename
+        $fileName = 'invoice_' . $invoice->reference_id . '.pdf';
+
+        Storage::disk('public')->put('invoices/' . $fileName, $pdf->output());
+        return url('storage/invoices/' . $fileName);
     }
 }
