@@ -93,12 +93,16 @@ class InvoicesController extends Controller
             ->where('reference_id', $referenceId)->firstOrFail();
 
         // Generate PDF content
-        $pdf = Pdf::loadView('invoice', compact('invoice'));
+        $pdf = Pdf::loadView('invoice', compact('invoice'))->setPaper([0, 0, 164, 600], 'portrait');;
 
         // Creation filename
         $fileName = 'invoice_' . $invoice->reference_id . '.pdf';
 
-        Storage::disk('public')->put('invoices/' . $fileName, $pdf->output());
+        $pdfOptions = [
+            'remote_enabled' => true
+        ];
+
+        Storage::disk('public')->put('invoices/' . $fileName, $pdf->output($pdfOptions));
         return url('storage/invoices/' . $fileName);
     }
 }
