@@ -16,6 +16,7 @@ use Carbon\Carbon;
         margin: 0;
         padding: 0;
         width: 100%;
+        max-width: 500px;
     }
 </style>
 <body style="background-color:#fff;color:#000;text-align:left;">
@@ -26,11 +27,11 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
 ?>
     <!-- Booking details -->
 <div style="{{ $divStyle }}">
-    <h2 style="font-size:1.2rem; text-transform: uppercase; text-align: center">{{ $invoice->reservation->branch->locales[0]->name }}
+    <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;">{{ $invoice->reservation->branch->locales[0]->name }}
         INVOICE</h2>
-    <img
+{{--    <img
         src="https://barcode.tec-it.com/barcode.ashx?data={{ $invoice['reference_id'] }}&code=Code128&translate-esc=false"
-        alt="" style="width:100%;max-height:80px;">
+        alt="" style="width:100%;max-height:80px;">--}}
     <h3 style="margin: 8px 0 10px">Booking details</h3>
     <p style="margin: 8px 0px">
         <span>Booking :</span>
