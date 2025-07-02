@@ -68,6 +68,8 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
         if(!isset($data['from']) || !isset($data['to']))
             abort(400,'Invalid Date Format' );
 
+        // Disable holidays conflict in the same period
+        /*
         $datesConflict = Holiday::where('business_id', $data['business_id'])
             ->where(function ($query) use ($data) {
                 $query->whereBetween('from', [$data['from'], $data['to']])
@@ -75,7 +77,7 @@ class HolidayRepository extends BaseRepository implements HolidayRepositoryInter
             })
             ->first();
         if($datesConflict)
-            abort(400,'Holiday already exists');
+            abort(400,'Holiday already exists');*/
     }
 
     public function createModel($businessId, array $data): Model

@@ -81,7 +81,8 @@ class Category extends Model
                 'items.discounts.locales',
                 'items.media',
                 'items.prices.locales',
-                'items.itemable']);
+                'items.itemable',
+                'items.holidays.locales']);
     }
 
     public function childrenNested()

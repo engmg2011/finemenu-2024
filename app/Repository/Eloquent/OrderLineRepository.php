@@ -228,39 +228,46 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
      * Do nothing if not matches
      * @param $itemId
      * @param $reservation
-     * @return array|false : return intersected holiday price
+     * @return false|\Illuminate\Support\Collection : return intersected holiday price
      */
-    public function getMatchedHoliday($itemId, $reservation)
+    public function getMatchedHolidays($itemId, $reservation)
     {
         // prepare requested reservation period
         $reservationPeriod = Period::make(Carbon::parse($reservation['from']), Carbon::parse($reservation['to']));
         // get item holidays
         $item = Item::with('holidays')->find($itemId);
         $itemHolidays = $item->holidays;
-        $matchedHoliday = null;
+        $matchedHolidays = collect();
         // Check for intersection with the item holidays
         if (isset($item->holidays) && sizeof($itemHolidays) > 0) {
             foreach ($item->holidays as $itemHoliday) {
                 $itemHolidayPeriod = Period::make($itemHoliday->from, $itemHoliday->to);
                 $intersection = $reservationPeriod->overlap($itemHolidayPeriod);
-                if ($intersection) {
-                    $matchedHoliday = $itemHoliday;
-                    break;
-                }
+                if ($intersection)
+                    $matchedHolidays->add($itemHoliday);
             }
         }
-        return $matchedHoliday ?? false;
+        return $matchedHolidays ?? false;
     }
 
     public function setOrderLinePrices(&$orderLine)
     {
+        \Log::debug($orderLine['reservation']['from']);
         // if reservation check holiday intersection
         if (isset($orderLine['reservation'])) {
-            $matchedHoliday = $this->getMatchedHoliday($orderLine['item_id'], $orderLine['reservation']);
-            \Log::debug([$matchedHoliday, $orderLine]);
-            if ($matchedHoliday) {
-                if ($orderLine['holiday_id'] !== $matchedHoliday->id)
-                    abort(400, "Timing matches holiday");
+            $matchedHolidays = $this->getMatchedHolidays($orderLine['item_id'], $orderLine['reservation']);
+            \Log::debug("matchedHolidays " . $matchedHolidays->toJson());
+//            \Log::debug([$matchedHolidays, $orderLine]);
+            if ($matchedHolidays->isNotEmpty()) {
+                if (!isset($orderLine['holiday_id']))
+                    abort(400, "Timing matches holiday, no holidayId sent");
+                $matchedHoliday = $matchedHolidays
+                    ->where('id', $orderLine['holiday_id'])
+                    ->where('from', $orderLine['reservation']['from'])
+                    ->where( 'to', $orderLine['reservation']['to'])
+                    ->first();
+                if (!$matchedHoliday)
+                    abort(400, "Timings are not matching the holiday");
                 $price = $matchedHoliday['price'];
             }
         }
