@@ -56,18 +56,5 @@ class CancelPendingReservations extends Command
             \Log::error("checking pending reservations -  " . $e->getMessage());
         }
 
-        // todo :: remove this when Shalehi works fine
-        try {
-            $response = Http::get('https://api-shalehi.menu-ai.net/cancel-pending-reservations');
-            if ($response->successful()) {
-                \Log::info("Called cancel Shalehi pending reservations");
-            } else {
-                \Log::error("Couldn't cancel pending Shalehi reservations.");
-            }
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-            \Log::error("Couldn't cancel pending Shalehi reservations -  " . $e->getMessage());
-        }
-
     }
 }
