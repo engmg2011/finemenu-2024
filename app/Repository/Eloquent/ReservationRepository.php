@@ -76,9 +76,18 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $request->validate([
             'from' => 'required|date',
-            'to' => 'required|date|after_or_equal:from',
+            'to' => 'required|date',
         ]);
 
+        $data = $request->all();
+        // Convert to Carbon instances to compare
+        $from = \Carbon\Carbon::parse($data['from']);
+        $to = \Carbon\Carbon::parse($data['to']);
+
+        // Swap if from > to
+        if ($from->gt($to)) {
+            [$data['from'], $data['to']] = [$data['to'], $data['from']];
+        }
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
         $itemId = $request->input('item_id');
@@ -88,8 +97,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerId = $request->input('follower_id');
 
         $business = Business::find($businessId);
-        $startDate = businessToUtcConverter($request->input('from'), $business,'Y-m-d H:i:s');
-        $endDate = businessToUtcConverter($request->input('to'), $business,'Y-m-d H:i:s');
+        $startDate = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
+        $endDate = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
 
         // TODO :: agree on default
         return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
