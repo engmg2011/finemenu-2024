@@ -19,7 +19,7 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
     {
         return array_only($data, [
             'insurance', 'latitude', 'longitude', 'address', 'units',
-            'frontage', 'bedrooms', 'item_id', 'owner_id']);
+            'frontage', 'bedrooms', 'item_id', 'owner_id', 'unit_names']);
     }
 
     public function createModel(array $data): Model
@@ -31,12 +31,18 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
     public function updateModel($id, array $data): Model
     {
         $model = $this->model->find($id);
+
+        $itemabelData =  $this->process($data);
+        \Log::debug("will update". json_encode($itemabelData));
+
         $model->update($this->process($data));
         return $this->model->find($model->id);
     }
 
     public function set(array $data): Model
     {
+        \Log::debug("should update". json_encode($data));
+
         if (isset($data['id']))
             return $this->updateModel($data['id'], $data);
         else
