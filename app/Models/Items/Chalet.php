@@ -45,7 +45,7 @@ class Chalet extends Model
 {
     use HasFactory, Itemable;
     protected $guarded=['id'];
-    protected $casts = ['address' => 'json', 'units'=>'integer'];
+    protected $casts = ['address' => 'json', 'units'=>'integer', 'unit_names' => 'array'];
     protected $hidden = ['created_at','updated_at'];
 
 }

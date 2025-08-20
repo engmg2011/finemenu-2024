@@ -110,12 +110,15 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function update($id, array $data): Model
     {
         $businessType = '';
+        // TODO:: need better solution not depends on categoryId
         if (isset($data['category_id']))
             $businessType = $this->getBusinessType($data['category_id'], $data);
         $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->relations($model, $data);
+
         if ($businessType === BusinessTypes::CHALET && isset($data['itemable'])) {
+            \Log::debug("start update 2". json_encode($data['itemable']));
             $data['itemable']['item_id'] = $id;
             $chalet = $this->chaletRepository->set($data['itemable']);
             $model->itemable()->associate($chalet);

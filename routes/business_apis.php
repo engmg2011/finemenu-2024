@@ -10,6 +10,7 @@ use App\Http\Controllers\FloorsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PermissionsController;
@@ -170,15 +171,18 @@ Route::group(['middleware' => [
                 Route::get('/search', [ItemsController::class, 'search']);
                 Route::get('/{id}', [ItemsController::class, 'show']);
                 Route::post('/', [ItemsController::class, 'create']);
-                Route::post('/{id}/delete', [ItemsController::class, 'destroy']);
                 Route::post('/sort', [ItemsController::class, 'sort']);
                 Route::post('/{id}', [ItemsController::class, 'update']);
                 Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
-                Route::post('/{id}/settings', [SettingsController::class, 'createSetting']);
-                Route::post('/{id}/settings/{settingId}', [SettingsController::class, 'updateSetting']);
-                Route::get('/{id}/settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
-                Route::get('/{id}/holidays', [ItemsController::class, 'listHolidays']);
-                Route::post('/{id}/holidays/sync', [ItemsController::class, 'syncHolidays']);
+                Route::group(['prefix' => '{id}'], function () {
+                    Route::post('settings', [SettingsController::class, 'createSetting']);
+                    Route::post('settings/{settingId}', [SettingsController::class, 'updateSetting']);
+                    Route::get('settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+                    Route::get('holidays', [ItemsController::class, 'listHolidays']);
+                    Route::post('holidays/sync', [ItemsController::class, 'syncHolidays']);
+                    Route::post('delete', [ItemsController::class, 'destroy']);
+                    Route::post('media/sort', [MediaController::class, 'itemMediaSort']);
+                });
             });
 
             Route::group(['prefix' => 'users',], function () {

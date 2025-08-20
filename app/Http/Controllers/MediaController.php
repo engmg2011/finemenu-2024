@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Actions\MediaAction;
 use App\Http\Resources\DataResource;
 use App\Jobs\UploadMenuQueue;
+use App\Models\Media;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -111,5 +112,21 @@ class MediaController extends Controller
             'item' => $item ?? null,
             'media' => $media ?? null
         ]);
+    }
+
+
+    public function itemMediaSort(Request $request, $businessId, $itemId)
+    {
+        $request->validate([
+           'sortedIds' => 'array',
+        ]);
+        $data = $request->all();
+        $mediaIds = $data['sortedIds'];
+        $dbMediaIds = Media::where('mediable_id', $itemId)
+            ->whereIn('id',$mediaIds)->pluck('id');
+        if(count($dbMediaIds) !== count($mediaIds)) {
+            abort(400,'Wrong data');
+        }
+        return response()->json($this->action->sort($data));
     }
 }

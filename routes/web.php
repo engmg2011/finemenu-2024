@@ -74,5 +74,10 @@ Route::get('cancel-pending-reservations', function (){
     Artisan::call('app:cancel-pending-reservations');
 })->middleware(['throttle:10,5']);
 
+Route::get('queue-work', function (){
+    Artisan::call('queue:work');
+    sleep(25);
+})->middleware(['throttle:10,5']);
+
 Route::get('invoices/{id}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{id}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
