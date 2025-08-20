@@ -117,8 +117,6 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             ->update($this->process($data));
         $this->relations($model, $data);
 
-        \Log::debug("start update". json_encode($data['itemable']) . " bt ".$businessType);
-
         if ($businessType === BusinessTypes::CHALET && isset($data['itemable'])) {
             \Log::debug("start update 2". json_encode($data['itemable']));
             $data['itemable']['item_id'] = $id;
