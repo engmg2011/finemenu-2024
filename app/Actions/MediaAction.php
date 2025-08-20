@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Storage;
 
@@ -214,6 +215,16 @@ class MediaAction
             $mediaAction->storeMedia($myFile['uploadedFilePath'], $myFile['fileType'], $item_name, $savingCategory);
         }
         $mediaAction->storeMedia($myFile['uploadedFilePath'], $myFile['fileType'], $item_name, $item);
+    }
+
+    public function sort($data)
+    {
+        DB::transaction(function () use ($data) {
+            foreach ($data['sortedIds'] as $index => $id) {
+                Media::where('id', $id)->update(['sort' => $index + 1]);
+            }
+        });
+        return true;
     }
 
 
