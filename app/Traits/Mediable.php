@@ -9,7 +9,9 @@ use App\Models\Media;
 trait Mediable
 {
     public function media() {
-        return $this->morphMany(Media::class, 'mediable');
+        return $this->morphMany(Media::class, 'mediable')
+            ->orderBy('sort', 'asc')
+            ->orderBy('id', 'desc');
     }
 
     public function featuredImage()
