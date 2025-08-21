@@ -111,9 +111,9 @@ class MediaAction
     {
         $directory = storage_path('app/' . $savePath);
         if (!is_dir($directory))
-            mkdir($directory, 0755, true);
+            mkdir($directory, 0777, true);
         else
-            chmod($directory, 0755);
+            chmod($directory, 0777);
         Storage::putFileAs($savePath, $file, $file_name);
         return $savePath . $file_name;
     }
