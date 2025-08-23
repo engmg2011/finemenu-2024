@@ -32,7 +32,7 @@ if (!function_exists('businessRoles')) {
 }
 
 // Admin and business users
-Route::group(['middleware' => [
+Route::group(['middleware' => ['throttle:300,1',
     'auth:sanctum', 'role:' . businessRoles()
 ]
 ], function () {

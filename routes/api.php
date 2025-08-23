@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Don't move down
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
     Route::group(['prefix' => 'media'], function () {
         Route::post('upload', [MediaController::class, 'postUpload']);
@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 // TODO :: put admin only roles
-Route::group(['middleware' => ['auth:sanctum',
+Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1',
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
 ], function () {
 

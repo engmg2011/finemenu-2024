@@ -16,7 +16,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix'=>'users', 'middleware'=>'auth:sanctum'],function(){
+Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () {
     Route::get('info', [UsersController::class, 'info']);
     Route::get('notifications', [UsersController::class, 'notificationsList']);
     Route::get('unread-notifications', [UsersController::class, 'unreadNotificationsCount']);
@@ -33,7 +33,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-        'middleware' => ['auth:sanctum', SetRequestModel::class , CheckUserModel::class]], function () {
+    'middleware' => ['auth:sanctum', 'throttle:300,1', SetRequestModel::class, CheckUserModel::class]], function () {
     Route::get('/', [UsersController::class, 'index']);
     Route::post('/', [UsersController::class, 'update']);
     Route::get('/items', [UsersController::class, 'userItems']);
