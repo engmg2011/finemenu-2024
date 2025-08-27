@@ -110,10 +110,15 @@ class MediaAction
     public function uploadMedia($file, $file_name, $savePath)
     {
         $directory = storage_path('app/' . $savePath);
-        if (!is_dir($directory))
-            mkdir($directory, 0777, true);
-        else
-            chmod($directory, 0777);
+        // TODO :: fix this in both servers
+        try{
+            if (!is_dir($directory))
+                mkdir($directory, 0777, true);
+            else
+                chmod($directory, 0777);
+        }catch (\Exception $exception){
+            \Log::error($exception->getMessage());
+        }
         Storage::putFileAs($savePath, $file, $file_name);
         return $savePath . $file_name;
     }
