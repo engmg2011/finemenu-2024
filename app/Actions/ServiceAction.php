@@ -5,14 +5,17 @@ namespace App\Actions;
 
 use App\Models\Service;
 use App\Repository\Eloquent\LocaleRepository;
+use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\ServiceRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class ServiceAction
 {
+    public $modelRelations = ["locales", "media" , "prices.locales"];
     public function __construct(private ServiceRepository $repository,
                                 private MediaAction $mediaAction,
-                                private LocaleRepository $localeAction){
+                                private LocaleRepository $localeAction,
+                                private PriceRepository $priceRepository,){
     }
 
     public function process(array $data): array
@@ -29,6 +32,8 @@ class ServiceAction
         $this->localeAction->createLocale($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
+        if (isset($data['prices']))
+            $this->priceRepository->setPrices($model, $data['prices']);
         return $model;
     }
 
@@ -39,6 +44,8 @@ class ServiceAction
         $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
+        if (isset($data['prices']))
+            $this->priceRepository->setPrices($model, $data['prices']);
         return $model;
     }
 
@@ -48,12 +55,12 @@ class ServiceAction
      */
     public function list()
     {
-        return Service::with('locales', 'media')->orderByDesc('id')->paginate(request('per-page', 15));
+        return Service::with($this->modelRelations)->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
     public function get(int $id)
     {
-        return Service::with('locales')->find($id);
+        return Service::with($this->modelRelations)->find($id);
     }
 
     public function destroy($id): ?bool
