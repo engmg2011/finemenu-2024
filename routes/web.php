@@ -72,11 +72,13 @@ Route::get('event', function (){
 
 Route::get('cancel-pending-reservations', function (){
     Artisan::call('app:cancel-pending-reservations');
+    die(); // to not log
 })->middleware(['throttle:10,5']);
 
 Route::get('queue-work', function (){
     Artisan::call('queue:work');
     sleep(25);
+    die();// to not log
 })->middleware(['throttle:10,5']);
 
 Route::get('invoices/{id}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');

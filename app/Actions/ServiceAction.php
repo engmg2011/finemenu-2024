@@ -29,11 +29,7 @@ class ServiceAction
     public function create(array $data)
     {
         $model = $this->repository->create($this->process($data));
-        $this->localeAction->createLocale($model, $data['locales']);
-        if (isset($data['media']))
-            $this->mediaAction->setMedia($model, $data['media']);
-        if (isset($data['prices']))
-            $this->priceRepository->setPrices($model, $data['prices']);
+        $this->relations($model,$data);
         return $model;
     }
 
@@ -41,12 +37,18 @@ class ServiceAction
     {
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
-        $this->localeAction->setLocales($model, $data['locales']);
+        $this->relations($model,$data);
+        return $model;
+    }
+
+    public function relations(&$model, &$data)
+    {
+        if (isset($data['locales']))
+            $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
         if (isset($data['prices']))
             $this->priceRepository->setPrices($model, $data['prices']);
-        return $model;
     }
 
 
