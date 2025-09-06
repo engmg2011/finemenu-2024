@@ -30,7 +30,7 @@ class ServiceAction
     {
         $model = $this->repository->create($this->process($data));
         $this->relations($model,$data);
-        return $model;
+        return $this->get($model->id);
     }
 
     public function update($id, array $data): Model
@@ -38,7 +38,7 @@ class ServiceAction
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         $this->relations($model,$data);
-        return $model;
+        return $this->get($model->id);
     }
 
     public function relations(&$model, &$data)
