@@ -31,20 +31,20 @@ services:
       - mysql
     #            - redis
     restart: unless-stopped
-
-  dashboard:
-    build:
-      context: ../dashboard
-      dockerfile: Dockerfile
-    ports:
-      - '9090:9090'
-    volumes:
-      - '../dashboard:/var/www/html/dashboard'
-    depends_on:
-      - backend
-    networks:
-      - sail
-    restart: unless-stopped
+  #
+  #    dashboard:
+  #        build:
+  #            context: ../dashboard
+  #            dockerfile: Dockerfile
+  #        ports:
+  #            - '9090:9090'
+  #        volumes:
+  #            - '../dashboard:/var/www/html/dashboard'
+  #        depends_on:
+  #            - backend
+  #        networks:
+  #            - sail
+  #        restart: unless-stopped
 
   #    vito:
   #        build:
@@ -65,6 +65,7 @@ services:
     ports:
       - '80:80'
     volumes:
+      - '../dashboard:/usr/share/nginx/dashboard'
       - '../qr:/usr/share/nginx/qr'
       - '../orders/:/usr/share/nginx/orders'
       - '../tablet/:/usr/share/nginx/tablet'
@@ -119,24 +120,24 @@ services:
     networks:
       - sail
 
-  #    redis:
-  #        env_file:
-  #            - .env
-  #        image: 'redis:alpine'
-  #        ports:
-  #            - '${FORWARD_REDIS_PORT:-6379}:6379'
-  #        volumes:
-  #            - 'sail-redis:/data'
-  #        networks:
-  #            - sail
-  #        healthcheck:
-  #            test:
-  #                CMD
-  #                redis-cli
-  #                ping
-  #            retries: 3
-  #            timeout: 5s
-  #        restart: unless-stopped
+  redis:
+    env_file:
+      - .env
+    image: 'redis:alpine'
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - 'sail-redis:/data'
+    networks:
+      - sail
+    healthcheck:
+      test:
+        CMD
+        redis-cli
+        ping
+      retries: 3
+      timeout: 5s
+    restart: unless-stopped
 
   thumbor:
     image: beeyev/thumbor-s3:debian
@@ -192,6 +193,31 @@ services:
     networks:
       - sail
 
+  imgbarq:
+    image: beeyev/thumbor-s3:debian
+    ports:
+      - "8686:8888"
+    environment:
+      - ALLOWED_SOURCES=['api.barq.solutions']
+      - HTTP_LOADER_ALLOWED_SOURCES=['api.barq.solutions','menu-ai.net','finemenu.net']
+      - HTTP_LOADER_FORWARD_ALLOWED_SOURCES=true
+      - MAX_SOURCE_SIZE=10485760  # 10MB
+      - ALLOW_UNSAFE_URL=True
+      - ENABLE_ETAGS=True
+      - RESPECT_ORIENTATION=True
+      - ALLOW_ANIMATED_GIFS=True
+      - PROGRESSIVE_JPEG=True
+      - QUALITY=100
+      - PNG_COMPRESSION_LEVEL=9
+      - AUTO_WEBP=True
+      - SECURITY_CORS_ENABLED=True
+      - SECURITY_CORS_ALLOW_ORIGIN=*
+      - SECURITY_CORS_ALLOW_HEADERS=accept, accept-version, content-type, origin
+      - SECURITY_CORS_ALLOW_METHODS=GET
+    restart: unless-stopped
+    networks:
+      - sail
+
 
   jenkins:
     build:
@@ -204,6 +230,7 @@ services:
       - ../qr:/var/jenkins_home/workspace/MenuAI/QR/menuai-qr/build/web
       - ../orders:/var/jenkins_home/workspace/DeployOrders/menuai-orders/build/web
       - ../tablet:/var/jenkins_home/workspace/DeployTablet/menuai-tablet/build/web
+      - ../dashboard:/var/jenkins_home/workspace/MenuAI/Dashboard/finemenu-dashboard/dist
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
