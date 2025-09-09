@@ -81,8 +81,18 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $data = $request->all();
         // Convert to Carbon instances to compare
-        $from = \Carbon\Carbon::parse($data['from']);
-        $to = \Carbon\Carbon::parse($data['to']);
+        if(str_contains($data['from'], "T")){
+            if(strlen($data['from']) === 16){
+                $from = Carbon::createFromFormat('Y-m-d\\TH:i', $data['from']);
+                $to = Carbon::createFromFormat('Y-m-d\\TH:i', $data['to']);
+            }else{
+                $from = Carbon::createFromFormat('Y-m-d\\TH:i:s', $data['from']);
+                $to = Carbon::createFromFormat('Y-m-d\\TH:i:s', $data['to']);
+            }
+        }else{
+            $from = Carbon::parse($data['from']);
+            $to = Carbon::parse($data['to']);
+        }
 
         // Swap if from > to
         if ($from->gt($to)) {
@@ -337,7 +347,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             })->get();
     }
 
-    public function isUnitAllowed($item, $reservations, int $requiredUnit = 1)
+    public function isUnitAllowed($item, $reservations, $requiredUnit = 1)
     {
         if ($item->itemable->units < $requiredUnit)
             return false;
@@ -355,6 +365,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $item = Item::with('itemable')->find($data['reservable_id']);
         if (!isset($data['unit']))
             $data['unit'] = 1;
+
+        if( isset($data['unit']['value']) ){
+            $data['unit'] = intval($data['unit']['value']);
+        }
+
         $all = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
         if (!$all)
             abort(400, "Unit isn't available, please choose different dates or try again later");

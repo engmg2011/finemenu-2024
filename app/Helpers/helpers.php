@@ -55,9 +55,9 @@ if (!function_exists('businessToUtcConverter')) {
             try {
                 $dateTime = Carbon::createFromFormat($format, $dateTime, $businessTimezone);
             } catch (\Exception $e) {
-                \Log::error("error in parsing ". $dateTime );
+                \Log::debug("error in parsing ". $dateTime );
                 $dateTime = Carbon::parse($dateTime, $businessTimezone);
-                \Log::error($e);
+                \Log::debug($e);
             }
         }
         return $dateTime->setTimezone('UTC');
