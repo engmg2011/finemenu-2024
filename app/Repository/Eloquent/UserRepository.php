@@ -88,6 +88,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $email = request('email', null);
         $phone = request('phone', null);
         $isEmployee = request('isEmployee', false);
+
+        if($isEmployee === "true")
+            $isEmployee = true;
+
         $query = $this->model->query();
 
         if($userId)
