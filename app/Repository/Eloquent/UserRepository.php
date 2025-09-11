@@ -87,6 +87,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $name = request('name', null);
         $email = request('email', null);
         $phone = request('phone', null);
+        $isEmployee = request('isEmployee', false);
         $query = $this->model->query();
 
         if($userId)
@@ -99,6 +100,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $query->where('phone', 'like', "%{$phone}%");
 
         return $query->where('business_id', $businessId)
+            ->where('is_employee', $isEmployee)
             ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\MediaAction;
 use App\Http\Resources\DataResource;
-use App\Models\Business;
 use App\Models\Category;
 use App\Models\User;
 use App\Repository\UserRepositoryInterface;
@@ -17,8 +15,7 @@ use Illuminate\Validation\Rule;
 class UsersController extends Controller
 {
 
-    public function __construct(public UserRepositoryInterface $userRepository,
-                                private MediaAction $mediaAction)
+    public function __construct(public UserRepositoryInterface $userRepository)
     {
     }
 
@@ -111,10 +108,14 @@ class UsersController extends Controller
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
 
-        if (isset($data['photo'])) {
-            $user = User::find($id);
+        $user = User::find($id);
+
+        if (isset($data['photo']))
             $user->updateProfilePhoto($data['photo']);
-        }
+
+        if (isset($data['is_employee']))
+            $user->update(['is_employee' => $data['is_employee']]);
+
         return \response()->json($this->userRepository->updateModel($id, $request->all()));
     }
 
