@@ -3,12 +3,13 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Actions\CategoryAction;
 use App\Actions\MediaAction;
 use App\Actions\SubscriptionAction;
 use App\Models\Business;
 use App\Models\Category;
 use App\Models\DietPlan;
-use App\Models\Menu;
+use App\Models\Item;
 use App\Models\Package;
 use App\Models\User;
 use App\Repository\BusinessRepositoryInterface;
@@ -31,7 +32,10 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                                 private readonly MenuRepositoryInterface $menuRepository,
                                 private readonly SubscriptionAction      $subscriptionAction,
                                 private readonly PermissionRepository    $permissionRepository,
-
+                                private readonly PriceRepository         $priceRepository,
+                                private readonly ItemRepository          $itemRepository,
+                                private readonly CategoryAction          $categoryAction,
+                                private readonly BranchRepository        $branchRepository,
     )
     {
         parent::__construct($model);
@@ -98,8 +102,8 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     {
         return Business::with(BusinessRepository::$modelRelations)
             ->where(function ($query) {
-                if(\request('type'))
-                $query->where('type', request('type'));
+                if (\request('type'))
+                    $query->where('type', request('type'));
             })
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
@@ -127,12 +131,54 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         $this->createModel($businessData);
     }
 
+    public function deleteItem(Item $item)
+    {
+        foreach ($item->media as $mediaItem) {
+            $this->mediaAction->delete($mediaItem->id);
+        }
+        foreach ($item->prices as $price) {
+            $this->priceRepository->destroy($price->id);
+        }
+        $this->itemRepository->destroy($item->id);
+    }
+
     public function destroy($id)
     {
-        $this->localeAction->deleteEntityLocales(Business::find($id));
-        Menu::where('business_id', $id)->delete();
-        $this->model->find($id)->delete();
+        if(auth()->user()->email !== "eng.mg2011@gmail.com")
+            abort(403);
 
+        $business = Business::with(BusinessRepository::$modelRelations)->find($id);
+        if($business){
+            // Delete Menus
+            $business->menus->map(function ($menu) {
+                // Delete Categories
+                $menu->categories->map(function (Category $category) {
+                    // Delete Categories children
+                    $category->children->map(function (Category $child) {
+                        $child->items->map(function ($item) {
+                            $this->deleteItem($item);
+                        });
+                        $this->categoryAction->destroy($child->id);
+                    });
+                    $category->items->map(function ($item) {
+                        $this->deleteItem($item);
+                    });
+                    $this->categoryAction->destroy($category->id);
+                });
+            });
+            // Delete Branches
+            $business->branches->map(function ($branch) use ($id) {
+                $this->branchRepository->destroy( $id , $branch->id);
+            });
+            // Delete owner
+            $business->user->delete();
+            // Delete Locales
+            $this->localeAction->deleteEntityLocales($business);
+            // Delete Business
+            $this->model->delete();
+            return "Deleted successfully";
+        }
+        return "Not found";
     }
 
 

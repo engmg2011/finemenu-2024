@@ -78,11 +78,11 @@ class BusinessController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        $this->repository->destroy($id);
+        return \response()->json($this->repository->destroy($id));
     }
 
 

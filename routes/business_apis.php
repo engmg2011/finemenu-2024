@@ -193,10 +193,11 @@ Route::group(['middleware' => ['throttle:300,1',
                 Route::post('/{modelId}', [UsersController::class, 'update']);
             });
 
-
             Route::group(['prefix' => 'config'], function () {
                 Route::post('/', [ConfigurationsController::class, 'setBusinessConfig']);
             });
+
+            Route::get('delete', [BusinessController::class, 'destroy']);
 
         });
 
