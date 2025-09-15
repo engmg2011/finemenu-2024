@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Constants\BusinessTypes;
 use App\Constants\OrderStatus;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
@@ -112,7 +113,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
                     // check if item exceeds the allowed amount
                     $reservationData['reservable_id'] = $reservable_id;
-                    $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
+                    if ($business->type === BusinessTypes::CHALET){
+                        $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
+                    }
                 }
 
             }

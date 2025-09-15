@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 use App\Constants\AuditServices;
+use App\Constants\BusinessTypes;
 use App\Constants\ConfigurationConstants;
 use App\Constants\PaymentConstants;
 use App\Constants\PermissionActions;
@@ -146,7 +147,9 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
 
-        $this->checkAllowedReservationUnits($data, $businessId, $branchId);
+        if(Business::find($businessId)->type === BusinessTypes::CHALET){
+            $this->checkAllowedReservationUnits($data, $businessId, $branchId);
+        }
 
         $data['reserved_by_id'] = auth('sanctum')->user()->id;
         $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
@@ -185,10 +188,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if (!isset($data['reservable_id']))
             $data['reservable_id'] = $reservation->reservable_id;
 
-        if (isset($data['from']) && isset($data['to'])) {
-
-            $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
-
+        $businessId = request()->route('businessId');
+        if(Business::find($businessId)->type === BusinessTypes::CHALET) {
+            if (isset($data['from']) && isset($data['to'])) {
+                $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
+            }
         }
 
         // TODO:: check if data['paid']
