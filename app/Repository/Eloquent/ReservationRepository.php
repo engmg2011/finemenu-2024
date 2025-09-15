@@ -311,10 +311,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->where('reservable_id', $reservable_id)
             ->where('from', $reservationData['from'])
             ->where('to', $reservationData['to'])
-            ->where('unit', $reservationData['unit'])
             ->where('business_id', $businessId)
             ->where('branch_id', $branchId)
             ->where('status', PaymentConstants::RESERVATION_PENDING)
+            ->where(function ($query) use ($reservationData) {
+                if(isset($reservationData['unit']))
+                    $query->where('unit', $reservationData['unit']);
+            })
             ->first();
     }
 
