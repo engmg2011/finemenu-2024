@@ -126,7 +126,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'control' => 'array',
-        'dashboard_access' => 'boolean'
+        'dashboard_access' => 'boolean',
+        'is_employee' => 'boolean',
     ];
 
     /**
