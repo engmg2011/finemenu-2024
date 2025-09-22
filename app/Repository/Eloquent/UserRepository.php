@@ -104,7 +104,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $query->where('phone', 'like', "%{$phone}%");
 
         return $query->where('business_id', $businessId)
-            ->where('is_employee', $isEmployee)
+            ->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q)
             ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
