@@ -17,7 +17,7 @@ class PermissionServices
     const Reservations = "reservations";
     const Services = "services";
     const Orders = "orders";
-    const Floors = "floors";
+    const Areas = "areas";
     const Tables = "tables";
     const Settings = "settings";
 

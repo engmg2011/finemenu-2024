@@ -6,7 +6,7 @@ use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
-use App\Http\Controllers\FloorsController;
+use App\Http\Controllers\AreasController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
@@ -16,7 +16,7 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TablesController;
+use App\Http\Controllers\SeatsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
@@ -108,21 +108,21 @@ Route::group(['middleware' => ['throttle:300,1',
                         Route::post('/{id}/delete', [InvoicesController::class, 'destroy']);
                     });
 
-                    // Business Branch floors
-                    Route::group(['prefix' => '/floors'], function () {
-                        Route::get('/', [FloorsController::class, 'index']);
-                        Route::get('/{id}', [FloorsController::class, 'show']);
-                        Route::post('/', [FloorsController::class, 'createModel']);
-                        Route::post('/{id}/delete', [FloorsController::class, 'destroy']);
-                        Route::post('/{id}', [FloorsController::class, 'update']);
+                    // Business Branch areas
+                    Route::group(['prefix' => '/areas'], function () {
+                        Route::get('/', [AreasController::class, 'index']);
+                        Route::get('/{id}', [AreasController::class, 'show']);
+                        Route::post('/', [AreasController::class, 'createModel']);
+                        Route::post('/{id}/delete', [AreasController::class, 'destroy']);
+                        Route::post('/{id}', [AreasController::class, 'update']);
 
-                        // Business Branch floors tables
-                        Route::group(['prefix' => '/{floorId}/tables'], function () {
-                            Route::get('/', [TablesController::class, 'index']);
-                            Route::get('/{id}', [TablesController::class, 'show']);
-                            Route::post('/', [TablesController::class, 'createModel']);
-                            Route::post('/{id}/delete', [TablesController::class, 'destroy']);
-                            Route::post('/{id}', [TablesController::class, 'update']);
+                        // Business Branch areas seats
+                        Route::group(['prefix' => '/{areaId}/seats'], function () {
+                            Route::get('/', [SeatsController::class, 'index']);
+                            Route::get('/{id}', [SeatsController::class, 'show']);
+                            Route::post('/', [SeatsController::class, 'createModel']);
+                            Route::post('/{id}/delete', [SeatsController::class, 'destroy']);
+                            Route::post('/{id}', [SeatsController::class, 'update']);
                         });
 
                     });

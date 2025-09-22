@@ -142,7 +142,7 @@ class UsersController extends Controller
             'business.locales',
             'business.menus.locales',
             'business.branches.locales',
-            'business.branches.floors.locales',
+            'business.branches.areas.locales',
             'devices'
         ])->find($userId);
 

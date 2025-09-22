@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $sort
  * @property string|null $slug
  * @property-read \App\Models\Business|null $business
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Floor> $floors
- * @property-read int|null $floors_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Area> $areas
+ * @property-read int|null $areas_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Locales> $locales
  * @property-read int|null $locales_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Media> $media
@@ -54,9 +54,9 @@ class Branch extends Model
         return $this->belongsTo(Business::class, 'business_id');
     }
 
-    public function floors()
+    public function areas()
     {
-        return $this->hasMany(Floor::class, 'branch_id');
+        return $this->hasMany(Area::class, 'branch_id');
     }
 
 
