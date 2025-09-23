@@ -128,7 +128,8 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     {
         $businessData = $this->businessService->registerationBusinessData($request, $user);
         // create restaurant & assign owner permission
-        $this->createModel($businessData);
+        $business = $this->createModel($businessData);
+        $user->update(['business_id' => $business->id]);
     }
 
     public function deleteItem(Item $item)
