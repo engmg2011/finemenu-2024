@@ -31,18 +31,12 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
     public function updateModel($id, array $data): Model
     {
         $model = $this->model->find($id);
-
-        $itemabelData =  $this->process($data);
-        \Log::debug("will update". json_encode($itemabelData));
-
         $model->update($this->process($data));
         return $this->model->find($model->id);
     }
 
     public function set(array $data): Model
     {
-        \Log::debug("should update". json_encode($data));
-
         if (isset($data['id']))
             return $this->updateModel($data['id'], $data);
         else
