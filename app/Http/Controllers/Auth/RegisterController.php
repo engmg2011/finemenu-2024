@@ -252,8 +252,10 @@ class RegisterController extends Controller
         if (!isset($data['email']) || empty($data['email']))
             $data['email'] = $data['phone'] . '@menu-ai.net';
 
-        if (isset($data['businessName']) && isset($data['businessType']))
+        if (isset($data['businessName']) && isset($data['businessType'])) {
             $data['dashboard_access'] = true;
+            $data['is_employee'] = true;
+        }
 
         // Create user && assign general role
         $user = $this->userRepository->createModel($data);
