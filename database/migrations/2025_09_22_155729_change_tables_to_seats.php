@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::rename('floors', 'areas');
+        Schema::rename('seats', 'tables');
+        Schema::table('tables', function (Blueprint $table){
+            $table->dropForeign(['floor_id']);
+        });
         Schema::rename('tables', 'seats');
         Schema::table('seats', function (Blueprint $table){
-            $table->dropForeign(['floor_id']);
             $table->renameColumn('floor_id', 'area_id');
-            $table->foreign('area_id')->references('id')->on('areas')->onDelete('cascade');
+            $table->foreign('area_id')->references('id')
+                ->on('areas')->onDelete('cascade');
         });
 
     }

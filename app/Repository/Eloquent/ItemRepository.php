@@ -155,12 +155,6 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $model->itemable()->associate($itemable);
             $model->save();
         }
-
-
-
-
-
-
         return $this->model->with(self::$modelRelations)->find($model->id);
     }
 
