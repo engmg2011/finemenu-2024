@@ -36,6 +36,8 @@ use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\PriceRepository;
 use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\ReservationRepository;
+use App\Repository\Eloquent\SalonProductRepository;
+use App\Repository\Eloquent\SalonServiceRepository;
 use App\Repository\Eloquent\SettingRepository;
 use App\Repository\Eloquent\SeatRepository;
 use App\Repository\Eloquent\UserRepository;
@@ -53,6 +55,8 @@ use App\Repository\PermissionRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
+use App\Repository\SalonProductRepositoryInterface;
+use App\Repository\SalonServiceRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
 use App\Repository\SeatRepositoryInterface;
 use App\Repository\UserRepositoryInterface;
@@ -95,6 +99,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ChaletRepositoryInterface::class, ChaletRepository::class);
         $this->app->bind(HolidayRepositoryInterface::class, HolidayRepository::class);
         $this->app->bind(DiscountRepositoryInteface::class, DiscountRepository::class);
+        $this->app->bind(SalonServiceRepositoryInterface::class, SalonServiceRepository::class);
+        $this->app->bind(SalonProductRepositoryInterface::class, SalonProductRepository::class);
     }
 
     /**

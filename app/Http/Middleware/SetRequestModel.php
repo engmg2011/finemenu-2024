@@ -20,6 +20,13 @@ class SetRequestModel
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
+        $businessId = (int) $request->route('businessId');
+        if($businessId !== 0){
+            if( (int) auth('sanctum')->user()->business_id !== $businessId ){
+                abort(403,"you don't have permission to access this resource");
+            }
+        }
+
         if($request->segment(4) === 'branches' && $request->segment(6) === 'settings' ){
             \request()->merge(['model' => Branch::class]);
             return $next($request);

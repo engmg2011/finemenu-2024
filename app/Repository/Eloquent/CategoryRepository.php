@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 
 use App\Models\Category;
+use App\Models\Menu;
 use App\Repository\CategoryRepositoryInterface;
 
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
@@ -18,6 +19,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
     public function list()
     {
-        return $this->model::with(['locales','media'])->orderBy('sort', 'asc')->paginate(request('per-page', 15));
+        $businessId = request()->route('businessId');;
+        $menuIds = Menu::where('business_id',$businessId)->pluck('id')->toArray();
+        return $this->model::whereIn('menu_id',$menuIds)->with(['locales','media'])->orderBy('sort', 'asc')->paginate(request('per-page', 15));
     }
 }
