@@ -18,6 +18,7 @@ use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SeatsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Middleware\SameBusinessMiddleware;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::group(['middleware' => ['throttle:300,1',
 ]
 ], function () {
 
-    Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class]], function () {
+    Route::group(['prefix' => 'business', 'middleware' => [SetRequestModel::class, SameBusinessMiddleware::class]], function () {
         Route::get('/', [BusinessController::class, 'index']);
         Route::get('/{id}', [BusinessController::class, 'show']);
         Route::post('/', [BusinessController::class, 'create']);
@@ -212,7 +213,8 @@ Route::group(['prefix' => 'business', 'middleware' =>
     [
         'auth:sanctum',
         'role:' . businessRoles(),
-        SetRequestModel::class
+        SetRequestModel::class,
+        SameBusinessMiddleware::class
     ]], function () {
 
     Route::group(['prefix' => '{businessId}/'], function () {
