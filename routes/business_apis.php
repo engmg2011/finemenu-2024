@@ -18,6 +18,7 @@ use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TablesController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
@@ -198,6 +199,15 @@ Route::group(['middleware' => ['throttle:300,1',
             });
 
             Route::get('delete', [BusinessController::class, 'destroy']);
+
+            Route::group(['prefix' => 'statistics'], function () {
+                Route::get('/basic', [StatisticsController::class, 'getBasicStatistics']);
+                Route::get('/reservations', [StatisticsController::class, 'getReservationsStatistics']);
+                Route::get('/revenue', [StatisticsController::class, 'getRevenueStatistics']);
+                Route::get('/capacity', [StatisticsController::class, 'getCapacity']);
+                Route::get('/employees-progress', [StatisticsController::class, 'getEmployeesReservationsProgress']);
+            });
+
 
         });
 

@@ -171,6 +171,11 @@ class User extends Authenticatable
 
     }
 
+    public function followingReservations()
+    {
+        return $this->hasMany(Reservation::class, 'follower_id');
+    }
+
     /*
         public function routeNotificationForOneSignal()
         {
