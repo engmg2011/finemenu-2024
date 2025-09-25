@@ -5,12 +5,12 @@
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\DietPlansController;
-use App\Http\Controllers\FloorsController;
+use App\Http\Controllers\AreasController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\ReservationsController;
-use App\Http\Controllers\TablesController;
+use App\Http\Controllers\SeatsController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
 
@@ -67,10 +67,10 @@ Route::group(['prefix' => 'webapp',
 
                 });
 
-                // Business Branch floors
-                Route::group(['prefix' => '/floors'], function () {
-                    Route::get('/', [FloorsController::class, 'index']);
-                    Route::get('/{floorId}/tables', [TablesController::class, 'index']);
+                // Business Branch areas
+                Route::group(['prefix' => '/areas'], function () {
+                    Route::get('/', [AreasController::class, 'index']);
+                    Route::get('/{areaId}/seats', [SeatsController::class, 'index']);
                 });
             });
         });

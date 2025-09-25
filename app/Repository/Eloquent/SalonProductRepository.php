@@ -3,23 +3,21 @@
 namespace App\Repository\Eloquent;
 
 
-use App\Models\Items\Chalet;
-use App\Repository\ChaletRepositoryInterface;
+use App\Models\Items\SalonProduct;
+use App\Repository\SalonProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class ChaletRepository extends BaseRepository implements ChaletRepositoryInterface
+class SalonProductRepository extends BaseRepository implements SalonProductRepositoryInterface
 {
 
-    public function __construct(Chalet $model)
+    public function __construct(SalonProduct $model)
     {
         parent::__construct($model);
     }
 
     public function process(array $data)
     {
-        return array_only($data, [
-            'insurance', 'latitude', 'longitude', 'address', 'units',
-            'frontage', 'bedrooms', 'item_id', 'owner_id', 'unit_names']);
+        return array_only($data, ['item_id','amount']);
     }
 
     public function createModel(array $data): Model

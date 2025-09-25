@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface FloorRepositoryInterface
+interface AreaRepositoryInterface
 {
     public function process($businessId, $branchId, array $data);
 

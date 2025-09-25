@@ -22,7 +22,7 @@ class CategoryAction
 
     public function process(array $data)
     {
-        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort']);
+        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort', 'type']);
     }
 
     public function create(array $data)
@@ -38,6 +38,7 @@ class CategoryAction
 
     public function update($id, array $data): Model
     {
+        unset($data['type']);
         $model = tap($this->repository->find($id))
             ->update($this->process($data));
         $this->localeRepository->setLocales($model, $data['locales']);

@@ -6,25 +6,30 @@ namespace App\Repository\Eloquent;
 use App\Actions\AddonAction;
 use App\Actions\MediaAction;
 use App\Constants\BusinessTypes;
+use App\Constants\CategoryTypes;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Item;
 use App\Repository\ChaletRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\ItemRepositoryInterface;
+use App\Repository\SalonProductRepositoryInterface;
+use App\Repository\SalonServiceRepositoryInterface;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
 
-    public function __construct(Item                               $model,
-                                private MediaAction                $mediaAction,
-                                private LocaleRepository           $localeAction,
-                                private PriceRepository            $priceAction,
-                                private AddonAction                $addonAction,
-                                private DiscountRepositoryInteface $discountRepository,
-                                private ChaletRepositoryInterface  $chaletRepository)
+    public function __construct(Item                                    $model,
+                                private MediaAction                     $mediaAction,
+                                private LocaleRepository                $localeAction,
+                                private PriceRepository                 $priceAction,
+                                private AddonAction                     $addonAction,
+                                private DiscountRepositoryInteface      $discountRepository,
+                                private ChaletRepositoryInterface       $chaletRepository,
+                                private SalonServiceRepositoryInterface $salonServiceRepository,
+                                private SalonProductRepositoryInterface $salonProductRepository)
     {
         parent::__construct($model);
     }
@@ -98,12 +103,26 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $data['user_id'] = auth('sanctum')->user()->id;
         $item = $this->model->create($this->process($data));
         $this->relations($item, $data);
-        if ($businessType === BusinessTypes::CHALET) {
-            $chaletData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
-            $chalet = $this->chaletRepository->createModel($chaletData);
-            $item->itemable()->associate($chalet);
+
+        // Create itemable model
+        if (in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON])) {
+            $itemableData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
+            switch ($businessType) {
+                case BusinessTypes::CHALET:
+                    $itemable = $this->chaletRepository->createModel($itemableData);
+                    break;
+                default:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->salonServiceRepository->createModel($itemableData);
+                    else
+                        $itemable = $this->salonProductRepository->createModel($itemableData);
+                    break;
+            }
+            $item->itemable()->associate($itemable);
             $item->save();
         }
+
         return Item::with(self::$modelRelations)->find($item->id);
     }
 
@@ -117,11 +136,23 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             ->update($this->process($data));
         $this->relations($model, $data);
 
-        if ($businessType === BusinessTypes::CHALET && isset($data['itemable'])) {
-            \Log::debug("start update 2". json_encode($data['itemable']));
+        // Create itemable model
+        if (isset($data['itemable']) && in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON])) {
             $data['itemable']['item_id'] = $id;
-            $chalet = $this->chaletRepository->set($data['itemable']);
-            $model->itemable()->associate($chalet);
+            $itemableData = $data['itemable'];
+            switch ($businessType) {
+                case BusinessTypes::CHALET:
+                    $itemable = $this->chaletRepository->set($itemableData);
+                    break;
+                default:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->salonServiceRepository->set($itemableData);
+                    else
+                        $itemable = $this->salonProductRepository->set($itemableData);
+                    break;
+            }
+            $model->itemable()->associate($itemable);
             $model->save();
         }
         return $this->model->with(self::$modelRelations)->find($model->id);

@@ -20,6 +20,7 @@ class SetRequestModel
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
+
         if($request->segment(4) === 'branches' && $request->segment(6) === 'settings' ){
             \request()->merge(['model' => Branch::class]);
             return $next($request);

@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
 use App\Models\Business;
-use App\Repository\FloorRepositoryInterface;
+use App\Repository\AreaRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-class FloorsController extends Controller
+class AreasController extends Controller
 {
-    public function __construct(private FloorRepositoryInterface $repository)
+    public function __construct(private AreaRepositoryInterface $repository)
     {
     }
 
     public function index($businessId, $branchId)
     {
-        return DataResource::collection($this->repository->branchFloors($businessId, $branchId));
+        return DataResource::collection($this->repository->branchAreas($businessId, $branchId));
     }
 
     public function createModel(Request $request, $businessId, $branchId): JsonResponse

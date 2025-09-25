@@ -3,23 +3,23 @@
 namespace App\Repository\Eloquent;
 
 
-use App\Models\Floor;
-use App\Repository\FloorRepositoryInterface;
+use App\Models\Area;
+use App\Repository\AreaRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class FloorRepository extends BaseRepository implements FloorRepositoryInterface
+class AreaRepository extends BaseRepository implements AreaRepositoryInterface
 {
 
-    public function __construct(Floor $model, private LocaleRepository $localeAction)
+    public function __construct(Area $model, private LocaleRepository $localeAction)
     {
         parent::__construct($model);
     }
 
-    public static array $modelRelations = ['locales', 'tables.locales'];
+    public static array $modelRelations = ['locales', 'seats.locales'];
 
 
-    private function floor($businessId, $branchId): Builder
+    private function area($businessId, $branchId): Builder
     {
         return $this->model->where([
             'business_id' => $businessId,
@@ -47,24 +47,24 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
     {
         $entity = $this->model->create($this->process($businessId, $branchId, $data));
         $this->relations($entity, $data);
-        return $this->model->with(FloorRepository::$modelRelations)->find($entity->id);
+        return $this->model->with(AreaRepository::$modelRelations)->find($entity->id);
     }
 
     public function updateModel($businessId, $branchId, $id, array $data): Model
     {
-        $model = $this->floor($businessId, $branchId)->find($id);
+        $model = $this->area($businessId, $branchId)->find($id);
         if(!$model)
-            abort(400,"Error: no floor exists with the same id");
+            abort(400,"Error: no area exists with the same id");
         $model->update($this->process($businessId, $branchId, $data));
         $this->relations($model, $data);
-        return $this->model->with(FloorRepository::$modelRelations)->find($model->id);
+        return $this->model->with(AreaRepository::$modelRelations)->find($model->id);
     }
 
     public function sort($businessId, $branchId, $data)
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
-            $this->floor($businessId, $branchId)->whereId($id)->update(['sort' => $sort]);
+            $this->area($businessId, $branchId)->whereId($id)->update(['sort' => $sort]);
             $sort++;
         }
         return true;
@@ -72,18 +72,18 @@ class FloorRepository extends BaseRepository implements FloorRepositoryInterface
 
     public function get($businessId, $branchId, int $id)
     {
-        return $this->floor($businessId, $branchId)->with(FloorRepository::$modelRelations)->find($id);
+        return $this->area($businessId, $branchId)->with(AreaRepository::$modelRelations)->find($id);
     }
 
     public function destroy($businessId, $branchId, $id): ?bool
     {
-        $this->floor($businessId, $branchId)->find($id)?->locales->map(
+        $this->area($businessId, $branchId)->find($id)?->locales->map(
             fn($locale) => $locale->delete()
         );
-        return $this->floor($businessId, $branchId)->find($id)?->delete();
+        return $this->area($businessId, $branchId)->find($id)?->delete();
     }
 
-    public function branchFloors( $business_id, $branch_id)
+    public function branchAreas($business_id, $branch_id)
     {
         return $this->listWhere(
             ['business_id' => $business_id, 'branch_id' => $branch_id],
