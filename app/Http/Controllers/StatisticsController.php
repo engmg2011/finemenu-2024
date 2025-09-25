@@ -299,7 +299,7 @@ class StatisticsController extends Controller
             ->get();
 
         return [
-            'labels' => ['Last Week', 'Current Week', 'Next 2 Weeks'],
+            'labels' => ['Last Week', 'Current Week', 'Next Week'],
             'employees' => $employees->map(function ($employee) {
                 return [
                     'name' => $employee->name,
