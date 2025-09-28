@@ -33,7 +33,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 {
 
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
-        'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings', 'follower'];
+        'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings', 'follower', 'seat.locales'];
 
     public function __construct(Reservation $model, private InvoiceRepository $invoiceRepository)
     {
@@ -50,7 +50,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
             "business_id", "branch_id", "created_at", "updated_at", 'notes', 'follower_id',
-            "unit"
+            "unit" , "seat_id"
         ]);
     }
 

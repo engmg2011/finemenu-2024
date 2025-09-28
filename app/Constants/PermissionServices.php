@@ -18,7 +18,7 @@ class PermissionServices
     const Services = "services";
     const Orders = "orders";
     const Areas = "areas";
-    const Tables = "tables";
+    const Seats = "seats";
     const Settings = "settings";
 
     public static function getConstants(): array

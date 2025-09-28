@@ -100,6 +100,11 @@ class Reservation extends Model
         return $this->belongsTo(Branch::class);
     }
 
+    public function seat()
+    {
+        return $this->belongsTo(Seat::class);
+    }
+
     public function business()
     {
         return $this->belongsTo(Business::class);
