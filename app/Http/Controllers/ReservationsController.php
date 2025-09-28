@@ -26,8 +26,8 @@ class ReservationsController extends Controller
         $user = auth('sanctum')->user();
         checkUserPermission($user, $branchId,
             PermissionServices::Reservations, PermissionActions::Read);
-        $ordersList = $this->repository->listModel($businessId, $branchId);
-        return DataResource::collection($ordersList);
+        $list = $this->repository->listModel($businessId, $branchId);
+        return DataResource::collection($list);
     }
 
     public function filter(Request $request)

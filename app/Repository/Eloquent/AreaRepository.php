@@ -85,9 +85,12 @@ class AreaRepository extends BaseRepository implements AreaRepositoryInterface
 
     public function branchAreas($business_id, $branch_id)
     {
+        $withSeats = [];
+        if (request()->has('full') && request('full') == 'true')
+            $withSeats = ['seats.locales'];
         return $this->listWhere(
             ['business_id' => $business_id, 'branch_id' => $branch_id],
-            ['locales']
+            ['locales' , ...$withSeats]
         );
     }
 
