@@ -19,8 +19,11 @@ class SalonServiceRepository extends BaseRepository implements SalonServiceRepos
     public function process(array $data)
     {
         if(isset($data['provider_employee_ids']) && is_array($data['provider_employee_ids'])){
-            $userBusinessIds = User::whereIn('id', $data['provider_employee_ids'])->pluck('business_id')->toArray();
-            $businessId = request()->route('businessId');
+            $userBusinessIds = User::whereIn('id', $data['provider_employee_ids'])
+                ->groupBy('business_id')
+                ->pluck('business_id')->toArray();
+            $businessId = (int) request()->route('businessId');
+
             if(count($userBusinessIds) > 1 || (isset($userBusinessIds[0]) && $userBusinessIds[0] !== $businessId) ){
                 abort(400, "Wrong Data");
             }
