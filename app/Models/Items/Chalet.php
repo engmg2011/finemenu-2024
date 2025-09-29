@@ -3,6 +3,7 @@
 namespace App\Models\Items;
 
 use App\Models\Item;
+use App\Traits\Featurable;
 use App\Traits\Itemable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,7 +44,7 @@ use Illuminate\Support\Carbon;
  */
 class Chalet extends Model
 {
-    use HasFactory, Itemable;
+    use HasFactory, Itemable, Featurable;
     protected $guarded=['id'];
     protected $casts = ['address' => 'json', 'units'=>'integer', 'unit_names' => 'array'];
     protected $hidden = ['created_at','updated_at'];
