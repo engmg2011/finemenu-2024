@@ -40,7 +40,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     }
 
     public static array $modelRelations = ['locales', 'media', 'prices.locales', 'addons.locales',
-        'discounts.locales', 'itemable'];
+        'discounts.locales', 'itemable.features.locales'];
 
 
     public function list()

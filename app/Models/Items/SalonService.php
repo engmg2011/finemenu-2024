@@ -2,6 +2,7 @@
 
 namespace App\Models\Items;
 
+use App\Traits\Featurable;
 use App\Traits\Itemable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class SalonService extends Model
 {
 
-    use HasFactory, Itemable;
+    use HasFactory, Itemable, Featurable;
 
     protected $guarded = ['id'];
     protected $casts = ['duration' => 'integer', 'provider_employee_ids' => 'array'];

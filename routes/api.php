@@ -10,6 +10,7 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\FeaturesController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
@@ -170,6 +171,22 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1',
         Route::post('/', [DietPlansController::class, 'create']);
         Route::post('/{id}', [DietPlansController::class, 'update']);
         Route::get('/{id}/delete', [DietPlansController::class, 'destroy']);
+    });
+
+});
+
+
+// TODO :: move admin only routes to here and make admin users
+Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
+    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
+], function () {
+
+    Route::group(['prefix' => 'features'], function () {
+        Route::get('/', [FeaturesController::class, 'index']);
+        Route::get('/{id}', [FeaturesController::class, 'show']);
+        Route::post('/', [FeaturesController::class, 'create']);
+        Route::post('/{id}', [FeaturesController::class, 'update']);
+        Route::get('/{id}/delete', [FeaturesController::class, 'destroy']);
     });
 
 });

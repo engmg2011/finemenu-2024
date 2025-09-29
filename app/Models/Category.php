@@ -81,7 +81,7 @@ class Category extends Model
                 'items.discounts.locales',
                 'items.media',
                 'items.prices.locales',
-                'items.itemable',
+                'items.itemable.features.locales',
                 'items.holidays.locales']);
     }
 

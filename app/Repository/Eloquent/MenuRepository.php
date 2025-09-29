@@ -81,7 +81,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
             'categories.items.media',
             'categories.items.holidays.locales',
             'categories.items.prices.locales',
-            'categories.items.itemable'
+            'categories.items.itemable.features.locales',
             ])->find($id);
     }
 
