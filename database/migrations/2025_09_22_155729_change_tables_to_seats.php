@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::rename('floors', 'areas');
-        Schema::rename('seats', 'tables');
         Schema::table('tables', function (Blueprint $table){
             $table->dropForeign(['floor_id']);
         });
