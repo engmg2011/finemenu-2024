@@ -252,7 +252,6 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
 
     public function setOrderLinePrices(&$orderLine)
     {
-        \Log::debug($orderLine['reservation']['from']);
         // if reservation check holiday intersection
         if (isset($orderLine['reservation'])) {
             $matchedHolidays = $this->getMatchedHolidays($orderLine['item_id'], $orderLine['reservation']);
