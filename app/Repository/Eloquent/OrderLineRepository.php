@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 
 use App\Constants\DiscountTypes;
+use App\Models\Addon;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Price;
@@ -38,6 +39,16 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
                 if (isset($data['addon_ids'])) {
                     $query->whereIn('id', $data['addon_ids']);
                 };
+            }])
+            ->with(['media' => function ($query) use ($data) {
+                $query->where('slug', 'featured')
+                    ->orderBy('sort')
+                    ->first()
+                    ->when(null, function ($q) {
+                        return $q->orWhere('type', 'like', '%image%')
+                            ->orderBy('sort')
+                            ->first();
+                    });
             }])
             ->with(['discounts' => function ($query) use ($data) {
                 if (isset($data['discount_ids'])) {
@@ -130,8 +141,9 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         // orderLine addons data
         $addonsPrice = 0;
         $addons = $item['addons'] ?? [];
-        foreach ($addons as &$addon) {
-            $addonsPrice += $addon['price'];
+        for($i = 0; $i < count($addons); $i++){
+            $addonsPrice += $addons[$i]['price'];
+            $addons[$i]['locales'] = Addon::with('locales')->find($addons[$i]['id'])?->locales ?? [];
         }
         $orderLine['data'] += ["addons" => $addons];
         $orderLine['total_price'] += $addonsPrice;
@@ -255,8 +267,6 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         // if reservation check holiday intersection
         if (isset($orderLine['reservation'])) {
             $matchedHolidays = $this->getMatchedHolidays($orderLine['item_id'], $orderLine['reservation']);
-            \Log::debug("matchedHolidays " . $matchedHolidays->toJson());
-//            \Log::debug([$matchedHolidays, $orderLine]);
             if ($matchedHolidays->isNotEmpty()) {
                 if (!isset($orderLine['holiday_id']))
                     abort(400, "Timing matches holiday, no holidayId sent");
