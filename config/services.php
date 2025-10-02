@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\AppleToken;
+
 return [
 
     /*
@@ -36,7 +38,11 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
-
+    'apple' => [
+        'client_id' => env('APPLE_CLIENT_ID'),
+        'client_secret' => AppleToken::generate(),
+        'redirect' => env('APPLE_REDIRECT_URI'),
+    ],
     'facebook' => [
         'client_id' => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
@@ -50,4 +56,5 @@ return [
         'rest_api_url' => env('ONESIGNAL_REST_API_URL', 'https://onesignal.com/api/v1'), // ✅ Add this
         'guzzle_client_timeout' => env('ONESIGNAL_TIMEOUT', 0), // Add this line
     ],
+
 ];
