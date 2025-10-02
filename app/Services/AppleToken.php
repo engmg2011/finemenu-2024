@@ -9,7 +9,7 @@ class AppleToken
     public static function generate()
     {
         try {
-            $keyFile = storage_path('app/Keys/Apple/AuthKey_' . env('APPLE_KEY_ID') . '.p8');
+            $keyFile = storage_path('Keys/Apple/AuthKey_' . env('APPLE_KEY_ID') . '.p8');
             $privateKey = file_get_contents($keyFile);
             $claims = [
                 'iss' => env('APPLE_TEAM_ID'),
@@ -22,7 +22,7 @@ class AppleToken
             return JWT::encode($claims, $privateKey, 'ES256', env('APPLE_KEY_ID'));
 
         } catch (\Exception $e) {
-            \Log::error('Could not generate apple token');
+//            die('Could not generate apple token, p8 file not found');
         }
         return '';
     }
