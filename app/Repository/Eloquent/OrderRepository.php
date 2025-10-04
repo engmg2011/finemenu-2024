@@ -14,6 +14,7 @@ use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\Items\SalonProduct;
 use App\Models\Order;
 use App\Models\User;
 use App\Repository\DiscountRepositoryInteface;
@@ -113,11 +114,39 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
                     // check if item exceeds the allowed amount
                     $reservationData['reservable_id'] = $reservable_id;
-                    if ($business->type === BusinessTypes::CHALET){
+                    if ($business->type === BusinessTypes::CHALET) {
                         $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
                     }
                 }
 
+            }
+        }
+    }
+
+    public function validateProductsData(&$orderLines)
+    {
+        if (isset($orderLines) && is_array($orderLines)) {
+
+            $itemIds = array_column($orderLines, 'item_id');
+            $items = Item::with('itemable')
+                ->where('hide', false)
+                ->where('disable_ordering', false)
+                ->whereIn('id', $itemIds)->get();
+
+            if (count($items) !== count($itemIds))
+                abort(400, "Wrong Data");
+
+            foreach ($items as &$item) {
+                // Check if the item is a salon product and if the amount is less than the order line count
+                if ($item->itemable instanceof SalonProduct) {
+                    $orderLine = collect($orderLines)->first(function ($line) use ($item) {
+                        return $line['item_id'] == $item->id;
+                    });
+                    $orderLine['count'] = (int) $orderLine['count'] ?? 1;
+                    if ($item->itemable->amount < $orderLine['count']) {
+                        abort(400, "Sorry, this amount is out of stock");
+                    }
+                }
             }
         }
     }
@@ -132,14 +161,16 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         $data['orderable_id'] = $data['branch_id'];
         $data['orderable_type'] = get_class(new Branch());
-
-        if (!count($data['order_lines']))
+        if (!isset($data['order_lines']) || !count($data['order_lines']))
             abort(400, "Please add order content");
 
         $this->validateCategoriesInBranch($data['order_lines']);
 
         // checking if exists reservation
         $this->checkAllowedReservationsOrDie($data, $business, $data['branch_id']);
+
+        // checking if items are available
+        $this->validateProductsData($data['order_lines']);
 
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
