@@ -141,7 +141,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         // orderLine addons data
         $addonsPrice = 0;
         $addons = $item['addons'] ?? [];
-        for($i = 0; $i < count($addons); $i++){
+        for ($i = 0; $i < count($addons); $i++) {
             $addonsPrice += $addons[$i]['price'];
             $addons[$i]['locales'] = Addon::with('locales')->find($addons[$i]['id'])?->locales ?? [];
         }
@@ -273,15 +273,19 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
                 $matchedHoliday = $matchedHolidays
                     ->where('id', $orderLine['holiday_id'])
                     ->where('from', $orderLine['reservation']['from'])
-                    ->where( 'to', $orderLine['reservation']['to'])
+                    ->where('to', $orderLine['reservation']['to'])
                     ->first();
                 if (!$matchedHoliday)
                     abort(400, "Timings are not matching the holiday");
                 $price = $matchedHoliday['price'];
             }
         }
-        if (!isset($price))
+        if (!isset($price)) {
             $price = $this->getItemPrice($orderLine['item_id'], $orderLine['price_id']);
+            if (isset($orderLine['count']) && $orderLine['count'] > 1) {
+                $price = $price * $orderLine['count'];
+            }
+        }
         $orderLine['subtotal_price'] = $price;
         $orderLine['total_price'] = $price;
     }
