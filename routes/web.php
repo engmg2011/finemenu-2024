@@ -2,6 +2,7 @@
 
 use App\Events\MyEvent;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\WebAppController;
 use App\Jobs\ProcessPodcast;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
@@ -83,3 +84,6 @@ Route::get('queue-work', function (){
 
 Route::get('invoices/{id}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{id}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
+
+
+Route::get('/send-test-mail', [WebAppController::class, 'testMail'] );

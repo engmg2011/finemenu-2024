@@ -12,11 +12,12 @@ use App\Notifications\OneSignalNotification;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use Mail;
 
 class WebAppController extends Controller
 {
-    public function __construct(private readonly BusinessRepositoryInterface    $businessRepository,
-                                private readonly MenuRepositoryInterface $menuRepository)
+    public function __construct(private readonly BusinessRepositoryInterface $businessRepository,
+                                private readonly MenuRepositoryInterface     $menuRepository)
     {
 
     }
@@ -46,7 +47,7 @@ class WebAppController extends Controller
             'business.locales', 'business.media',
             'business.settings'])->where('slug', $branchSlug)->firstOrFail();
         $branchMenu = Menu::find($branch->menu_id);
-        if($branchMenu->type === MenuTypes::SUBSCRIPTION)
+        if ($branchMenu->type === MenuTypes::SUBSCRIPTION)
             return response()->json($this->businessRepository->dietMenu($branchMenu, $branch));
         $menu = $this->menuRepository->fullMenu($branch->menu_id);
         return response()->json(compact('branch', 'menu'));
@@ -73,6 +74,7 @@ class WebAppController extends Controller
             "min-acceptable-version" => env("QR_APP_MIN_ACCEPTABLE_VERSION"),
         ]);
     }
+
     public function TabletAppVersion(): JsonResponse
     {
         return response()->json([
@@ -82,6 +84,7 @@ class WebAppController extends Controller
             "min-acceptable-version" => env("TABLET_APP_MIN_ACCEPTABLE_VERSION"),
         ]);
     }
+
     public function OrdersAppVersion(): JsonResponse
     {
         return response()->json([
@@ -92,12 +95,27 @@ class WebAppController extends Controller
         ]);
     }
 
-    public function businessTypes(): JsonResponse {
+    public function businessTypes(): JsonResponse
+    {
         return response()->json(BusinessTypes::all());
     }
 
     public function send()
     {
-        Device::find(25)->notify(new OneSignalNotification("hi" , "test"));
+        Device::find(25)->notify(new OneSignalNotification("hi", "test"));
+    }
+
+    public function testMail()
+    {
+        try {
+            Mail::raw('Hello, this is a test email from Laravel on HostGator SMTP.', function ($message) {
+                $message->to('eng.mg2011@gmail.com')
+                    ->subject('Laravel Test Email');
+            });
+            return "✅ Test email sent successfully!";
+        } catch (\Exception $e) {
+            return "❌ Failed to send email: " . $e->getMessage();
+        }
+
     }
 }
