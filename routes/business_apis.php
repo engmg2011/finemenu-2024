@@ -209,6 +209,7 @@ Route::group(['middleware' => ['throttle:300,1',
                 Route::get('/employees-progress', [StatisticsController::class, 'getEmployeesReservationsProgress']);
             });
 
+            Route::get('notes', [BranchesController::class, 'notes']);
 
         });
 
