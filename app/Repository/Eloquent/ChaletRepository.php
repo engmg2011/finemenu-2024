@@ -18,6 +18,11 @@ class ChaletRepository extends BaseRepository implements ChaletRepositoryInterfa
 
     public function process(array $data)
     {
+        $data = array_filter($data, fn($value) => $value !== null);
+
+        if(isset($data['units']) &&  ((int) $data['units'])< 1)
+            $data['units'] = 1;
+
         return array_only($data, [
             'insurance', 'latitude', 'longitude', 'address', 'units',
             'frontage', 'bedrooms', 'item_id', 'owner_id', 'unit_names']);
