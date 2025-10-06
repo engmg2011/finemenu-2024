@@ -131,23 +131,26 @@ class BranchesController extends Controller
             ->selectRaw("n.at_str, n.by, n.text")
             ->where('business_id', $businessId)
             ->join(DB::raw("
-                JSON_TABLE(reservations.notes, '$[*]'
-                    COLUMNS (
-                        at_str VARCHAR(50) PATH '$.at',
-                        `by` VARCHAR(255) PATH '$.by',
-                        text TEXT PATH '$.text'
-                    )
-                ) AS n
-            "), DB::raw('1'), '=', DB::raw('1'))
+        JSON_TABLE(reservations.notes, '$[*]'
+            COLUMNS (
+                at_str VARCHAR(50) PATH '$.at',
+                `by` VARCHAR(255) PATH '$.by',
+                text TEXT PATH '$.text'
+            )
+        ) AS n
+    "), DB::raw('1'), '=', DB::raw('1'))
             ->orderByDesc(DB::raw("STR_TO_DATE(n.at_str, '%Y-%m-%d %h:%i %p')"))
-            ->limit(10)
+            ->limit(8)
             ->get();
 
         $userNames = collect($notesList)->pluck('by')->unique();
-        $userImages = User::whereIn('name', $userNames)->pluck('profile_photo_path', 'name');
-        foreach ($notesList as &$note) {
-            $note->photo = url('storage/'.$userImages[$note->by]) ?? null;
+        $users = User::whereIn('name', $userNames)->get()->keyBy('name');
+
+        foreach ($notesList as $note) {
+            $user = $users->get($note->by);
+            $note->photo = $user?->profile_photo_url ?? (new User)->defaultProfilePhotoUrl();
         }
+
         return response()->json($notesList);
     }
 
