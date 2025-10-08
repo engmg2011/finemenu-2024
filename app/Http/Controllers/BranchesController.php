@@ -148,7 +148,7 @@ class BranchesController extends Controller
 
         foreach ($notesList as $note) {
             $user = $users->get($note->by);
-            $note->photo = $user?->profile_photo_url ?? (new User)->defaultProfilePhotoUrl();
+            $note->photo = $user?->profile_photo_url ?? "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg";
         }
 
         return response()->json($notesList);
