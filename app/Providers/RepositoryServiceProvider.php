@@ -28,6 +28,7 @@ use App\Repository\Eloquent\FeatureRepository;
 use App\Repository\Eloquent\HolidayRepository;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ItemRepository;
+use App\Repository\Eloquent\Items\CarRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\MenuRepository;
@@ -104,6 +105,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SalonServiceRepositoryInterface::class, SalonServiceRepository::class);
         $this->app->bind(SalonProductRepositoryInterface::class, SalonProductRepository::class);
         $this->app->bind(FeatureRepositoryInterface::class, FeatureRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, CarRepository::class);
 
     }
 

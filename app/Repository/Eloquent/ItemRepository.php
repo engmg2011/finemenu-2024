@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Repository\ChaletRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
+use App\Repository\ItemInterfaces\CarRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\SalonProductRepositoryInterface;
 use App\Repository\SalonServiceRepositoryInterface;
@@ -29,7 +30,8 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                                 private DiscountRepositoryInteface      $discountRepository,
                                 private ChaletRepositoryInterface       $chaletRepository,
                                 private SalonServiceRepositoryInterface $salonServiceRepository,
-                                private SalonProductRepositoryInterface $salonProductRepository)
+                                private SalonProductRepositoryInterface $salonProductRepository,
+                                private CarRepositoryInterface          $carRepository)
     {
         parent::__construct($model);
     }
@@ -111,12 +113,17 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->createModel($itemableData);
                     break;
-                default:
+                case BusinessTypes::CARS:
+                    $itemable = $this->carRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
                     if ($category->type === CategoryTypes::SERVICE)
                         $itemable = $this->salonServiceRepository->createModel($itemableData);
                     else
                         $itemable = $this->salonProductRepository->createModel($itemableData);
+                    break;
+                default:
                     break;
             }
             $item->itemable()->associate($itemable);
@@ -144,12 +151,17 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->set($itemableData);
                     break;
-                default:
+                case BusinessTypes::CARS:
+                    $itemable = $this->carRepository->set($itemableData);
+                    break;
+                case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
                     if ($category->type === CategoryTypes::SERVICE)
                         $itemable = $this->salonServiceRepository->set($itemableData);
                     else
                         $itemable = $this->salonProductRepository->set($itemableData);
+                    break;
+                default:
                     break;
             }
             $model->itemable()->associate($itemable);
