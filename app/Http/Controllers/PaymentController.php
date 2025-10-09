@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\PaymentConstants;
+use App\Models\Invoice;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Http\Request;
@@ -13,9 +15,18 @@ class PaymentController extends Controller
     {
     }
 
+    public function isPendingInvoice($referenceNumber)
+    {
+        $invoiceStatus = Invoice::where('reference_id', $referenceNumber)->pluck('status')->first();
+        return $invoiceStatus === PaymentConstants::INVOICE_PENDING;
+    }
+
     public function hesabeCheckout($referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
+        // disable multiple payment
+        if(!$this->isPendingInvoice($referenceNumber))
+            return redirect()->route('invoice.show', $referenceNumber);
         $checkoutLink = $this->paymentService->checkout($referenceNumber);
         return redirect($checkoutLink);
     }
