@@ -81,5 +81,5 @@ Route::get('queue-work', function (){
     die();// to not log
 })->middleware(['throttle:10,5']);
 
-Route::get('invoices/{id}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
-Route::get('invoices/{id}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
+Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
+Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
