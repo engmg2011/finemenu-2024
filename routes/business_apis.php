@@ -177,6 +177,7 @@ Route::group(['middleware' => ['throttle:300,1',
                 Route::post('/{id}', [ItemsController::class, 'update']);
                 Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
                 Route::group(['prefix' => '{id}'], function () {
+                    Route::post('settings/set', [SettingsController::class, 'setSetting']);
                     Route::post('settings', [SettingsController::class, 'createSetting']);
                     Route::post('settings/{settingId}', [SettingsController::class, 'updateSetting']);
                     Route::get('settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
