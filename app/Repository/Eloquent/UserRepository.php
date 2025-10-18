@@ -32,6 +32,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function processUser(array $data)
     {
+        $data['is_employee'] = filter_var($data['is_employee'], FILTER_VALIDATE_BOOLEAN);
         return array_only($data, ['name', 'email', 'phone', 'currency',
             'password', 'email_verified_at', 'business_id', 'dashboard_access', 'is_employee']);
     }
@@ -46,12 +47,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function search($businessId, array $data)
     {
         return User::where(function ($query) use ($businessId) {
-                return $query->where('business_id', $businessId)
-                    ->orWhereHas('business', function ($query) use ($businessId) {
-                        $query->where('id', $businessId);
-                    });
+            return $query->where('business_id', $businessId)
+                ->orWhereHas('business', function ($query) use ($businessId) {
+                    $query->where('id', $businessId);
+                });
 //                    ->orWhereNull('business_id');
-            })
+        })
             ->where(function ($query) use ($data) {
                 return $query->where('name', 'like', "%{$data['search']}%")
                     ->orWhere('email', 'like', "%{$data['search']}%")
@@ -79,31 +80,34 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return User::orderByDesc('id')->paginate(request('per-page', 15));
     }
 
-    public function listModel($businessId)
+    public function listModel()
     {
+        // TODO :: assign employees to some branches
+        $businessId = \request()->route('businessId');
         $userId = \request('id', null);
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
         $name = request('name', null);
         $email = request('email', null);
         $phone = request('phone', null);
-        $isEmployee = request('isEmployee', false);
 
-        if($isEmployee === "true")
-            $isEmployee = true;
+        $isEmployee = filter_var(request('isEmployee', false), FILTER_VALIDATE_BOOLEAN);
+        $withSettings = filter_var(request('settings', false), FILTER_VALIDATE_BOOLEAN);
 
         $query = $this->model->query();
 
-        if($userId)
+        if ($userId)
             $query->where('id', $userId);
-        if($name)
+        if ($name)
             $query->where('name', 'like', "%{$name}%");
-        if($email)
+        if ($email)
             $query->where('email', 'like', "%{$email}%");
-        if($phone)
+        if ($phone)
             $query->where('phone', 'like', "%{$phone}%");
+        if($withSettings)
+            $query->with('settings');
 
-        return $query->where('business_id', $businessId)
+            return $query->where('business_id', $businessId)
             ->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q)
             ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
@@ -116,7 +120,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function updateModel($id, array $data): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
     {
-
         if (isset($data['password']) && $data['password'] !== "")
             $data['password'] = bcrypt($data['password']);
         else

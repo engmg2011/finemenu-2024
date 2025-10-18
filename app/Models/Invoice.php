@@ -63,7 +63,13 @@ class Invoice extends Model
 
     protected $guarded = ['id'];
 
-    protected $casts = ['data' => 'json', 'amount'=>'float'];
+    protected $casts = [
+        'data' => 'json',
+        'amount'=>'float',
+        'status_changed_at' => 'datetime',
+        'paid_at' => 'datetime',
+        'due_at' => 'datetime'
+    ];
 
     protected $hidden = ['data'];
 
