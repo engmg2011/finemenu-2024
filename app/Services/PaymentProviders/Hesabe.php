@@ -4,7 +4,6 @@ namespace App\Services\PaymentProviders;
 
 use App\Constants\PaymentConstants;
 use App\Events\UpdateReservation;
-use App\Jobs\SendNewReservationNotification;
 use App\Jobs\SendUpdateReservationNotification;
 use App\Models\Invoice;
 use Hesabe\Payment\HesabeCrypt;
@@ -59,7 +58,7 @@ class Hesabe implements PaymentProviderInterface
 
         // Step 3: Validate the response
         if (!$decryptedDataObj || !isset($decryptedDataObj->response)) {
-            \Log::critical("Error: Invalid data received : ". $encryptedData);
+            \Log::critical("Error: Invalid data received : " . $encryptedData);
             return redirect()->route('payment.failed');
         }
 
@@ -76,8 +75,11 @@ class Hesabe implements PaymentProviderInterface
             // Retrieve invoice using reference or ID
             if ($invoice) {
                 if ($invoice->status !== PaymentConstants::INVOICE_PAID) {
-                    $invoice->update(['status' => PaymentConstants::INVOICE_PAID]);
-                    if($invoice->reservation){
+                    $invoice->update([
+                        'status' => PaymentConstants::INVOICE_PAID,
+                        'paid_at' => now(),
+                    ]);
+                    if ($invoice->reservation) {
                         $invoice->reservation->update(['status' => PaymentConstants::RESERVATION_COMPLETED]);
 
                         app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($invoice->reservation->id);

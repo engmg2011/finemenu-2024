@@ -32,11 +32,18 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_ONLINE)
             $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
+
+        if (isset($data['status']) && $data['status'] === PaymentConstants::INVOICE_PAID)
+            $data['paid_at'] = now();
+
+        if (isset($data['status']) && $data['status'] !== PaymentConstants::INVOICE_PAID)
+            $data['paid_at'] = null;
+
         return array_only($data, [
             'amount', 'data', 'external_link', 'reference_id',
             'note', 'type', 'status', 'status_changed_at', 'payment_type',
             'reservation_id', 'order_id', 'order_line_id', 'invoice_by_id', 'invoice_for_id',
-            'business_id', 'branch_id'
+            'business_id', 'branch_id', 'paid_at', 'due_at'
         ]);
     }
 
