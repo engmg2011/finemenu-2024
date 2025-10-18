@@ -7,7 +7,6 @@ use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
-use App\Http\Middleware\CheckUserModel;
 use App\Http\Middleware\SetRequestModel;
 
 
@@ -33,7 +32,9 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-    'middleware' => ['auth:sanctum', 'throttle:300,1', SetRequestModel::class, CheckUserModel::class]], function () {
+    'middleware' => ['auth:sanctum', 'throttle:300,1', SetRequestModel::class
+        //, CheckUserModel::class
+    ]], function () {
     Route::get('/', [UsersController::class, 'index']);
     Route::post('/', [UsersController::class, 'update']);
     Route::get('/items', [UsersController::class, 'userItems']);
@@ -58,5 +59,12 @@ Route::group(['middleware' => [
     Route::group(['prefix' => 'users',], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::post('/', [UsersController::class, 'create']);
+    });
+});
+
+Route::group(['prefix' => 'business/{businessId}/'], function () {
+    Route::get('/', [UsersController::class, 'index']);
+    Route::group(['prefix' => 'branches/{branchId}'], function () {
+        Route::get('/', [UsersController::class, 'index']);
     });
 });

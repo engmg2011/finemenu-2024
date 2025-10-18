@@ -24,9 +24,9 @@ class UsersController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function index($businessId)
+    public function index()
     {
-        return DataResource::collection($this->userRepository->listModel($businessId));
+        return DataResource::collection($this->userRepository->listModel());
     }
 
     /**
@@ -112,9 +112,6 @@ class UsersController extends Controller
 
         if (isset($data['photo']))
             $user->updateProfilePhoto($data['photo']);
-
-        if (isset($data['is_employee']))
-            $user->update(['is_employee' => $data['is_employee']]);
 
         return \response()->json($this->userRepository->updateModel($id, $request->all()));
     }
