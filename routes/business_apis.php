@@ -82,7 +82,7 @@ Route::group(['middleware' => ['throttle:300,1',
                     Route::post('', [BranchesController::class, 'update']);
                     Route::post('/delete', [BranchesController::class, 'destroy']);
 
-                    Route::group(['prefix' => 'items', 'middleware' => [SetRequestModel::class]], function () {
+                    Route::group(['prefix' => 'items' ], function () {
                         Route::get('/', [ItemsController::class, 'index']);
                     });
 
@@ -175,12 +175,16 @@ Route::group(['middleware' => ['throttle:300,1',
                 Route::post('/', [ItemsController::class, 'create']);
                 Route::post('/sort', [ItemsController::class, 'sort']);
                 Route::post('/{id}', [ItemsController::class, 'update']);
-                Route::get('/{modelId}/settings', [SettingsController::class, 'listSettings']);
+
+                Route::group(['prefix' => '{modelId}/settings'], function () {
+                    Route::get('/', [SettingsController::class, 'listSettings']);
+                    Route::post('/set', [SettingsController::class, 'setSetting']);
+                    Route::post('/', [SettingsController::class, 'createSetting']);
+                    Route::post('/{settingId}', [SettingsController::class, 'updateSetting']);
+                    Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+                });
+
                 Route::group(['prefix' => '{id}'], function () {
-                    Route::post('settings/set', [SettingsController::class, 'setSetting']);
-                    Route::post('settings', [SettingsController::class, 'createSetting']);
-                    Route::post('settings/{settingId}', [SettingsController::class, 'updateSetting']);
-                    Route::get('settings/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
                     Route::get('holidays', [ItemsController::class, 'listHolidays']);
                     Route::post('holidays/sync', [ItemsController::class, 'syncHolidays']);
                     Route::post('delete', [ItemsController::class, 'destroy']);
