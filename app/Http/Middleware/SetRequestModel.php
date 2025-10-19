@@ -32,6 +32,10 @@ class SetRequestModel
             \request()->merge(['model' => Category::class]);
             return $next($request);
         }
+        if($request->segment(4) === 'items' && $request->segment(6) === 'settings' ){
+            \request()->merge(['model' => Item::class]);
+            return $next($request);
+        }
 
         switch ($request->segment(2)){
             case 'items':
@@ -47,7 +51,6 @@ class SetRequestModel
                 \request()->merge(['model' => User::class]);
                 break;
         }
-
         return $next($request);
     }
 }
