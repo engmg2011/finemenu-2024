@@ -46,7 +46,7 @@ if (!function_exists('checkUserPermission')) {
 if (!function_exists('businessToUtcConverter')) {
     function businessToUtcConverter(DateTime|string $dateTime,
                                     int|Business    $business = null,
-                                    string          $format = 'Y-m-d\TH:i')
+                                    string          $format = 'Y-m-d H:i:s')
     {
         if (is_int($business))
             $business = Business::find($business);

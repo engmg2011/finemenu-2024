@@ -4,7 +4,7 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
-use App\Events\UpdateReservation;
+use App\Models\Business;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Reservation;
@@ -13,6 +13,7 @@ use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -72,7 +73,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $data['data'] = [];
         $model = $this->model->create($this->process($data));
 
-        AuditService::log(AuditServices::Invoices, $model->id,"Created invoice " . $model->id,
+        AuditService::log(AuditServices::Invoices, $model->id, "Created invoice " . $model->id,
             $model->business_id, $model->branch_id);
         return $this->get($model->id);
     }
@@ -98,7 +99,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
 //        event(new UpdateReservation($invoice->reservation_id));
         $this->model->find($id)->update($this->process($data));
 
-        AuditService::log(AuditServices::Invoices, $id,"Updated invoice " . $invoice->id,
+        AuditService::log(AuditServices::Invoices, $id, "Updated invoice " . $invoice->id,
             $invoice->business_id, $invoice->branch_id);
         return Invoice::find($id);
     }
@@ -187,6 +188,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
+        $business = Business::find($businessId);
         $query = $this->model->query();
         if ($request->has('status'))
             $query->where('status', $request->status);
@@ -200,9 +202,20 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('by_user_id', $request->by_user_id);
         if ($request->has('for_user_id'))
             $query->where('for_user_id', $request->for_user_id);
-        if ($request->has('from') && $request->has('to'))
-            $query->whereBetween('created_at',  [$request->from , $request->to ]);
+        // carbon date end of day business to utc TZ
+        if ($request->has('from') && $request->has('to')) {
+            $from = businessToUtcConverter($request->from, $business);
+            $toEOD = Carbon::parse($request->to)->endOfDay();
+            $to = businessToUtcConverter($toEOD, $business);
+            $query->whereBetween('created_at', [$from, $to]);
+        }
 
+        if ($request->has('paid_from') && $request->has('paid_to')) {
+            $paidFrom = businessToUtcConverter($request->paid_from, $business);
+            $paidToEOD = Carbon::parse($request->paid_to)->endOfDay();
+            $paidTo = businessToUtcConverter($paidToEOD, $business);
+            $query->whereBetween('paid_at', [$paidFrom, $paidTo]);
+        }
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
         return $query->where(['branch_id' => $branchId, 'business_id' => $businessId])
