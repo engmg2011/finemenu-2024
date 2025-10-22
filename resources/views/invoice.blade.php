@@ -56,9 +56,14 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
             style="font-weight:bold;">Chalet {{  $reservable['locales'][0]['name'] ?? "" }}, {{ $nights }} nights</span>
     </p>
     <p style="margin: 8px 0px">
-        <span>Check-in / out at:</span>
+        <span>Check-in:</span>
         <span
-            style="font-weight:bold;">{{ Carbon::parse( $reservation['from'] )->format('g:i A') }}</span>
+            style="font-weight:bold;">{{ Carbon::parse( $reservation['from'] )->format('d-m-Y g:i A') }} </span>
+    </p>
+    <p style="margin: 8px 0px">
+        <span>Check-out:</span>
+        <span
+            style="font-weight:bold;"> {{ Carbon::parse( $reservation['to'] )->format('d-m-Y g:i A') }}</span>
     </p>
     <p style="margin: 8px 0px">
         <span>Booking Date:</span>
@@ -80,7 +85,7 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
             <span style="font-weight:bold;">{{$reservation['unit']}}</span>
         </p>
     @endif
-    @if($reservable['itemable']['address']['en'])
+    @if(isset($reservable['itemable']) && $reservable['itemable']['address']['en'])
         <p>
             <span>Address:</span>
             <span style="font-weight:bold;">
@@ -143,6 +148,14 @@ $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($i
             <span
                 style="font-weight:bold;"> {{ $inv['status'] === \App\Constants\PaymentConstants::INVOICE_PAID ? 'Paid' : 'Unpaid' }}</span>
         </p>
+
+        @if($invoice['paid_at'])
+            <p  >
+                <span>Paid AT:</span>
+                <span style="font-weight:bold;">{{ Carbon::parse( $invoice['paid_at'] )->format('d-m-Y g:i A') }}</span>
+            </p>
+        @endif
+
         <p>
             @if($inv['type'] == 'debit')
                 <span>Note:</span>

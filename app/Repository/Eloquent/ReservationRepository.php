@@ -329,7 +329,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         // Reservation Margin Before and after any reservation
         $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
 
-        // Change to UTC
+        // UTC dates as it's inner function
         $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
         $endDate = (clone $data['to'])->addSeconds($reservationMargin);
 

@@ -68,8 +68,9 @@ class ReservationsController extends Controller
         return DataResource::collection($this->repository->listModel($businessId, $branchId, $conditions));
     }
 
-    public function show($id)
+    public function show()
     {
+        $id = \request()->route('id');
         return \response()->json($this->repository->get($id));
     }
 
