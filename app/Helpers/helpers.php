@@ -64,6 +64,27 @@ if (!function_exists('businessToUtcConverter')) {
     }
 }
 
+if (!function_exists('utcToBusinessConverter')) {
+    function utcToBusinessConverter(DateTime|string $dateTime,
+                                    int|Business    $business = null,
+                                    string          $format = 'Y-m-d H:i:s')
+    {
+        if (is_int($business))
+            $business = Business::find($business);
+        $businessTimezone = $business->getConfig(ConfigurationConstants::TIMEZONE, config('app.timezone'));
+        if (is_string($dateTime)) {
+            try {
+                $dateTime = Carbon::createFromFormat($format, $dateTime, 'utc');
+            } catch (\Exception $e) {
+                \Log::debug("error in parsing ". $dateTime );
+                $dateTime = Carbon::parse($dateTime, $businessTimezone);
+                \Log::debug($e);
+            }
+        }
+        return $dateTime->setTimezone($businessTimezone);
+    }
+}
+
 
 
 

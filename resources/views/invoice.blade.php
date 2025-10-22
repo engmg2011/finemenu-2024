@@ -34,9 +34,10 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
         {{ $invoice->reservation->branch->locales[0]->name }}
         INVOICE
     </h2>
-{{--    <img
-        src="https://barcode.tec-it.com/barcode.ashx?data={{ $invoice['reference_id'] }}&code=Code128&translate-esc=false"
-        alt="" style="width:100%;max-height:80px;">--}}
+    @php
+        $logoSetting = collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo');
+    @endphp
+    <img src="{{  $logoSetting['data'][0]['src'] ?? null }}" alt="" style="width:100px; float: right; margin: 10px">
     <h3 style="margin: 8px 0 10px">Booking details</h3>
     <p style="margin: 8px 0px">
         <span>Booking :</span>
@@ -58,16 +59,16 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
     <p style="margin: 8px 0px">
         <span>Check-in:</span>
         <span
-            style="font-weight:bold;">{{ Carbon::parse( $reservation['from'] )->format('d-m-Y g:i A') }} </span>
+            style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['from'] ) , $reservation->business_id)->format('d-m-Y g:i A') }} </span>
     </p>
     <p style="margin: 8px 0px">
         <span>Check-out:</span>
         <span
-            style="font-weight:bold;"> {{ Carbon::parse( $reservation['to'] )->format('d-m-Y g:i A') }}</span>
+            style="font-weight:bold;"> {{ utcToBusinessConverter(Carbon::parse( $reservation['to'] ) , $reservation->business_id)->format('d-m-Y g:i A') }}</span>
     </p>
     <p style="margin: 8px 0px">
         <span>Booking Date:</span>
-        <span style="font-weight:bold;">{{  $reservation['created_at'] }}</span>
+        <span style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
     </p>
 </div>
 
@@ -140,7 +141,7 @@ $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($i
         </p>
         <p>
             <span>Amount:</span>
-            <span style="font-weight:bold;"> {{ $inv['amount'] }} KD</span>
+            <span style="font-weight:bold;"> {{ $inv['amount'] }} KWD</span>
 
         </p>
         <p>
@@ -152,17 +153,14 @@ $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($i
         @if($invoice['paid_at'])
             <p  >
                 <span>Paid AT:</span>
-                <span style="font-weight:bold;">{{ Carbon::parse( $invoice['paid_at'] )->format('d-m-Y g:i A') }}</span>
+                <span style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $invoice['paid_at'] ) , $reservation->business_id)   }}</span>
             </p>
         @endif
 
         <p>
             @if($inv['type'] == 'debit')
-                <span>Note:</span>
-                <span style="font-weight:bold;"> Refundable after checkout.
-                @else
-                        <span>Note:</span>
-                        <span style="font-weight:bold;"> Non-refundable confirmation.
+                    <span>Note:</span>
+                    <span style="font-weight:bold;"> Refundable after checkout.
             @endif
         </p>
     @endforeach
