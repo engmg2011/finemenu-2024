@@ -1,5 +1,6 @@
 <?php
 
+use App\Constants\PaymentConstants;
 use Carbon\Carbon;
 
 ?><!DOCTYPE html>
@@ -11,6 +12,7 @@ use Carbon\Carbon;
         font-size: 8px;
         text-transform: uppercase;
     }
+
     body {
         font-family: DejaVu Sans, sans-serif;
         padding: 0;
@@ -18,16 +20,33 @@ use Carbon\Carbon;
         max-width: 500px;
         margin: 0 auto;
     }
-    @media (min-width: 1024px){
-        html { font-size: 12px;}
+
+    @media (min-width: 1024px) {
+        html {
+            font-size: 12px;
+        }
     }
 </style>
 <body style="background-color:#fff;color:#000;text-align:left;">
 <?php
 $reservation = $invoice['reservation'];
 $reservable = $invoice['reservation']['data']['reservable'];
-$divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem"
+$divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
+
+
+$invoicesList = $invoice->reservation->invoices;
+$invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($invoice);
+
+
+$creditInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT);
+$totalCredit = $creditInvoices->sum('amount');
+
+$debitInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_DEBIT);
+$totalDebit = $debitInvoices->sum('amount');
+
+$rentAmount = $totalCredit - $totalDebit;
 ?>
+
     <!-- Booking details -->
 <div style="{{ $divStyle }}">
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
@@ -68,7 +87,8 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
     </p>
     <p style="margin: 8px 0px">
         <span>Booking Date:</span>
-        <span style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
+        <span
+            style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
     </p>
 </div>
 
@@ -119,11 +139,18 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
         <span style="font-weight:bold;">{{ $reservation['unit'] ?? "" }}</span>
     </p>
 </div>
-<?php
-$invoicesList = $invoice->reservation->invoices;
-$invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($invoice);
-?>
 <div style="{{ $divStyle }}">
+
+    <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
+        INVOICES LIST
+    </h2>
+    <p>
+        <b> Rent </b>: {{ $rentAmount }} KWD<br>
+    </p>
+    <p>
+        <b> Insurance </b>: {{ $totalDebit }} KWD
+    </p>
+
     @foreach ($invoices as $index => $inv)
         @if($index !== 0)
             <hr/>
@@ -147,20 +174,21 @@ $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($i
         <p>
             <span>Status:</span>
             <span
-                style="font-weight:bold;"> {{ $inv['status'] === \App\Constants\PaymentConstants::INVOICE_PAID ? 'Paid' : 'Unpaid' }}</span>
+                style="font-weight:bold;"> {{ $inv['status'] === PaymentConstants::INVOICE_PAID ? 'Paid' : 'Unpaid' }}</span>
         </p>
 
         @if($invoice['paid_at'])
-            <p  >
+            <p>
                 <span>Paid AT:</span>
-                <span style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $invoice['paid_at'] ) , $reservation->business_id)   }}</span>
+                <span
+                    style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $invoice['paid_at'] ) , $reservation->business_id)   }}</span>
             </p>
         @endif
 
         <p>
             @if($inv['type'] == 'debit')
-                    <span>Note:</span>
-                    <span style="font-weight:bold;"> Refundable after checkout.
+                <span>Note:</span>
+                <span style="font-weight:bold;"> Refundable after checkout.
             @endif
         </p>
     @endforeach
