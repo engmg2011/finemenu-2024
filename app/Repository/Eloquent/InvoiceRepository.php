@@ -34,12 +34,6 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         if (isset($data['payment_type']) && $data['payment_type'] === PaymentConstants::TYPE_ONLINE)
             $data['external_link'] = route('payment.hesabe-checkout', ['referenceId' => $data['reference_id']]);
 
-        if (isset($data['status']) && $data['status'] === PaymentConstants::INVOICE_PAID)
-            $data['paid_at'] = now();
-
-        if (isset($data['status']) && $data['status'] !== PaymentConstants::INVOICE_PAID)
-            $data['paid_at'] = null;
-
         return array_only($data, [
             'amount', 'data', 'external_link', 'reference_id',
             'note', 'type', 'status', 'status_changed_at', 'payment_type',
@@ -71,6 +65,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $data['invoice_by_id'] = auth('sanctum')->user()->id;
         $data['invoice_for_id'] = $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id;
         $data['data'] = [];
+
+        if (isset($data['status']) && $data['status'] === PaymentConstants::INVOICE_PAID)
+            $data['paid_at'] = now();
+
         $model = $this->model->create($this->process($data));
 
         AuditService::log(AuditServices::Invoices, $model->id, "Created invoice " . $model->id,
@@ -86,6 +84,14 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $userId = auth('sanctum')->user()->id;
         $user = User::find($userId);
         $invoice = $this->model->findOrFail($id);
+
+
+        if (isset($data['status']) && $data['status'] === PaymentConstants::INVOICE_PAID && $invoice->status !== PaymentConstants::INVOICE_PAID)
+            $data['paid_at'] = now();
+
+        if (isset($data['status']) && $data['status'] !== PaymentConstants::INVOICE_PAID)
+            $data['paid_at'] = null;
+
 //        if (!$user->hasAnyPermission([PermissionsConstants::Branch . '.' . $invoice->branch_id,
 //            PermissionsConstants::Business . '.' . $invoice->business_id]))
 //            return abort(403,'You Don\'t have permission');
