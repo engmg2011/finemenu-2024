@@ -73,13 +73,13 @@ Route::get('event', function (){
 Route::get('cancel-pending-reservations', function (){
     Artisan::call('app:cancel-pending-reservations');
     die(); // to not log
-})->middleware(['throttle:10,5']);
+})->middleware(['throttle:30,1']);
 
 Route::get('queue-work', function (){
     Artisan::call('queue:work');
     sleep(25);
     die();// to not log
-})->middleware(['throttle:10,5']);
+})->middleware(['throttle:30,1']);
 
 Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
