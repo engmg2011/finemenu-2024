@@ -83,15 +83,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function listModel()
     {
         // TODO :: assign employees to some branches
-        $businessId = \request()->route('businessId');
-        $userId = \request('id', null);
+        $businessId = request()->route('businessId');
+        $isEmployee = filter_var(request('isEmployee', false), FILTER_VALIDATE_BOOLEAN);
+
+        return $this->buildUserListQuery($businessId, $isEmployee);
+    }
+
+    public function listEmployees()
+    {
+        // TODO :: assign employees to some branches
+        $businessId = request()->route('businessId');
+        $isEmployee = true;
+
+        return $this->buildUserListQuery($businessId, $isEmployee);
+    }
+
+    private function buildUserListQuery(string $businessId, bool $isEmployee)
+    {
+        $userId = request('id', null);
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
         $name = request('name', null);
         $email = request('email', null);
         $phone = request('phone', null);
-
-        $isEmployee = filter_var(request('isEmployee', false), FILTER_VALIDATE_BOOLEAN);
         $withSettings = filter_var(request('settings', false), FILTER_VALIDATE_BOOLEAN);
 
         $query = $this->model->query();
@@ -107,12 +121,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if($withSettings)
             $query->with('settings');
 
-            return $query->where('business_id', $businessId)
-            ->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q)
-            ->orderBy($sortBy, $sortType)
+        $query->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q);
+
+        return $query->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
-
     public function get(int $id)
     {
         return $this->model->find($id);
