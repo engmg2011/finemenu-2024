@@ -29,6 +29,11 @@ class UsersController extends Controller
         return DataResource::collection($this->userRepository->listModel());
     }
 
+    public function employees()
+    {
+        return DataResource::collection($this->userRepository->listEmployees());
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -253,5 +253,6 @@ Route::group(['middleware' => 'throttle:60,1', 'prefix' => 'business/{businessId
     Route::group(['prefix' => 'branches/{branchId}'], function () {
         Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
     });
+    Route::get('/employees', [UsersController::class, 'employees']);
 });
 
