@@ -95,10 +95,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $businessId = request()->route('businessId');
         $isEmployee = true;
 
-        return $this->buildUserListQuery($businessId, $isEmployee);
+        return $this->buildUserListQuery($businessId, $isEmployee, true);;
     }
 
-    private function buildUserListQuery(string $businessId, bool $isEmployee)
+    private function buildUserListQuery(string $businessId, bool $isEmployee, $formatData = false)
     {
         $userId = request('id', null);
         $sortBy = request('sortBy', 'id');
@@ -123,7 +123,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         $query->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q);
 
-        return $query->orderBy($sortBy, $sortType)
+        if($formatData)
+            $query->select('id', 'name')
+                ->with('settings', function ($query) {
+                    $query->where('key', 'shifts');
+                });
+        else if($withSettings)
+            $query->with('settings');
+        return $query->where('business_id', $businessId)->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
     public function get(int $id)
