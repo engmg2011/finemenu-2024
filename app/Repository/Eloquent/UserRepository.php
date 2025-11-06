@@ -32,7 +32,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function processUser(array $data)
     {
-        $data['is_employee'] = filter_var($data['is_employee'], FILTER_VALIDATE_BOOLEAN);
+        if(isset($data['is_employee']))
+            $data['is_employee'] = filter_var($data['is_employee'], FILTER_VALIDATE_BOOLEAN);
+
         return array_only($data, ['name', 'email', 'phone', 'currency',
             'password', 'email_verified_at', 'business_id', 'dashboard_access', 'is_employee']);
     }
