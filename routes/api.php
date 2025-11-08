@@ -58,14 +58,6 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1',
         Route::get("/{id}", [MenusController::class, 'menu']);
     });
 
-    Route::group(['prefix' => 'contacts'], function () {
-        Route::get('/', [ContactController::class, 'index']);
-        Route::get('/{id}', [ContactController::class, 'show']);
-        Route::post('/', [ContactController::class, 'create']);
-        Route::post('/{id}', [ContactController::class, 'update']);
-        Route::post('/{id}/delete', [ContactController::class, 'destroy']);
-    });
-
     Route::group(['prefix' => 'prices'], function () {
         Route::post('/{id}/delete', [PricesController::class, 'destroy']);
     });

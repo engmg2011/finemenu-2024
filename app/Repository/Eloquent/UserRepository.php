@@ -22,7 +22,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         'business.media',
         'business.branches.locales',
         'business.branches.media',
-        'settings'];
+        'settings', 'contacts'];
 
     public function __construct(User                                  $model,
                                 private readonly PermissionRepository $permissionRepository)
@@ -126,7 +126,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $query->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q);
 
         if($formatData)
-            $query->select('id', 'name')
+            $query->select('id', 'name','profile_photo_path')
                 ->with('settings', function ($query) {
                     $query->where('key', 'shifts');
                 });
