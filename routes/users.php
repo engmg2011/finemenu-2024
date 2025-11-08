@@ -3,6 +3,7 @@
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SettingsController;
@@ -50,6 +51,14 @@ Route::group(['prefix' => 'users/{modelId}',
     Route::group(['prefix' => 'orders'], function () {
         Route::get('/', [OrdersController::class, 'userOrders']);
     });
+
+    Route::group(['prefix' => 'contacts'], function () {
+        Route::get('/', [ContactController::class, 'index']);
+        Route::get('/{id}', [ContactController::class, 'show']);
+        Route::post('/set', [ContactController::class, 'setUserContact']);;
+        Route::post('/{id}/delete', [ContactController::class, 'destroy']);
+    });
+
 });
 
 Route::group(['middleware' => [
@@ -59,12 +68,5 @@ Route::group(['middleware' => [
     Route::group(['prefix' => 'users',], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::post('/', [UsersController::class, 'create']);
-    });
-});
-
-Route::group(['prefix' => 'business/{businessId}/'], function () {
-    Route::get('/', [UsersController::class, 'index']);
-    Route::group(['prefix' => 'branches/{branchId}'], function () {
-        Route::get('/', [UsersController::class, 'index']);
     });
 });

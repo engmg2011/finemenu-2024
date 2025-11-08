@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\ContactAction ;
 use App\Http\Resources\DataResource;
+use App\Models\Contact;
+use App\Models\User;
+use App\Repository\ContactRepositoryInterface;
+use App\Repository\Eloquent\ContactRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -11,11 +14,11 @@ use Illuminate\Http\Response;
 
 class ContactController extends Controller
 {
-    private $action;
+    private $repository;
 
-    public function __construct(ContactAction $action)
+    public function __construct(ContactRepositoryInterface $repository)
     {
-        $this->action = $action;
+        $this->repository = $repository;
     }
     /**
      * Display a listing of the resource.
@@ -24,7 +27,7 @@ class ContactController extends Controller
      */
     public function index()
     {
-        return DataResource::collection($this->action->list());
+        return DataResource::collection($this->repository->list());
     }
 
     /**
@@ -35,7 +38,7 @@ class ContactController extends Controller
      */
     public function create(Request $request)
     {
-        return \response()->json($this->action->create($request->all()));
+        return \response()->json($this->repository->createModel($request->all()));
     }
 
     /**
@@ -46,7 +49,7 @@ class ContactController extends Controller
      */
     public function show($id)
     {
-        return \response()->json($this->action->get($id));
+        return \response()->json($this->repository->get($id));
     }
 
     /**
@@ -58,7 +61,7 @@ class ContactController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return \response()->json($this->action->update($id, $request->all()));
+        return \response()->json($this->repository->updateModel($id, $request->all()));
     }
 
     /**
@@ -69,6 +72,33 @@ class ContactController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return $this->repository->delete($id);
+    }
+
+
+    public function setUserContact(Request $request, $userId)
+    {
+        $request->validate([
+            'media' => 'required',
+            'value' => 'required',
+        ]);
+
+        $this->repository = app(ContactRepository::class);
+        $data = $request->all();
+        $data['contactable_id'] = $userId;
+        $data['contactable_type'] = User::class;
+
+        if(isset($data['id']))
+            return $this->repository->updateModel($data['id'], $data);
+        else{
+            $id = Contact::where('contactable_id', $userId)
+                ->where('contactable_type', User::class)
+                ->where('media', $data['media'])
+                ->first()?->id;
+            if($id)
+                return $this->repository->updateModel($id, $data);
+            return $this->repository->createModel($data);
+        }
+
     }
 }

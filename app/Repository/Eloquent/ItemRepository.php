@@ -92,7 +92,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function getBusinessType($categoryId)
     {
         $category = Category::with('menu.business')->find($categoryId);
-        return $category->menu->business->type;
+        return $category?->menu->business->type ?? null;
     }
 
     public function create(array $data): Model
@@ -111,12 +111,14 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->createModel($itemableData);
                     break;
-                default:
+                case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
                     if ($category->type === CategoryTypes::SERVICE)
                         $itemable = $this->salonServiceRepository->createModel($itemableData);
                     else
                         $itemable = $this->salonProductRepository->createModel($itemableData);
+                    break;
+                default:
                     break;
             }
             $item->itemable()->associate($itemable);
@@ -131,7 +133,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $businessType = '';
         // TODO:: need better solution not depends on categoryId
         if (isset($data['category_id']))
-            $businessType = $this->getBusinessType($data['category_id'], $data);
+            $businessType = $this->getBusinessType($data['category_id']);
         $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->relations($model, $data);
@@ -144,12 +146,14 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->set($itemableData);
                     break;
-                default:
+                case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
                     if ($category->type === CategoryTypes::SERVICE)
                         $itemable = $this->salonServiceRepository->set($itemableData);
                     else
                         $itemable = $this->salonProductRepository->set($itemableData);
+                    break;
+                default:
                     break;
             }
             $model->itemable()->associate($itemable);

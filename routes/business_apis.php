@@ -7,6 +7,7 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\AreasController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
@@ -249,10 +250,11 @@ Route::group(['prefix' => 'business', 'middleware' =>
 
 // no auth
 Route::group(['middleware' => 'throttle:60,1', 'prefix' => 'business/{businessId}/'], function () {
+    Route::get('/', [UsersController::class, 'index']);
     Route::get('config', [ConfigurationsController::class, 'getBusinessConfig']);
+    Route::get('/employees', [UsersController::class, 'employees']);
     Route::group(['prefix' => 'branches/{branchId}'], function () {
+        Route::get('/', [UsersController::class, 'index']);
         Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
     });
-    Route::get('/employees', [UsersController::class, 'employees']);
 });
-
