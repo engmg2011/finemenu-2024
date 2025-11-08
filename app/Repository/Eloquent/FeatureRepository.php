@@ -23,7 +23,7 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
 
     public function process(array $data)
     {
-        return array_only($data, ['key', 'type']);
+        return array_only($data, ['key', 'type','itemable_type','sort']);
     }
 
     public function relations($model, $data)
