@@ -24,6 +24,7 @@ use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\DiscountRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\AreaRepository;
+use App\Repository\Eloquent\FeatureOptionsRepository;
 use App\Repository\Eloquent\FeatureRepository;
 use App\Repository\Eloquent\HolidayRepository;
 use App\Repository\Eloquent\InvoiceRepository;
@@ -44,6 +45,7 @@ use App\Repository\Eloquent\SeatRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\EloquentRepositoryInterface;
 use App\Repository\AreaRepositoryInterface;
+use App\Repository\FeatureOptionsRepositoryInterface;
 use App\Repository\FeatureRepositoryInterface;
 use App\Repository\HolidayRepositoryInterface;
 use App\Repository\InvoiceRepositoryInterface;
@@ -104,6 +106,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SalonServiceRepositoryInterface::class, SalonServiceRepository::class);
         $this->app->bind(SalonProductRepositoryInterface::class, SalonProductRepository::class);
         $this->app->bind(FeatureRepositoryInterface::class, FeatureRepository::class);
+        $this->app->bind(FeatureOptionsRepositoryInterface::class, FeatureOptionsRepository::class);
 
     }
 

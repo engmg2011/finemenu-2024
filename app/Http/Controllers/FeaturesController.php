@@ -21,6 +21,10 @@ class FeaturesController extends Controller
 
     public function create(Request $request): JsonResponse
     {
+        $request->validate([
+            'key' => 'required|string|unique:features,key',
+            'type' => 'required|string',
+        ]);
         return response()->json($this->repository->createModel($request->all()));
     }
 
@@ -44,6 +48,10 @@ class FeaturesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'key' => 'required|string|unique:features,key,' . $id,
+            'type' => 'required|string',
+        ]);
         return response()->json($this->repository->updateModel($id, $request->all()));
     }
 

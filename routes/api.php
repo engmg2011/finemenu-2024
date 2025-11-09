@@ -179,6 +179,7 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
         Route::post('/', [FeaturesController::class, 'create']);
         Route::post('/{id}', [FeaturesController::class, 'update']);
         Route::get('/{id}/delete', [FeaturesController::class, 'destroy']);
+        Route::post('/sort', [FeaturesController::class, 'sort']);
     });
 
 });
