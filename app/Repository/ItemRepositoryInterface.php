@@ -21,7 +21,7 @@ interface ItemRepositoryInterface
 
     public function create(array $data): Model;
 
-    public function update($id, array $data): Model;
+    public function updateModel($id, array $data): Model;
 
     public function sort($data);
 

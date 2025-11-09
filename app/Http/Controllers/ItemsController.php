@@ -74,7 +74,7 @@ class ItemsController extends Controller
     {
         $data = $request->all();
         $this->setUtcDates($data, $businessId);
-        return response()->json($this->repository->update($id, $request->all()));
+        return response()->json($this->repository->updateModel($id, $request->all()));
     }
 
     /**

@@ -128,12 +128,12 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         return Item::with(self::$modelRelations)->find($item->id);
     }
 
-    public function update($id, array $data): Model
+    public function updateModel($id, array $data): Model
     {
-        $businessType = '';
-        // TODO:: need better solution not depends on categoryId
-        if (isset($data['category_id']))
-            $businessType = $this->getBusinessType($data['category_id']);
+        if (!isset($data['category_id']))
+            $data['category_id'] = Item::find($id)->category_id;
+
+        $businessType = $this->getBusinessType($data['category_id']);
         $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->relations($model, $data);
