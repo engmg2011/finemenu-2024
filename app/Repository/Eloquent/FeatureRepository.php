@@ -41,6 +41,8 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
 
     public function createModel(array $data): Model
     {
+        $maxSort = $this->model->max('sort') ?? 0;
+        $data['sort'] = $maxSort + 1;
         $entity = $this->model->create($this->process($data));
         $this->relations($entity, $data);
         return $this->model->with(self::$modelRelations)->find($entity->id);
