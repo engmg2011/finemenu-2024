@@ -13,7 +13,7 @@ class Feature extends Model
     use HasFactory, Localizable;
 
     protected $guarded = ['id'];
-    protected $casts = ['sort' => 'integer', 'value' => 'json'];
+    protected $casts = ['sort' => 'integer', 'value' => 'json' , 'options' => 'array'];
     public $timestamps = false;
 
     public function salonServices()
@@ -24,6 +24,11 @@ class Feature extends Model
     public function salonProducts()
     {
         return $this->morphedByMany(SalonProduct::class, 'featureable');
+    }
+
+    public function feature_options()
+    {
+        return $this->hasMany(FeatureOptions::class, 'feature_id');
     }
 
 }

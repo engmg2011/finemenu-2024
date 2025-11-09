@@ -5,26 +5,27 @@ namespace App\Repository\Eloquent;
 
 
 use App\Models\Feature;
+use App\Models\FeatureOptions;
+use App\Repository\FeatureOptionsRepositoryInterface;
 use App\Repository\FeatureRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class FeatureRepository extends BaseRepository implements FeatureRepositoryInterface
+class FeatureOptionsRepository extends BaseRepository implements FeatureOptionsRepositoryInterface
 {
     /**
      * UserRepository constructor.
-     * @param Feature $model
+     * @param FeatureOptions $model
      * @param LocaleRepository $localeRepository
      */
-    public function __construct(Feature $model, private LocaleRepository $localeRepository,
-    private FeatureOptionsRepository $featureOptionsRepository) {
+    public function __construct(FeatureOptions $model, private LocaleRepository $localeRepository) {
         parent::__construct($model);
     }
 
-    public static array $modelRelations = ['locales', 'feature_options.locales'];
+    public static array $modelRelations = ['locales'];
 
     public function process(array $data)
     {
-        return array_only($data, ['key', 'type','itemable_type','sort', "icon", "icon-font-type","color"]);
+        return array_only($data, ['feature_id','sort']);
     }
 
     public function relations($model, $data)
@@ -33,9 +34,6 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
             if (!$this->validateLocalesRelated($model, $data))
                 abort(400,'Invalid Locales Data');
             $this->localeRepository->setLocales($model, $data['locales']);
-        }
-        if (isset($data['feature_options'])) {
-            $this->featureOptionsRepository->setOptions($model, $data['feature_options']);
         }
     }
 
@@ -56,11 +54,9 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
         return $this->model->with(self::$modelRelations)->find($model->id);
     }
 
-    public function listModel($itemable_type)
+    public function listModel()
     {
         $query = $this->model->query();
-        if($itemable_type)
-            $query->where('itemable_type','like', '%'.$itemable_type.'%');
         return $query->with(self::$modelRelations)->get();
     }
 
@@ -87,20 +83,19 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
         return $this->find($id)?->delete();
     }
 
-
-    public function processFeaturable(array $data)
+    public function setOptions($model, $options)
     {
-        return array_only($data, ['value', 'value_unit','sort']);
-    }
+        foreach ($options as &$option) {
+            if(isset($option['id'])){
+                $this->updateModel($option['id'], $option);
+            }
+            else{
+                $option['feature_id'] = $model['id'];
+                $option['feature_type'] = get_class($model);
+                $this->createModel($option);
+            }
 
-
-    public function setFeatures($model, $features)
-    {
-        $syncData = [];
-        foreach ($features as $feature) {
-            $syncData[$feature['id']] = $this->processFeaturable($feature);
         }
-        $model->features()->sync($syncData);
     }
 
 }
