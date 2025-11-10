@@ -20,7 +20,7 @@ class ContactRepository extends BaseRepository implements ContactRepositoryInter
 
     public function process(array $data): array
     {
-        return array_only($data, ["media", "value", "contactable_type", "contactable_id"]);
+        return array_only($data, ["key", "media", "value", "contactable_type", "contactable_id"]);
     }
 
     public function createModel(array $data)

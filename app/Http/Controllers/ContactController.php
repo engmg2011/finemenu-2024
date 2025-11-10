@@ -78,27 +78,36 @@ class ContactController extends Controller
 
     public function setUserContact(Request $request, $userId)
     {
-        $request->validate([
-            'media' => 'required',
-            'value' => 'required',
-        ]);
-
         $this->repository = app(ContactRepository::class);
-        $data = $request->all();
-        $data['contactable_id'] = $userId;
-        $data['contactable_type'] = User::class;
+        $contacts = $request->get('contacts', []);
 
-        if(isset($data['id']))
-            return $this->repository->updateModel($data['id'], $data);
-        else{
-            $id = Contact::where('contactable_id', $userId)
-                ->where('contactable_type', User::class)
-                ->where('media', $data['media'])
-                ->first()?->id;
-            if($id)
-                return $this->repository->updateModel($id, $data);
-            return $this->repository->createModel($data);
+        foreach ($contacts as &$contact) {
+            if (!isset($contact['value']) || empty($contact['value']) ||
+                !isset($contact['media']) || empty($contact['media'])) {
+                abort('400', 'invalid data');
+            }
         }
+
+        foreach ($contacts as &$data) {
+            $data['contactable_id'] = $userId;
+            $data['contactable_type'] = User::class;
+
+            if(isset($data['id'])) {
+                $this->repository->updateModel($data['id'], $data);
+            }
+            else{
+                $id = Contact::where('contactable_id', $userId)
+                    ->where('contactable_type', User::class)
+                    ->where('key', $data['key'])
+                    ->first()?->id;
+                if($id)
+                    $this->repository->updateModel($id, $data);
+                else
+                    $this->repository->createModel($data);
+            }
+        }
+
+        return \response()->json(User::find($userId)->contacts);
 
     }
 }
