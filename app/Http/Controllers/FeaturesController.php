@@ -48,10 +48,9 @@ class FeaturesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'key' => 'required|string|unique:features,key,' . $id,
-            'type' => 'required|string',
-        ]);
+        $feature = Feature::findOrFail($id);
+        if ($request->key !== $feature->key)
+            $request->validate(['key' => 'required|string|unique:features,key']);
         return response()->json($this->repository->updateModel($id, $request->all()));
     }
 

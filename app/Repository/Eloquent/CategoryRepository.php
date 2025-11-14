@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent;
 
 
 use App\Actions\MediaAction;
+use App\Constants\CategoryTypes;
 use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\CategoryRepositoryInterface;
@@ -12,15 +13,20 @@ use Illuminate\Support\Collection;
 
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
-    /**
-     * UserRepository constructor.
-     * @param Category $model
-     */
+
     public function __construct(Category $model,
                                 protected LocaleRepository $localeRepository,
                                 private MediaAction        $mediaAction
     ) {
         parent::__construct($model);
+    }
+
+    public function process(array $data)
+    {
+        if(!isset($data['business_id']))
+            $data['business_id'] = request()->route('businessId');
+        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort',
+            'type', 'business_id','itemable_type','icon']);
     }
 
     public function list()
@@ -30,10 +36,18 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         return $this->model::whereIn('menu_id',$menuIds)->with(['locales','media'])->orderBy('sort', 'asc')->paginate(request('per-page', 15));
     }
 
-
-    public function process(array $data)
+    public function featuresCategories()
     {
-        return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort', 'type']);
+        $itemable_type = request()->get('itemable_type');
+        $query = $this->model->query();
+
+        if($itemable_type)
+            $query->where('itemable_type', 'like', "%$itemable_type%");
+
+        return $query->where('type', CategoryTypes::FEATURES)
+            ->with(['locales','media','features.locales','features.feature_options.locales'])
+            ->orderBy('sort', 'asc')
+            ->paginate(request('per-page', 15));
     }
 
     public function createModel(array $data)
@@ -43,7 +57,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $this->localeRepository->createLocale($category, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($category, $data['media']);
-        return $category;
+        return $this->get($category->id);
     }
 
 
