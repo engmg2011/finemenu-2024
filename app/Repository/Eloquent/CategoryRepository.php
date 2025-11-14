@@ -18,8 +18,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
      */
     public function __construct(Category $model,
                                 protected LocaleRepository $localeRepository,
-                                private CategoryRepository $repository,
-                                private MediaAction        $mediaAction) {
+                                private MediaAction        $mediaAction
+    ) {
         parent::__construct($model);
     }
 
@@ -39,7 +39,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     public function createModel(array $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
-        $category = $this->repository->create($this->process($data));
+        $category = $this->model->create($this->process($data));
         $this->localeRepository->createLocale($category, $data['locales']);
         if (isset($data['media']))
             $this->mediaAction->setMedia($category, $data['media']);
@@ -50,7 +50,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     public function updateModel($id, array $data): Model
     {
         unset($data['type']);
-        $model = tap($this->repository->find($id))
+        $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->localeRepository->setLocales($model, $data['locales']);
         if (isset($data['media']))
@@ -62,7 +62,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     {
         $sort = 1;
         foreach ($data['sortedIds'] as $id) {
-            $this->repository->find($id)->update(['sort' => $sort]);
+            $this->model->find($id)->update(['sort' => $sort]);
             $sort++;
         }
         return true;
@@ -73,23 +73,23 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
      */
     public function listModel()
     {
-        return $this->repository->list();
+        return $this->model->list();
     }
 
     public function mainCategories()
     {
-        return $this->repository->where(['parent_id' => null])->get();
+        return $this->model->where(['parent_id' => null])->get();
     }
 
     public function get(int $id)
     {
-        return Category::with(['locales', 'media'])->find($id);
+        return $this->model->with(['locales', 'media'])->find($id);
     }
 
     public function destroy($id): ?bool
     {
-        $this->localeRepository->deleteEntityLocales(Category::find($id));
-        return $this->repository->delete($id);
+        $this->localeRepository->deleteEntityLocales($this->model->find($id));
+        return $this->model->delete($id);
     }
 
 
@@ -108,7 +108,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $categories = new Collection();
         foreach ($categories_names as $category_name) {
             $lastCatId = $categories->count() ? $categories->last()->id : null;
-            $same_category = Category::where('parent_id', $lastCatId)
+            $same_category = $this->model->where('parent_id', $lastCatId)
                 ->where('menu_id', $menuId)
                 ->whereHas('locales', function ($q) use ($category_name) {
                     $q->where('name', $category_name);

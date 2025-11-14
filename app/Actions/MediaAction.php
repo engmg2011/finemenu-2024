@@ -20,8 +20,7 @@ class MediaAction
 {
 
     public function __construct(private MediaRepository $repository,
-                                private LocaleRepository $localeRepository,
-                                private readonly CategoryRepository $categoryRepository)
+                                private LocaleRepository $localeRepository)
     {
     }
 
@@ -176,7 +175,7 @@ class MediaAction
         $item_name = $this->fineName(explode('.', $item_name)[0]);
         $menu = Menu::find($user['menuId']);
         if (count($splitNames)) {
-            $categories = $this->categoryRepository
+            $categories = app(CategoryRepository::class)
                 ->createCategoriesFromPath(
                     $splitNames,
                     $myFile['uploadedFilePath'],
@@ -195,7 +194,7 @@ class MediaAction
             })->first();
             if(!$savingCategory){
                 // TODO :: Pass first user locale , from user locales setting
-                $savingCategory = $this->categoryRepository->createModel([
+                $savingCategory = app(CategoryRepository::class)->createModel([
                     "locales" => [
                         ["name" => $othersName, 'locale' => 'ar'],
                         ["name" => $othersName, 'locale' => 'en']
