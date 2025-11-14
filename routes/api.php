@@ -3,7 +3,7 @@
 use App\Constants\ConfigurationConstants;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
-use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContentsController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\DietPlansController;
@@ -175,6 +175,10 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
 
     Route::group(['prefix' => 'features'], function () {
         Route::get('/', [FeaturesController::class, 'index']);
+        Route::group(['prefix' => '/categories'], function () {
+            Route::get('/', [CategoriesController::class, 'featuresCategories']);
+            Route::post('/', [CategoriesController::class, 'create']);
+        });
         Route::get('/{id}', [FeaturesController::class, 'show']);
         Route::post('/', [FeaturesController::class, 'create']);
         Route::post('/sort', [FeaturesController::class, 'sort']);

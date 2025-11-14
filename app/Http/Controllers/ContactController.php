@@ -83,7 +83,8 @@ class ContactController extends Controller
 
         foreach ($contacts as &$contact) {
             if (!isset($contact['value']) || empty($contact['value']) ||
-                !isset($contact['media']) || empty($contact['media'])) {
+                !isset($contact['media']) || empty($contact['media']) ||
+                !isset($contact['key']) || empty($contact['key']) ) {
                 abort('400', 'invalid data');
             }
         }

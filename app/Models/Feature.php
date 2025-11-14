@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Models\Items\SalonProduct;
 use App\Models\Items\SalonService;
+use App\Traits\Categorizable;
 use App\Traits\Localizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Feature extends Model
 {
-    use HasFactory, Localizable;
+    use HasFactory, Localizable, Categorizable;
 
     protected $guarded = ['id'];
     protected $casts = ['sort' => 'integer', 'value' => 'json' , 'options' => 'array'];

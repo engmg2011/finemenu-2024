@@ -2,11 +2,11 @@
 
 namespace App\Jobs;
 
-use App\Actions\CategoryAction;
 use App\Actions\ItemAction;
 use App\Actions\MediaAction;
 use App\Models\Category;
 use App\Models\Menu;
+use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ItemRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,7 +24,8 @@ class UploadMenuQueue implements ShouldQueue
      * @param $myFile
      * @param $user
      */
-    public function __construct(private $myFile, private $user)
+    public function __construct(private $myFile, private $user,
+                                private CategoryRepository $categoryRepository)
     {
 
     }
@@ -55,7 +56,7 @@ class UploadMenuQueue implements ShouldQueue
         $item_name = $this->fineName(explode('.', $item_name)[0]);
         $menu = Menu::find($this->user['menuId']);
         if (count($splitNames)) {
-            $categories = (app(CategoryAction::class))
+            $categories = $this->categoryRepository
                 ->createCategoriesFromPath(
                     $splitNames,
                     $this->myFile['uploadedFilePath'],
@@ -73,7 +74,7 @@ class UploadMenuQueue implements ShouldQueue
                 $q->where('name',self::OthersName);
             })->first();
             if(!$savingCategory){
-                $savingCategory = app(CategoryAction::class)->create([
+                $savingCategory = $this->categoryRepository->createModel([
                     "locales" => [["name" => self::OthersName, 'locale' => $this->user['locale']]],
                     "image" => $this->myFile['uploadedFilePath'],
                     "user_id" => $this->user['userId'],

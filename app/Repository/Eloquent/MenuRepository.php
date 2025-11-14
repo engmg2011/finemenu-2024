@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent;
 
+use App\Constants\CategoryTypes;
 use App\Models\Menu;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
     {
         if (isset($data['locales'])) {
             if (!$this->validateLocalesRelated($model, $data))
-                abort(400,'Invalid Locales Data');
+                abort(400, 'Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
     }
@@ -69,20 +70,24 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function fullMenu($id)
     {
-        return Menu::with(['settings', 'media', 'locales',
-            'categories.childrenNested',
-            'categories.locales',
-            'categories.settings',
-            'categories.media',
-            'categories.items.locales',
-            'categories.items.addons.locales',
-            'categories.items.addons.locales',
-            'categories.items.discounts.locales',
-            'categories.items.media',
-            'categories.items.holidays.locales',
-            'categories.items.prices.locales',
-            'categories.items.itemable.features.locales',
-            ])->find($id);
+        return Menu::with(['settings', 'media', 'locales'
+        ])->with('categories', function ($query) {
+            $query->whereIn('type', [CategoryTypes::SERVICE, CategoryTypes::PRODUCT])
+                ->with([
+                    'childrenNested',
+                    'locales',
+                    'settings',
+                    'media',
+                    'items.locales',
+                    'items.addons.locales',
+                    'items.addons.locales',
+                    'items.discounts.locales',
+                    'items.media',
+                    'items.holidays.locales',
+                    'items.prices.locales',
+                    'items.itemable.features.locales'
+                ]);
+        })->find($id);
     }
 
     public function get($businessId, int $id)

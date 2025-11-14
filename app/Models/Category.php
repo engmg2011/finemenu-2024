@@ -94,4 +94,10 @@ class Category extends Model
     {
         return $this->belongsTo(Menu::class);
     }
+
+    public function features()
+    {
+        return $this->hasMany(Feature::class, 'category_id');
+
+    }
 }
