@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CategoryAction;
 use App\Http\Resources\DataResource;
+use App\Repository\Eloquent\CategoryRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -11,11 +11,9 @@ use function response;
 
 class CategoriesController extends Controller
 {
-    private $action;
 
-    public function __construct(CategoryAction $action)
+    public function __construct(private CategoryRepository $repository)
     {
-        $this->action = $action;
     }
 
     /**
@@ -25,7 +23,7 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        return DataResource::collection($this->action->list());
+        return DataResource::collection($this->repository->list());
     }
 
     /**
@@ -36,7 +34,7 @@ class CategoriesController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json($this->action->create($request->all()));
+        return response()->json($this->repository->createModel($request->all()));
     }
 
     /**
@@ -47,7 +45,7 @@ class CategoriesController extends Controller
      */
     public function show($businessId, $id)
     {
-        return response()->json($this->action->get($id));
+        return response()->json($this->repository->get($id));
     }
 
     /**
@@ -59,7 +57,7 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, $businessId, $id)
     {
-        return response()->json($this->action->update($id, $request->all()));
+        return response()->json($this->repository->updateModel($id, $request->all()));
     }
 
     /**
@@ -70,11 +68,11 @@ class CategoriesController extends Controller
      */
     public function destroy($businessId, $id)
     {
-        return response()->json($this->action->destroy($id));
+        return response()->json($this->repository->destroy($id));
     }
 
     public function updateSort(Request $request)
     {
-        return response()->json($this->action->updateSort($request->all()));
+        return response()->json($this->repository->updateSort($request->all()));
     }
 }

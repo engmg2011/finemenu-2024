@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Media;
 use App\Models\Menu;
 use App\Models\User;
+use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
@@ -18,7 +19,9 @@ use Storage;
 class MediaAction
 {
 
-    public function __construct(private MediaRepository $repository, private LocaleRepository $localeRepository)
+    public function __construct(private MediaRepository $repository,
+                                private LocaleRepository $localeRepository,
+                                private readonly CategoryRepository $categoryRepository)
     {
     }
 
@@ -173,7 +176,7 @@ class MediaAction
         $item_name = $this->fineName(explode('.', $item_name)[0]);
         $menu = Menu::find($user['menuId']);
         if (count($splitNames)) {
-            $categories = (app(CategoryAction::class))
+            $categories = $this->categoryRepository
                 ->createCategoriesFromPath(
                     $splitNames,
                     $myFile['uploadedFilePath'],
@@ -192,7 +195,7 @@ class MediaAction
             })->first();
             if(!$savingCategory){
                 // TODO :: Pass first user locale , from user locales setting
-                $savingCategory = app(CategoryAction::class)->create([
+                $savingCategory = $this->categoryRepository->createModel([
                     "locales" => [
                         ["name" => $othersName, 'locale' => 'ar'],
                         ["name" => $othersName, 'locale' => 'en']

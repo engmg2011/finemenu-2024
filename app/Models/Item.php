@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Addonable;
+use App\Traits\Categorizable;
 use App\Traits\Discountable;
 use App\Traits\Localizable;
 use App\Traits\Mediable;
@@ -66,16 +67,11 @@ use Illuminate\Support\Carbon;
  */
 class Item extends Model
 {
-    use HasFactory, Localizable, Mediable,
+    use HasFactory, Localizable, Mediable, Categorizable,
         Priceable, Discountable, Addonable, Reservable, Settable;
 
     protected $guarded = ['id'];
     protected $casts = ['hide' => 'boolean', 'disable_ordering' => 'boolean'];
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     public function user()
     {

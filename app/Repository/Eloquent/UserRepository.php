@@ -137,7 +137,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
     public function get(int $id)
     {
-        return $this->model->find($id);
+        return $this->model->with('contacts')->find($id);
     }
 
     public function updateModel($id, array $data): \Illuminate\Database\Eloquent\Builder|array|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model

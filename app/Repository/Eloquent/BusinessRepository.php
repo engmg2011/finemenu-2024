@@ -3,7 +3,6 @@
 namespace App\Repository\Eloquent;
 
 
-use App\Actions\CategoryAction;
 use App\Actions\MediaAction;
 use App\Actions\SubscriptionAction;
 use App\Models\Business;
@@ -34,8 +33,8 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                                 private readonly PermissionRepository    $permissionRepository,
                                 private readonly PriceRepository         $priceRepository,
                                 private readonly ItemRepository          $itemRepository,
-                                private readonly CategoryAction          $categoryAction,
                                 private readonly BranchRepository        $branchRepository,
+                                private readonly CategoryRepository      $categoryRepository
     )
     {
         parent::__construct($model);
@@ -159,12 +158,12 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                         $child->items->map(function ($item) {
                             $this->deleteItem($item);
                         });
-                        $this->categoryAction->destroy($child->id);
+                        $this->categoryRepository->destroy($child->id);
                     });
                     $category->items->map(function ($item) {
                         $this->deleteItem($item);
                     });
-                    $this->categoryAction->destroy($category->id);
+                    $this->categoryRepository->destroy($category->id);
                 });
             });
             // Delete Branches

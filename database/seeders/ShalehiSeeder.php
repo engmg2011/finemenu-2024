@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Actions\CategoryAction;
 use App\Constants\PaymentConstants;
 use App\Models\Item;
 use App\Models\Items\Chalet;
 use App\Models\Locales;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Repository\Eloquent\CategoryRepository;
 use Illuminate\Database\Seeder;
 
 class ShalehiSeeder extends Seeder
@@ -18,13 +18,13 @@ class ShalehiSeeder extends Seeder
     const MENU_ID = 1;
     const USER_ID = 1;
 
-    public function __construct(private CategoryAction $categoryAction)
+    public function __construct(private readonly CategoryRepository $categoryRepository)
     {
     }
 
     public function category()
     {
-        $category = $this->categoryAction->create(json_decode('{
+        $category = $this->categoryRepository->createModel(json_decode('{
               "user_id": ' . self::USER_ID . ',
               "menu_id": ' . self::MENU_ID . ',
               "locales": [
