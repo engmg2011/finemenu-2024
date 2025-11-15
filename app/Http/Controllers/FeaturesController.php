@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
+use App\Models\Feature;
 use App\Repository\FeatureRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

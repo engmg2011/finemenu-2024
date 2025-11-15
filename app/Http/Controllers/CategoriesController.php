@@ -34,7 +34,17 @@ class CategoriesController extends Controller
         return response()->json($this->repository->updateModel($id, $request->all()));
     }
 
+    public function updateFeatureCategory(Request $request, $id)
+    {
+        return response()->json($this->repository->updateModel($id, $request->all()));
+    }
+
     public function destroy($businessId, $id)
+    {
+        return response()->json($this->repository->destroy($id));
+    }
+
+    public function destroyFeatureCategory($id)
     {
         return response()->json($this->repository->destroy($id));
     }
