@@ -27,6 +27,13 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
         return array_only($data, ['key', 'type','itemable_type','sort', "icon", "icon-font-type","color", "category_id"]);
     }
 
+    public function processFeaturable(array $data)
+    {
+        if(!isset($data['category_id']))
+            $data['category_id'] = Feature::find($data['id'])->category_id;
+        return array_only($data, ['value', 'value_unit','sort' , 'category_id']);
+    }
+
     public function relations($model, $data)
     {
         if (isset($data['locales'])) {
@@ -87,12 +94,6 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
             fn($locale) => $locale->delete()
         );
         return $this->find($id)?->delete();
-    }
-
-
-    public function processFeaturable(array $data)
-    {
-        return array_only($data, ['value', 'value_unit','sort']);
     }
 
 
