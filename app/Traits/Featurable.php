@@ -23,7 +23,7 @@ trait Featurable
     {
         return $this->morphToMany(Feature::class , 'featureable')
             ->using(\App\Models\Featurable::class) // custom pivot model
-            ->withPivot('value', 'value_unit','sort');
+            ->withPivot('value', 'value_unit','sort','category_id');
     }
 
     public function getFeaturesDataAttribute()
@@ -36,6 +36,7 @@ trait Featurable
                 'value'      => $feature->pivot->value ?? null,
                 'value_unit' => $feature->pivot->value_unit ?? null,
                 'sort'       => $feature->pivot->sort ?? null,
+                'category_id'       => $feature->pivot->category_id ?? null
             ];
         });
     }
