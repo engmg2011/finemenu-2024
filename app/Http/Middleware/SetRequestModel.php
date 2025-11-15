@@ -32,6 +32,11 @@ class SetRequestModel
             \request()->merge(['model' => Category::class]);
             return $next($request);
         }
+        if($request->segment(2) === 'features' && $request->segment(3) === 'categories' &&
+            $request->segment(4) === 'settings' ){
+            \request()->merge(['model' => Category::class]);
+            return $next($request);
+        }
         if($request->segment(4) === 'items' && $request->segment(6) === 'settings' ){
             \request()->merge(['model' => Item::class]);
             return $next($request);

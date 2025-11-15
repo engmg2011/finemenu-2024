@@ -8,32 +8,35 @@ use App\Constants\CategoryTypes;
 use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\CategoryRepositoryInterface;
+use App\Repository\SettingRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
 
-    public function __construct(Category $model,
-                                protected LocaleRepository $localeRepository,
-                                private MediaAction        $mediaAction
-    ) {
+    public function __construct(Category                                    $model,
+                                protected LocaleRepository                  $localeRepository,
+                                private MediaAction                         $mediaAction,
+                                private SettingRepositoryInterface $settingRepository
+    )
+    {
         parent::__construct($model);
     }
 
     public function process(array $data)
     {
-        if(!isset($data['business_id']))
+        if (!isset($data['business_id']))
             $data['business_id'] = request()->route('businessId');
         return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort',
-            'type', 'business_id','itemable_type','icon']);
+            'type', 'business_id', 'itemable_type', 'icon','icon-font-type']);
     }
 
     public function list()
     {
         $businessId = request()->route('businessId');;
-        $menuIds = Menu::where('business_id',$businessId)->pluck('id')->toArray();
-        return $this->model::whereIn('menu_id',$menuIds)->with(['locales','media'])->orderBy('sort', 'asc')->paginate(request('per-page', 15));
+        $menuIds = Menu::where('business_id', $businessId)->pluck('id')->toArray();
+        return $this->model::whereIn('menu_id', $menuIds)->with(['locales', 'media'])->orderBy('sort', 'asc')->paginate(request('per-page', 15));
     }
 
     public function featuresCategories()
@@ -41,23 +44,31 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $itemable_type = request()->get('itemable_type');
         $query = $this->model->query();
 
-        if($itemable_type)
+        if ($itemable_type)
             $query->where('itemable_type', 'like', "%$itemable_type%");
 
         return $query->where('type', CategoryTypes::FEATURES)
-            ->with(['locales','media','features.locales','features.feature_options.locales'])
+            ->with(['locales', 'media', 'features.locales', 'features.feature_options.locales', 'settings'])
             ->orderBy('sort', 'asc')
             ->paginate(request('per-page', 15));
+    }
+
+    public function modelRelations(&$model, &$data)
+    {
+        if (isset($data['locales']))
+            $this->localeRepository->setLocales($model, $data['locales']);
+        if (isset($data['media']))
+            $this->mediaAction->setMedia($model, $data['media']);
+        if (isset($data['settings']))
+            $this->settingRepository->setSettings($model, $data);
     }
 
     public function createModel(array $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
-        $category = $this->model->create($this->process($data));
-        $this->localeRepository->createLocale($category, $data['locales']);
-        if (isset($data['media']))
-            $this->mediaAction->setMedia($category, $data['media']);
-        return $this->get($category->id);
+        $model = $this->model->create($this->process($data));
+        $this->modelRelations($model, $data);
+        return $this->get($model->id);
     }
 
 
@@ -66,9 +77,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         unset($data['type']);
         $model = tap($this->model->find($id))
             ->update($this->process($data));
-        $this->localeRepository->setLocales($model, $data['locales']);
-        if (isset($data['media']))
-            $this->mediaAction->setMedia($model, $data['media']);
+        $this->modelRelations($model, $data);
         return $this->get($id);
     }
 
@@ -97,7 +106,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
     public function get(int $id)
     {
-        return $this->model->with(['locales', 'media'])->find($id);
+        return $this->model->with(['locales', 'media', 'settings'])->find($id);
     }
 
     public function destroy($id): ?bool

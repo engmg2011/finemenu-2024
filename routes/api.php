@@ -21,6 +21,7 @@ use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\WebAppController;
+use App\Http\Middleware\SetRequestModel;
 use Berkayk\OneSignal\OneSignalClient;
 use Illuminate\Support\Facades\Route;
 
@@ -44,10 +45,23 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1']], function () {
     });
 });
 
+// Features for guests
+Route::group(['prefix' => 'features'], function () {
+    Route::get('/', [FeaturesController::class, 'index']);
+    Route::group(['prefix' => '/categories'], function () {
+        Route::get('/', [CategoriesController::class, 'featuresCategories']);
+        Route::group(['prefix' => '{modelId}'], function () {
+            Route::get('/', [CategoriesController::class, 'show']);
+            Route::group(["prefix" => "/settings"], function () {
+                Route::get('/', [SettingsController::class, 'listSettings']);
+            });
+        });
+    });
+    Route::get('/{id}', [FeaturesController::class, 'show']);
+});
+
 // TODO :: put admin only roles
-Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1',
-    'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
-], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]], function () {
 
     Route::group(['prefix' => 'locales'], function () {
         Route::post("", [LocalesController::class, 'createModel']);
@@ -170,20 +184,28 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1',
 
 // TODO :: move admin only routes to here and make admin users
 Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
+    SetRequestModel::class,
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
 ], function () {
 
     Route::group(['prefix' => 'features'], function () {
-        Route::get('/', [FeaturesController::class, 'index']);
         Route::group(['prefix' => '/categories'], function () {
-            Route::get('/', [CategoriesController::class, 'featuresCategories']);
             Route::post('/', [CategoriesController::class, 'create']);
+            Route::post('/sort', [CategoriesController::class, 'updateSort']);
+            Route::group(['prefix' => '{modelId}'], function () {
+                Route::post('/', [CategoriesController::class, 'updateFeatureCategory']);
+                Route::post('/delete', [CategoriesController::class, 'destroyFeatureCategory']);
+                Route::group(["prefix" => "/settings"], function () {
+                    Route::post('/set', [SettingsController::class, 'setSetting']);
+                    Route::get('/{settingId}/delete', [SettingsController::class, 'deleteSetting']);
+                });
+            });
         });
-        Route::get('/{id}', [FeaturesController::class, 'show']);
         Route::post('/', [FeaturesController::class, 'create']);
         Route::post('/sort', [FeaturesController::class, 'sort']);
         Route::post('/{id}', [FeaturesController::class, 'update']);
-        Route::get('/{id}/delete', [FeaturesController::class, 'destroy']);
+        Route::get('/{id}', [FeaturesController::class, 'show']);
+        Route::post('/{id}/delete', [FeaturesController::class, 'destroy']);
     });
 
 });
