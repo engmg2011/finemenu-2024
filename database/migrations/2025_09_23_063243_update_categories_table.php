@@ -13,7 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->enum('type' , [CategoryTypes::PRODUCT, CategoryTypes::SERVICE])
+            $table->enum('type' , [
+                CategoryTypes::PRODUCT,
+                CategoryTypes::SERVICE,
+                CategoryTypes::FEATURES])
                 ->nullable()->default(CategoryTypes::PRODUCT);
         });
     }
