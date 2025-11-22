@@ -40,15 +40,10 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
                     $query->whereIn('id', $data['addon_ids']);
                 };
             }])
-            ->with(['media' => function ($query) use ($data) {
+            ->with(['media' => function ($query) {
                 $query->where('slug', 'featured')
                     ->orderBy('sort')
-                    ->first()
-                    ->when(null, function ($q) {
-                        return $q->orWhere('type', 'like', '%image%')
-                            ->orderBy('sort')
-                            ->first();
-                    });
+                    ->take(1);
             }])
             ->with(['discounts' => function ($query) use ($data) {
                 if (isset($data['discount_ids'])) {
@@ -163,6 +158,8 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     {
         $data['user_id'] = auth('sanctum')->user()->id;
         $orderLine = $this->create($this->process($data));
+
+
         $this->processRelations($orderLine, $data, true);
         return $orderLine;
     }

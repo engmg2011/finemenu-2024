@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('features', function (Blueprint $table) {
             $table->id();
             $table->string('key');
-            $table->enum('type', ['string', 'number' , 'boolean' ,'json', 'array']);
+            $table->enum('type', ['string', 'number', 'boolean', 'json', 'array', 'object', 'date']);
             $table->string('itemable_type')->nullable();
         });
 
