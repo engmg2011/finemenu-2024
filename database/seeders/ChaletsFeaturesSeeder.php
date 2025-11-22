@@ -95,7 +95,7 @@ class ChaletsFeaturesSeeder extends Seeder
             "menu_id": null,
             "type": "features",
             "icon": "fa fa-icon",
-            "icon-font-type": "FontAwesome",
+            "icon-font-type": "mdi",
             "itemable_type": "Chalet",
             "locales": [
             {
@@ -116,7 +116,7 @@ class ChaletsFeaturesSeeder extends Seeder
             "key": "'.$slug.'",
             "type": "' . $type . '",
             "icon": "",
-            "icon-font-type": "FontAwesome",
+            "icon-font-type": "mdi",
             "color": "",
             "locales": [
                 {
