@@ -24,7 +24,7 @@ class FeatureRepository extends BaseRepository implements FeatureRepositoryInter
 
     public function process(array $data)
     {
-        return array_only($data, ['key', 'type','itemable_type','sort', "icon", "icon-font-type","color", "category_id"]);
+        return array_only($data, ['key', 'type','itemable_type','sort', "icon", "icon-font-type","color", "category_id", "featured"]);
     }
 
     public function processFeaturable(array $data)

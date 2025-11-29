@@ -14,7 +14,7 @@ class Feature extends Model
     use HasFactory, Localizable, Categorizable;
 
     protected $guarded = ['id'];
-    protected $casts = ['sort' => 'integer', 'value' => 'json' , 'options' => 'array'];
+    protected $casts = ['sort' => 'integer', 'value' => 'json' , 'options' => 'array', 'featured'=>'boolean'];
     public $timestamps = false;
 
     public function salonServices()
