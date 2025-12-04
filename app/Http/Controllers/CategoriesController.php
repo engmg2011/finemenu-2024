@@ -41,7 +41,7 @@ class CategoriesController extends Controller
 
     public function destroy($businessId, $id)
     {
-        return response()->json($this->repository->destroy($id));
+        return response()->json($this->repository->destroy($businessId, $id));
     }
 
     public function destroyFeatureCategory($id)
