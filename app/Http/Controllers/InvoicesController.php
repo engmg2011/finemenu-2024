@@ -94,6 +94,7 @@ class InvoicesController extends Controller
 
         // Generate PDF content
         $pdf = Pdf::loadView('invoice', compact('invoice'))
+            ->setOptions(['isHtml5ParserEnabled' => true])
             ->setPaper([0, 0, 164, 600], 'portrait');;
         // Creation filename
         $fileName = 'invoice_' . $invoice->reference_id . '.pdf';

@@ -5,16 +5,24 @@ use Carbon\Carbon;
 
 ?><!DOCTYPE html>
 <html lang="en" dir="ltr" style="margin: 0; padding: 0">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
 <style>
+    @font-face {
+        font-family: 'Amiri';
+        src: url('{{ public_path('public/fonts/Amiri/Amiri-Regular.ttf') }}') format('truetype');
+    }
     html {
         padding: 0 !important;
         margin: 0 !important;
         font-size: 8px;
         text-transform: uppercase;
     }
-
     body {
-        font-family: DejaVu Sans, sans-serif;
+        font-family: 'Amiri', sans-serif;
+        direction: rtl;
+        text-align: right;
         padding: 0;
         width: 100%;
         max-width: 500px;
@@ -28,6 +36,7 @@ use Carbon\Carbon;
     }
 </style>
 <body style="background-color:#fff;color:#000;text-align:left;">
+شاليهي 
 <?php
 $reservation = $invoice['reservation'];
 $reservable = $invoice['reservation']['data']['reservable'];
