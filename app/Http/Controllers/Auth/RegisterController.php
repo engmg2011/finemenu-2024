@@ -167,10 +167,24 @@ class RegisterController extends Controller
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
 
+    function userFromData($data)
+    {
+        return User::where(function ($query) use ($data) {
+            if (isset($data['phone']) && $data['phone'] !== "")
+                return $query->where('phone', $data['phone']);
+            if (isset($data['email']) && $data['email'] !== "")
+                return $query->where('email', $data['email']);
+        })->with('settings')->first();
+    }
+
     public function forgotPassword(Request $request): JsonResponse
     {
         $data = $request->all();
         $validator = $this->resetValidator($data);
+
+
+        if (!$this->userFromData($data))
+            return response()->json(['message' => 'User not found'], 400);
 
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
@@ -208,7 +222,14 @@ class RegisterController extends Controller
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
         if ($reset) {
-            $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
+
+            $user = $this->userFromData($data);
+            if (!$user)
+                return response()->json(['message' => 'User not found'], 400);
+
+            if(isset($data['password']))
+                $user->update(['password' => bcrypt($data['password'])]);
+
             $token = $user->createToken('authToken');
             $device = $this->userRepository->userDevice($request, $user, $token);
             $user['token'] = $token->plainTextToken;
