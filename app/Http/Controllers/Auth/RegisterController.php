@@ -117,7 +117,7 @@ class RegisterController extends Controller
         // TODO :: set $available_code_tries = 3
         $available_code_tries = 30;
 
-        $searchArray = ( isset($data['phone']) && $data['phone'] !== "" ) ?
+        $searchArray = (isset($data['phone']) && $data['phone'] !== "") ?
             array_only($data, ['phone']) : array_only($data, ['email']);
 
         $codeData = InitRegister::where($searchArray)
@@ -126,8 +126,8 @@ class RegisterController extends Controller
         if (is_null($codeData)) {
             $codeData = InitRegister::create($searchArray +
                 [
-                    'phone'=> $data['phone'] ?? "",
-                    'email'=> $data['email'] ?? "",
+                    'phone' => $data['phone'] ?? "",
+                    'email' => $data['email'] ?? "",
                     'tries_count' => 0,
                     'code' => $randomCode,
                     'created_at' => Carbon::now()
@@ -198,8 +198,10 @@ class RegisterController extends Controller
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         $isValidCode = InitRegister::where(function ($query) use ($data) {
-                return $query->where('phone', $data['phone'])
-                    ->orWhere('email', $data['email']);
+                if (isset($data['phone']) && $data['phone'] !== "")
+                    return $query->where('phone', $data['phone']);
+                if (isset($data['email']) && $data['email'] !== "")
+                    return $query->where('email', $data['email']);
             })
             ->where('created_at', '>', Carbon::now()->subMinutes(15))
             ->where('code', $data['code'])->first();
