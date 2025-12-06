@@ -6,6 +6,7 @@ use App\Constants\PaymentConstants;
 use App\Models\Business;
 use App\Models\Reservation;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,7 +37,11 @@ class SendUpdateReservationNotification implements ShouldQueue
         $msg = [];
         $msg['subject'] = $branchName ?? "BarqSolutions";
         $title = $this->type === PaymentConstants::RESERVATION_CANCELED ? "Canceled" : "Updated";
-        $msg['message'] = $title . " booking for $firstItemName from $branchName Booking ID " . $this->reservation->id;
+        $msg['message'] = $title . " booking for $firstItemName, Booking ID " . $this->reservation->id.
+            ', ['. Carbon::parse($this->reservation->from)->format('d-m-y')
+            . ' - '. Carbon::parse($this->reservation->to)->format('d-m-y'). ' ] ,'.
+            'Unit '. $this->reservation->unit . ', Status '. $this->reservation->status.
+            ( $this->reservation->order_id ? ' 📱': '');
         return $msg;
     }
 

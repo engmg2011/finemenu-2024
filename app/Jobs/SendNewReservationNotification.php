@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Business;
 use App\Models\Reservation;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +35,11 @@ class SendNewReservationNotification implements ShouldQueue
         $branchName = $this->reservation->branch->locales[0]->name ?? "";
         $msg = [];
         $msg['subject'] = $branchName ?? "BarqSolutions";
-        $msg['message'] = "Booking $firstItemName from $branchName ";
+        $msg['message'] = "Booking $firstItemName from $branchName ".
+            ', ['. Carbon::parse($this->reservation->from)->format('d-m-y')
+            . ' - '. Carbon::parse($this->reservation->to)->format('d-m-y'). ' ] ,'.
+            'Unit '. $this->reservation->unit . ', Status '. $this->reservation->status.
+            ( $this->reservation->order_id ? ' 📱': '');
         return $msg;
     }
 
