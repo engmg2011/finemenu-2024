@@ -109,10 +109,10 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         return $this->model->with(['locales', 'media', 'settings'])->find($id);
     }
 
-    public function destroy($id): ?bool
+    public function destroy($businessId, $id)
     {
         $this->localeRepository->deleteEntityLocales($this->model->find($id));
-        return $this->model->delete($id);
+        return Category::destroy($id);
     }
 
 

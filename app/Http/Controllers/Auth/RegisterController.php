@@ -16,10 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use function PHPUnit\Framework\isEmpty;
 
 class RegisterController extends Controller
 {
@@ -98,7 +96,8 @@ class RegisterController extends Controller
     {
         // TODO :: set times = 3
         $triesAvailable = 30;
-        $tried = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])->where('created_at', '>', Carbon::now()->addHours(-1))->first();
+        $tried = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])
+            ->where('created_at', '>', Carbon::now()->subMinutes(15))->first();
         if (is_null($tried))
             $tried = IpTries::create(['ip' => $_SERVER['REMOTE_ADDR'], 'tries' => 0]);
         if ($tried->tries < $triesAvailable)
@@ -118,13 +117,17 @@ class RegisterController extends Controller
         // TODO :: set $available_code_tries = 3
         $available_code_tries = 30;
 
-        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
+        $searchArray = (isset($data['phone']) && $data['phone'] !== "") ?
+            array_only($data, ['phone']) : array_only($data, ['email']);
+
         $codeData = InitRegister::where($searchArray)
-            ->where('created_at', '>', Carbon::now()->subHour())
+            ->where('created_at', '>', Carbon::now()->subMinutes(15))
             ->first();
         if (is_null($codeData)) {
             $codeData = InitRegister::create($searchArray +
                 [
+                    'phone' => $data['phone'] ?? "",
+                    'email' => $data['email'] ?? "",
                     'tries_count' => 0,
                     'code' => $randomCode,
                     'created_at' => Carbon::now()
@@ -164,10 +167,24 @@ class RegisterController extends Controller
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
 
+    function userFromData($data)
+    {
+        return User::where(function ($query) use ($data) {
+            if (isset($data['phone']) && $data['phone'] !== "")
+                return $query->where('phone', $data['phone']);
+            if (isset($data['email']) && $data['email'] !== "")
+                return $query->where('email', $data['email']);
+        })->with('settings')->first();
+    }
+
     public function forgotPassword(Request $request): JsonResponse
     {
         $data = $request->all();
         $validator = $this->resetValidator($data);
+
+
+        if (!$this->userFromData($data))
+            return response()->json(['message' => 'User not found'], 400);
 
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
@@ -189,18 +206,30 @@ class RegisterController extends Controller
     public function validateCode(Request $request, $reset = false): JsonResponse
     {
         $data = $request->all();
-        $validator = $reset ? $this->resetValidator($data, ['code' => ['required']]) : $this->validator($data, ['code' => ['required']]);
+        $validator = $reset ? $this->resetValidator($data, ['code' => ['required']]) :
+            $this->validator($data, ['code' => ['required']]);
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
-        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ? array_only($data, ['phone']) : array_only($data, ['email']);
-        $isValidCode = InitRegister::where($searchArray)
-            ->where('created_at', '>', Carbon::now()->subHour())
+        $isValidCode = InitRegister::where(function ($query) use ($data) {
+                if (isset($data['phone']) && $data['phone'] !== "")
+                    return $query->where('phone', $data['phone']);
+                if (isset($data['email']) && $data['email'] !== "")
+                    return $query->where('email', $data['email']);
+            })
+            ->where('created_at', '>', Carbon::now()->subMinutes(15))
             ->where('code', $data['code'])->first();
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
         if ($reset) {
-            $user = User::where(array_only($data, ['email', 'phone']))->with('settings')->first();
+
+            $user = $this->userFromData($data);
+            if (!$user)
+                return response()->json(['message' => 'User not found'], 400);
+
+            if(isset($data['password']))
+                $user->update(['password' => bcrypt($data['password'])]);
+
             $token = $user->createToken('authToken');
             $device = $this->userRepository->userDevice($request, $user, $token);
             $user['token'] = $token->plainTextToken;
@@ -237,10 +266,11 @@ class RegisterController extends Controller
         if (!$this->IpCanRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
-        $searchArray = isset($data['phone']) && !isEmpty($data['phone']) ?
-            array_only($data, ['phone']) : array_only($data, ['email']);
-        $isValidCode = InitRegister::where($searchArray)
-            ->where('created_at', '>', Carbon::now()->subHour())
+        $isValidCode = InitRegister::where(function ($query) use ($data) {
+            return $query->where('phone', $data['phone'])
+                ->orWhere('email', $data['email']);
+        })
+            ->where('created_at', '>', Carbon::now()->subMinutes(15))
             ->where('code', $data['code'])->first();
 
         if (!$isValidCode)
@@ -250,7 +280,7 @@ class RegisterController extends Controller
         $data['email_verified_at'] = Carbon::now();
 
         if (!isset($data['email']) || empty($data['email']))
-            $data['email'] = $data['phone'] . '@menu-ai.net';
+            $data['email'] = $data['phone'] . '@' . env('APP_DOMAIN');
 
         if (isset($data['businessName']) && isset($data['businessType'])) {
             $data['dashboard_access'] = true;

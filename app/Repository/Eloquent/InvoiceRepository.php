@@ -16,6 +16,7 @@ use App\Services\PaymentProviders\PaymentService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use function Psy\debug;
 
 
 class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInterface
@@ -63,7 +64,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $data['business_id'] = request()->route('businessId');
         $data['reference_id'] = strtoupper(uniqid());
         $data['invoice_by_id'] = auth('sanctum')->user()->id;
-        $data['invoice_for_id'] = $invoice['invoice_for_id'] ?? auth('sanctum')->user()->id;
+        $data['invoice_for_id'] = $data['invoice_for_id'] ?? auth('sanctum')->user()->id;
         $data['data'] = [];
 
         if (isset($data['status']) && $data['status'] === PaymentConstants::INVOICE_PAID)
@@ -121,6 +122,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                     'order_id' => $reservation->order_id,
                     'order_line_id' => $reservation->order_line_id,
                 ];
+
+            $invoiceData['invoice_for_id'] = $reservation->reserved_for_id;
+
             if (isset($invoice['id']) && $invoice['id'])
                 $this->update($invoice['id'], $invoiceData);
             else

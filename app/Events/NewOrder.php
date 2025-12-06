@@ -81,7 +81,7 @@ class NewOrder implements ShouldBroadcast
             // OneSignal
             if (count($devices)) {
                 foreach ($devices as $device) {
-                    $device->notify(new OneSignalNotification('MenuAI', "Requested $firstItemName from $branchName "));
+                    $device->notify(new OneSignalNotification('BarqSolutions', "Requested $firstItemName from $branchName "));
                 }
             }
 
