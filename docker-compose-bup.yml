@@ -227,10 +227,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ../qr:/var/jenkins_home/workspace/MenuAI/QR/menuai-qr/build/web
+      - ../qr:/var/jenkins_home/workspace/BarqSolutions/QR/menuai-qr/build/web
       - ../orders:/var/jenkins_home/workspace/DeployOrders/menuai-orders/build/web
       - ../tablet:/var/jenkins_home/workspace/DeployTablet/menuai-tablet/build/web
-      - ../dashboard:/var/jenkins_home/workspace/MenuAI/Dashboard/finemenu-dashboard/dist
+      - ../dashboard:/var/jenkins_home/workspace/BarqSolutions/Dashboard/finemenu-dashboard/dist
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock

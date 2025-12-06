@@ -34,7 +34,7 @@ class SendUpdateReservationNotification implements ShouldQueue
         $firstItemName = $this->reservation->data['reservable']['locales'][0]['name'] ?? "";
         $branchName = $this->reservation->branch->locales[0]->name ?? "";
         $msg = [];
-        $msg['subject'] = $branchName ?? "MenuAI";
+        $msg['subject'] = $branchName ?? "BarqSolutions";
         $title = $this->type === PaymentConstants::RESERVATION_CANCELED ? "Canceled" : "Updated";
         $msg['message'] = $title . " booking for $firstItemName from $branchName Booking ID " . $this->reservation->id;
         return $msg;

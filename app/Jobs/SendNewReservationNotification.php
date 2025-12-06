@@ -33,7 +33,7 @@ class SendNewReservationNotification implements ShouldQueue
         $firstItemName = $this->reservation->data['reservable']['locales'][0]['name'] ?? "";
         $branchName = $this->reservation->branch->locales[0]->name ?? "";
         $msg = [];
-        $msg['subject'] = $branchName ?? "MenuAI";
+        $msg['subject'] = $branchName ?? "BarqSolutions";
         $msg['message'] = "Booking $firstItemName from $branchName ";
         return $msg;
     }
