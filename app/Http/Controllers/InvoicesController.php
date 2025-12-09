@@ -12,6 +12,12 @@ use App\Services\AuditService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use ArPHP\I18N\Arabic;
+
+require_once __DIR__.'/../../ar-php/src/arabic.php';
+
+//use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
+
 
 class InvoicesController extends Controller
 {
@@ -92,12 +98,36 @@ class InvoicesController extends Controller
         $invoice = Invoice::with(InvoiceRepository::Relations)
             ->where('reference_id', $referenceId)->firstOrFail();
 
-        // Generate PDF content
-        $pdf = Pdf::loadView('invoice', compact('invoice'))
-            ->setOptions(['isHtml5ParserEnabled' => true])
-            ->setPaper([0, 0, 164, 600], 'portrait');;
-        // Creation filename
-        $fileName = 'invoice_' . $invoice->reference_id . '.pdf';
-        return $pdf->download($fileName);
+        $html = view('invoice', compact('invoice'))->render();
+
+        $Arabic = new Arabic();
+
+        $p = $Arabic->arIdentify($html);
+
+        for ($i = count($p)-1; $i >= 0; $i-=2) {
+            $utf8ar = $Arabic->utf8Glyphs(substr($html, $p[$i-1], $p[$i] - $p[$i-1]));
+            $html   = substr_replace($html, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
+        }
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($html);
+        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'auto_language_detection'  => true,])
+            ->download('invoice.pdf',array('Attachment'=>0));
+    }
+
+    public function arPdf()
+    {
+        $html = view('arPdf')->render();
+
+        $Arabic = new Arabic();
+
+        $p = $Arabic->arIdentify($html);
+
+        for ($i = count($p)-1; $i >= 0; $i-=2) {
+            $utf8ar = $Arabic->utf8Glyphs(substr($html, $p[$i-1], $p[$i] - $p[$i-1]));
+            $html   = substr_replace($html, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
+        }
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($html);
+        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'auto_language_detection'  => true,])->stream('invoice.pdf',array('Attachment'=>0));
     }
 }
