@@ -7,12 +7,9 @@ use Carbon\Carbon;
 <html lang="en" dir="ltr" style="margin: 0; padding: 0">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Invoice - {{ $invoice['reference_id'] }} </title>
 </head>
 <style>
-    @font-face {
-        font-family: 'Amiri';
-        src: url('{{ public_path('public/fonts/Amiri/Amiri-Regular.ttf') }}') format('truetype');
-    }
     html {
         padding: 0 !important;
         margin: 0 !important;
@@ -20,7 +17,7 @@ use Carbon\Carbon;
         text-transform: uppercase;
     }
     body {
-        font-family: 'Amiri', sans-serif;
+        font-family: DejaVu Sans, serif;/* To Accept Arabic */
         direction: rtl;
         text-align: right;
         padding: 0;
@@ -36,7 +33,6 @@ use Carbon\Carbon;
     }
 </style>
 <body style="background-color:#fff;color:#000;text-align:left;">
-شاليهي 
 <?php
 $reservation = $invoice['reservation'];
 $reservable = $invoice['reservation']['data']['reservable'];
@@ -56,7 +52,7 @@ $totalDebit = $debitInvoices->sum('amount');
 $rentAmount = $totalCredit - $totalDebit;
 ?>
 
-    <!-- Booking details -->
+<!-- Booking details -->
 <div style="{{ $divStyle }}">
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
         {{ $invoice->reservation->branch->locales[0]->name }}
