@@ -9,6 +9,7 @@ use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 // Fixing arabic in pdf file
