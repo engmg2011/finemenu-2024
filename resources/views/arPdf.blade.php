@@ -24,5 +24,22 @@
     <span>نص جانبي</span>
     <span>نص آخر</span>
 </div>
+<?php
+$avatarUrl = 'https://static.vecteezy.com/system/resources/thumbnails/057/068/323/small/single-fresh-red-strawberry-on-table-green-background-food-fruit-sweet-macro-juicy-plant-image-photo.jpg';
+$arrContextOptions=array(
+    "ssl"=>array(
+        "verify_peer"=>false,
+        "verify_peer_name"=>false,
+    ),
+);
+$type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
+$avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
+$avatarBase64Data = base64_encode($avatarData);
+$imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+
+?>
+
+<img style='display:block; width:100px;height:100px;' id='base64image' src='{{ $imageData }}' />
+
 </body>
 </html>
