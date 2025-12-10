@@ -3,27 +3,35 @@
 use App\Constants\PaymentConstants;
 use Carbon\Carbon;
 
-?><!DOCTYPE html>
-<html lang="en" dir="ltr" style="margin: 0; padding: 0">
+?><!doctype html>
+<html lang="en">
 <head>
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Invoice - {{ $invoice['reference_id'] }} </title>
+
+    <!-- Bootstrap CSS -->
+    {{--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">--}}
+
+    <title>Hello, world!</title>
 </head>
+<body>
 <style>
     html {
         padding: 0 !important;
         margin: 0 !important;
-        font-size: 8px;
+        font-size: 12px;
         text-transform: uppercase;
     }
+
     body {
-        font-family: DejaVu Sans, serif;/* To Accept Arabic */
-        direction: rtl;
-        text-align: right;
+        font-family: DejaVu Sans, serif; /* To Accept Arabic */
+        direction: ltr;
+        text-align: left;
         padding: 0;
-        width: 100%;
-        max-width: 500px;
         margin: 0 auto;
+        /*max-width: 600px;*/
     }
 
     @media (min-width: 1024px) {
@@ -52,7 +60,7 @@ $totalDebit = $debitInvoices->sum('amount');
 $rentAmount = $totalCredit - $totalDebit;
 ?>
 
-<!-- Booking details -->
+    <!-- Booking details -->
 <div style="{{ $divStyle }}">
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
         {{ $invoice->reservation->branch->locales[0]->name }}
@@ -60,9 +68,29 @@ $rentAmount = $totalCredit - $totalDebit;
     </h2>
     @php
         $logoSetting = collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo');
+        // create base64 image
+        if($logoSetting['data'][0]['src']){
+            $avatarUrl = $logoSetting['data'][0]['src'];
+
+            // storage_path('app/public/10/5405_Shalehi_icon.png');
+            $avatarUrl = str_replace(url('/storage'), "/app/public", $avatarUrl);
+            $avatarUrl = storage_path($avatarUrl);
+            $arrContextOptions=array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );
+            $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
+            $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
+            $avatarBase64Data = base64_encode($avatarData);
+            $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+        }
     @endphp
-    <img src="{{  $logoSetting['data'][0]['src'] ?? null }}" alt="" style="width:100px; float: right; margin: 10px">
-    <h3 style="margin: 8px 0 10px">Booking details</h3>
+    @if($logoSetting['data'][0]['src'] ?? false)
+        <img id='base64image' src='{{ $imageData }}' alt=""
+             style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
+    @endif
     <p style="margin: 8px 0px">
         <span>Booking :</span>
         <span style="font-weight:bold;">#{{ $invoice['reference_id'] }}</span>

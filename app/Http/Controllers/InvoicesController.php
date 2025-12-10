@@ -9,14 +9,10 @@ use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use ArPHP\I18N\Arabic;
 
 require_once __DIR__.'/../../ar-php/src/arabic.php';
-
-//use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
 
 class InvoicesController extends Controller
@@ -128,6 +124,7 @@ class InvoicesController extends Controller
         }
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($html);
-        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'auto_language_detection'  => true,])->stream('invoice.pdf',array('Attachment'=>0));
+        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'auto_language_detection'  => true,])
+            ->stream('invoice.pdf',array('Attachment'=>0));
     }
 }
