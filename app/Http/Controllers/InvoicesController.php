@@ -10,9 +10,10 @@ use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
-use ArPHP\I18N\Arabic;
 
-require_once __DIR__.'/../../ar-php/src/arabic.php';
+// Fixing arabic in pdf file
+require_once base_path('app/ar-php/src/Arabic.php');
+use ArPHP\I18N\Arabic;
 
 
 class InvoicesController extends Controller
