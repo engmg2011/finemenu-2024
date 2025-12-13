@@ -83,3 +83,6 @@ Route::get('queue-work', function (){
 
 Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
+Route::get('ar-pdf',[InvoicesController::class , 'arPdf']);
+
+
