@@ -198,6 +198,18 @@ class RegisterController extends Controller
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
 
+    public function isValidCode($data)
+    {
+        return InitRegister::where(function ($query) use ($data) {
+                if (isset($data['phone']) && $data['phone'] !== "")
+                    return $query->where('phone', $data['phone']);
+                if (isset($data['email']) && $data['email'] !== "")
+                    return $query->where('email', $data['email']);
+            })
+            ->where('created_at', '>', Carbon::now()->subMinutes(15))
+            ->where('code', $data['code'])->first();
+    }
+
 
     /**
      * @param Request $request
@@ -211,23 +223,18 @@ class RegisterController extends Controller
         if ($validator->fails())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
-        $isValidCode = InitRegister::where(function ($query) use ($data) {
-                if (isset($data['phone']) && $data['phone'] !== "")
-                    return $query->where('phone', $data['phone']);
-                if (isset($data['email']) && $data['email'] !== "")
-                    return $query->where('email', $data['email']);
-            })
-            ->where('created_at', '>', Carbon::now()->subMinutes(15))
-            ->where('code', $data['code'])->first();
+        $isValidCode = $this->isValidCode($data);
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
+
+
         if ($reset) {
 
             $user = $this->userFromData($data);
             if (!$user)
                 return response()->json(['message' => 'User not found'], 400);
 
-            if(isset($data['password']))
+            if (isset($data['password']))
                 $user->update(['password' => bcrypt($data['password'])]);
 
             $token = $user->createToken('authToken');
@@ -266,13 +273,7 @@ class RegisterController extends Controller
         if (!$this->IpCanRegister())
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
-        $isValidCode = InitRegister::where(function ($query) use ($data) {
-            return $query->where('phone', $data['phone'])
-                ->orWhere('email', $data['email']);
-        })
-            ->where('created_at', '>', Carbon::now()->subMinutes(15))
-            ->where('code', $data['code'])->first();
-
+        $isValidCode = $this->isValidCode($data);
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
 
