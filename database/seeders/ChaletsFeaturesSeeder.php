@@ -94,7 +94,7 @@ class ChaletsFeaturesSeeder extends Seeder
             "user_id": 1,
             "menu_id": null,
             "type": "features",
-            "icon": "fa fa-icon",
+            "icon": "",
             "icon-font-type": "mdi",
             "itemable_type": "Chalet",
             "locales": [
