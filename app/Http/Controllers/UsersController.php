@@ -96,22 +96,30 @@ class UsersController extends Controller
         $id = request()->route('modelId');
 
         $data = $request->all();
-        unset($data['email']);
-        unset($data['phone']);
 
+        // TODO :: Make apis to change password, email and phone
         if (isset($data['password']) && $data['password'] === "")
             unset($data['password']);
 
         $validator = Validator::make($data, [
-            'email' => ['string', 'email', 'max:255',
-                Rule::unique('users')->ignore($id)],
-            'phone' => ['string', 'min:8', 'max:15',
-                Rule::unique('users')->ignore($id)],
+            'email' => [
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($id),
+            ],
+            'phone' => [
+                'string',
+                'min:8',
+                'max:15',
+                Rule::unique('users', 'phone')->ignore($id),
+            ],
             'name' => ['string', 'max:255'],
             'password' => ['sometimes', 'string', 'confirmed', 'min:8'],
         ]);
+
         if ($validator->fails())
-            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 403);
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         $user = User::find($id);
 
