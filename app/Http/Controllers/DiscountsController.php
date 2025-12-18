@@ -77,6 +77,6 @@ class DiscountsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return response()->json($this->repository->destroy($id));
     }
 }

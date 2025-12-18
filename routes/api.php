@@ -135,6 +135,7 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . Roles
         Route::get('/{id}', [DiscountsController::class, 'show']);
         Route::post('/', [DiscountsController::class, 'create']);
         Route::post('/{id}', [DiscountsController::class, 'update']);
+        Route::post('/{id}/delete', [DiscountsController::class, 'destroy']);
     });
 
 
