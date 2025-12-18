@@ -72,10 +72,6 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . Roles
         Route::get("/{id}", [MenusController::class, 'menu']);
     });
 
-    Route::group(['prefix' => 'prices'], function () {
-        Route::post('/{id}/delete', [PricesController::class, 'destroy']);
-    });
-
     Route::group(['prefix' => 'services'], function () {
         Route::get('/', [ServicesController::class, 'index']);
         Route::get('/{id}', [ServicesController::class, 'show']);
@@ -106,13 +102,6 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . Roles
         Route::post('/{id}/delete', [MediaController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'prices'], function () {
-        Route::get('/', [PricesController::class, 'index']);
-        Route::get('/{id}', [PricesController::class, 'show']);
-        Route::post('/', [PricesController::class, 'create']);
-        Route::post('/{id}', [PricesController::class, 'update']);
-    });
-
 
     Route::group(['prefix' => 'settings'], function () {
         Route::get('/', [SettingsController::class, 'index']);
@@ -128,14 +117,6 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . Roles
         Route::post('/', [AddonsController::class, 'create']);
         Route::post('/{id}', [AddonsController::class, 'update']);
         Route::post('/{id}/delete', [AddonsController::class, 'destroy']);
-    });
-
-    Route::group(['prefix' => 'discounts'], function () {
-        Route::get('/', [DiscountsController::class, 'index']);
-        Route::get('/{id}', [DiscountsController::class, 'show']);
-        Route::post('/', [DiscountsController::class, 'create']);
-        Route::post('/{id}', [DiscountsController::class, 'update']);
-        Route::post('/{id}/delete', [DiscountsController::class, 'destroy']);
     });
 
 

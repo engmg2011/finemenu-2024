@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\AreasController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\PricesController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SeatsController;
@@ -217,6 +219,21 @@ Route::group(['middleware' => ['throttle:300,1',
 
             Route::get('notes', [BranchesController::class, 'notes']);
 
+            Route::group(['prefix' => 'discounts'], function () {
+                Route::get('/', [DiscountsController::class, 'index']);
+                Route::get('/{id}', [DiscountsController::class, 'show']);
+                Route::post('/', [DiscountsController::class, 'create']);
+                Route::post('/{id}', [DiscountsController::class, 'update']);
+                Route::post('/{id}/delete', [DiscountsController::class, 'destroy']);
+            });
+
+            Route::group(['prefix' => 'prices'], function () {
+                Route::get('/', [PricesController::class, 'index']);
+                Route::get('/{id}', [PricesController::class, 'show']);
+                Route::post('/', [PricesController::class, 'create']);
+                Route::post('/{id}', [PricesController::class, 'update']);
+                Route::post('/{id}/delete', [PricesController::class, 'destroy']);
+            });
         });
 
 
