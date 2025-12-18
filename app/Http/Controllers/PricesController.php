@@ -43,7 +43,7 @@ class PricesController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($businessId, $id)
     {
         return \response()->json($this->action->get($id));
     }
@@ -55,7 +55,7 @@ class PricesController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,$businessId,  $id)
     {
         return \response()->json($this->action->update($id,$request->all()));
     }
@@ -66,7 +66,7 @@ class PricesController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy($businessId, $id)
     {
         return \response()->json($this->action->destroy($id));
     }

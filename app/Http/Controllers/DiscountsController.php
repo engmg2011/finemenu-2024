@@ -48,7 +48,7 @@ class DiscountsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($businessId, $id)
     {
         return \response()->json($this->repository->get($id));
     }
@@ -60,7 +60,7 @@ class DiscountsController extends Controller
      * @param  int  $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $businessId, $id)
     {
         $data = $request->all();
         $business = Business::find($data['business_id']);
@@ -75,7 +75,7 @@ class DiscountsController extends Controller
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($businessId, $id)
     {
         return response()->json($this->repository->destroy($id));
     }
