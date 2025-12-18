@@ -50,7 +50,7 @@ class DiscountsController extends Controller
      */
     public function show($id)
     {
-        return \response()->json($this->repository->getModel($id));
+        return \response()->json($this->repository->get($id));
     }
 
     /**
