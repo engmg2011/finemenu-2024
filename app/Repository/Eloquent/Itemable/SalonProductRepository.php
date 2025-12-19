@@ -1,35 +1,25 @@
 <?php
 
-namespace App\Repository\Eloquent;
+namespace App\Repository\Eloquent\Itemable;
 
 
-use App\Models\Items\SalonService;
-use App\Models\User;
+use App\Models\Items\SalonProduct;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\FeatureRepositoryInterface;
-use App\Repository\SalonServiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class SalonServiceRepository extends BaseRepository implements SalonServiceRepositoryInterface
+class SalonProductRepository extends BaseRepository implements SalonProductRepositoryInterface
 {
 
-    public function __construct(SalonService $model, private readonly FeatureRepositoryInterface $featureRepository)
+    public function __construct(SalonProduct $model, private readonly FeatureRepositoryInterface $featureRepository)
     {
         parent::__construct($model);
     }
 
     public function process(array $data)
     {
-        if(isset($data['provider_employee_ids']) && is_array($data['provider_employee_ids'])){
-            $userBusinessIds = User::whereIn('id', $data['provider_employee_ids'])
-                ->groupBy('business_id')
-                ->pluck('business_id')->toArray();
-            $businessId = (int) request()->route('businessId');
-
-            if(count($userBusinessIds) > 1 || (isset($userBusinessIds[0]) && $userBusinessIds[0] !== $businessId) ){
-                abort(400, "Wrong Data");
-            }
-        }
-        return array_only($data, ['item_id','duration',"provider_employee_ids"]);
+        return array_only($data, ['item_id','amount']);
     }
 
     public function relations($model , array $data)
@@ -41,6 +31,8 @@ class SalonServiceRepository extends BaseRepository implements SalonServiceRepos
 
     public function createModel(array $data): Model
     {
+        if(!isset($data['amount']))
+            $data['amount'] = 1;
         $model = $this->model->create($this->process($data));
         $this->relations($model, $data);
         return $model;

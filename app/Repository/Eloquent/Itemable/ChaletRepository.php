@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Repository\Eloquent;
+namespace App\Repository\Eloquent\Itemable;
 
 
 use App\Models\Items\Chalet;
-use App\Repository\ChaletRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\FeatureRepositoryInterface;
+use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class ChaletRepository extends BaseRepository implements ChaletRepositoryInterface

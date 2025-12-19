@@ -42,11 +42,12 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Chalet whereUpdatedAt($value)
  * @mixin Eloquent
  */
-class Car extends Model
+class CarProduct extends Model
 {
     use HasFactory, Itemable, Featurable;
     protected $guarded=['id'];
     protected $casts = [];
     protected $hidden = ['created_at','updated_at'];
+    public $timestamps = false;
 
 }

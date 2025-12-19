@@ -14,12 +14,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('cars', callback: function (Blueprint $table) {
+        Schema::create('car_products', callback: function (Blueprint $table) {
             $table->id();
             $table->enum('color', [CarColor::all()])->nullable();
-            $table->string('brand_id')->nullable();
+            $table->unsignedBigInteger('brand_id')->nullable();
             $table->foreign('brand_id')->references('id')->on('car_brands')->onDelete('cascade');
-            $table->string('model_id')->nullable();
+            $table->unsignedBigInteger('model_id')->nullable();
             $table->foreign('model_id')->references('id')->on('car_models')->onDelete('cascade');
             $table->string('year')->nullable();
             $table->string('vin')->nullable();
@@ -38,6 +38,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('cars');
+        Schema::dropIfExists('car_products');
     }
 };

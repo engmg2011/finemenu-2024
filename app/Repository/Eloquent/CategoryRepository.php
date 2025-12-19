@@ -142,8 +142,9 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             }
             $lastCatId = $categories->count() ? $categories->last()->id : null;
             // TODO :: choose first of user locales
-            $created_category = $this->create([
-                "locales" => [["name" => $category_name, 'locale' => 'en'], ["name" => $category_name, 'locale' => 'ar']],
+            $created_category = $this->createModel([
+                "locales" => [["name" => $category_name, 'locale' => 'en'],
+                    ["name" => $category_name, 'locale' => 'ar']],
                 "image" => $image_path,
                 "user_id" => $userId,
                 "business_id" => $menu->business_id,

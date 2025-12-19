@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Feature;
-use App\Models\Items\Car;
+use App\Models\Items\CarProduct;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\FeatureOptionsRepository;
 use App\Repository\Eloquent\FeatureRepository;
@@ -122,7 +122,7 @@ class CarsFeaturesSeeder extends Seeder
             ]}', true);
 
         $category = $this->categoryRepository->createModel($cat);
-        Category::find($category->id)->update(['itemable_type' => Car::class]);
+        Category::find($category->id)->update(['itemable_type' => CarProduct::class]);
         return $category;
     }
 
@@ -146,7 +146,7 @@ class CarsFeaturesSeeder extends Seeder
             "category_id" : "' . $category_id . '"
         }', true));
 
-        Feature::find($feature->id)->update(['itemable_type' => Car::class]);
+        Feature::find($feature->id)->update(['itemable_type' => CarProduct::class]);
         return $feature;
     }
 

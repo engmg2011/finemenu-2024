@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\ItemableInterfaces;
 
 use Illuminate\Database\Eloquent\Model;
 
-interface SalonServiceRepositoryInterface
+interface CarProductRepositoryInterface
 {
 
     public function process(array $data);
