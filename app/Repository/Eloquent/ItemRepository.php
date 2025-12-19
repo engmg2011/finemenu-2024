@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
+    const ItemableTypes = [
+        BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM
+    ];
 
     public function __construct(Item                                    $model,
                                 private MediaAction                     $mediaAction,
@@ -107,7 +110,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($item, $data);
 
         // Create itemable model
-        if (in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM])) {
+        if (in_array($businessType, self::ItemableTypes )) {
             $itemableData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
             switch ($businessType) {
                 case BusinessTypes::CHALET:
@@ -144,7 +147,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($model, $data);
 
         // Create itemable model
-        if (isset($data['itemable']) && in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON])) {
+        if (isset($data['itemable']) && in_array($businessType, self::ItemableTypes)) {
             $data['itemable']['item_id'] = $id;
             $itemableData = $data['itemable'];
             switch ($businessType) {
@@ -189,6 +192,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function destroy($id): ?bool
     {
         $this->localeAction->deleteEntityLocales(Item::find($id));
+        // TODO :: Delete itemable model
         return $this->delete($id);
     }
 

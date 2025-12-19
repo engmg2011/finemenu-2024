@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Don't move down
-Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:500,1']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
     Route::group(['prefix' => 'media'], function () {
         Route::post('upload', [MediaController::class, 'postUpload']);
