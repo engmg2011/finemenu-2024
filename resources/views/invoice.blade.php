@@ -139,7 +139,7 @@ $rentAmount = $totalCredit - $totalDebit;
             <span style="font-weight:bold;">{{$reservation['unit']}}</span>
         </p>
     @endif
-    @if(isset($reservable['itemable']) && $reservable['itemable']['address']['en'])
+    @if(isset($reservable['itemable']) && $reservable['itemable']['address'] && $reservable['itemable']['address']['en'])
         <p>
             <span>Address:</span>
             <span style="font-weight:bold;">
