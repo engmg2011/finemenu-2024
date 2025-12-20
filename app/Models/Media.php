@@ -67,6 +67,7 @@ class Media extends Model
         else $src = url($src);
 
         $src = str_replace("https://api.finemenu.net", "https://api.menu-ai.net", $src);
+        $src = str_replace("https://api-shalehi.menu-ai.net", "https://api.shalehi.com", $src);
 
         return $src;
     }
