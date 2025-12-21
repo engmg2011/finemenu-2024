@@ -1,37 +1,37 @@
 <?php
 
-namespace App\Repository\Eloquent;
+namespace App\Repository\Eloquent\Itemable;
 
 
-use App\Models\Items\SalonProduct;
+use App\Models\Items\CarProduct;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\FeatureRepositoryInterface;
-use App\Repository\SalonProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class SalonProductRepository extends BaseRepository implements SalonProductRepositoryInterface
+class CarProductRepository extends BaseRepository implements CarProductRepositoryInterface
 {
 
-    public function __construct(SalonProduct $model, private readonly FeatureRepositoryInterface $featureRepository)
+    public function __construct(CarProduct $model, private readonly FeatureRepositoryInterface $featureRepository)
     {
         parent::__construct($model);
     }
 
     public function process(array $data)
     {
-        return array_only($data, ['item_id','amount']);
+        return array_only($data, ['item_id', 'color', 'brand_id', 'brand_id', 'model_id', 'model_id', 'year', 'vin',
+            'license_plate', 'shape_type', 'mileage', 'engine_type', 'drive_type',]);
     }
 
-    public function relations($model , array $data)
+    public function relations($model, array $data)
     {
-        if(isset($data['featuresData']))
+        if (isset($data['featuresData']))
             $this->featureRepository->setFeatures($model, $data['featuresData']);
 
     }
 
     public function createModel(array $data): Model
     {
-        if(!isset($data['amount']))
-            $data['amount'] = 1;
         $model = $this->model->create($this->process($data));
         $this->relations($model, $data);
         return $model;

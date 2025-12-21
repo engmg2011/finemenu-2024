@@ -31,10 +31,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        if (!Type::hasType('enum')) {
-            Type::addType('enum', \Doctrine\DBAL\Types\StringType::class);
-            DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()
-                ->registerDoctrineTypeMapping('enum', 'string');
-        }
+//        if (!Type::hasType('enum')) {
+//            Type::addType('enum', \Doctrine\DBAL\Types\StringType::class);
+//            DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform()
+//                ->registerDoctrineTypeMapping('enum', 'string');
+//        }
     }
 }

@@ -2,32 +2,37 @@
 
 namespace App\Providers;
 
+use App\Repository\AreaRepositoryInterface;
 use App\Repository\BookmarkRepositoryInterface;
 use App\Repository\BranchRepositoryInterface;
+use App\Repository\BusinessRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
-use App\Repository\ChaletRepositoryInterface;
 use App\Repository\ContactRepositoryInterface;
 use App\Repository\ContentRepositoryInterface;
 use App\Repository\DeviceRepositoryInterface;
 use App\Repository\DietPlanRepositoryInterface;
 use App\Repository\DietPlanSubscriptionRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
+use App\Repository\Eloquent\AreaRepository;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Eloquent\BookmarkRepository;
 use App\Repository\Eloquent\BranchRepository;
+use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\CategoryRepository;
-use App\Repository\Eloquent\ChaletRepository;
 use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
 use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
 use App\Repository\Eloquent\DiscountRepository;
 use App\Repository\Eloquent\EventRepository;
-use App\Repository\Eloquent\AreaRepository;
 use App\Repository\Eloquent\FeatureOptionsRepository;
 use App\Repository\Eloquent\FeatureRepository;
 use App\Repository\Eloquent\HolidayRepository;
 use App\Repository\Eloquent\InvoiceRepository;
+use App\Repository\Eloquent\Itemable\CarProductRepository;
+use App\Repository\Eloquent\Itemable\ChaletRepository;
+use App\Repository\Eloquent\Itemable\SalonProductRepository;
+use App\Repository\Eloquent\Itemable\SalonServiceRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
@@ -36,19 +41,19 @@ use App\Repository\Eloquent\OrderLineRepository;
 use App\Repository\Eloquent\OrderRepository;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\Eloquent\PriceRepository;
-use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\ReservationRepository;
-use App\Repository\Eloquent\SalonProductRepository;
-use App\Repository\Eloquent\SalonServiceRepository;
-use App\Repository\Eloquent\SettingRepository;
 use App\Repository\Eloquent\SeatRepository;
+use App\Repository\Eloquent\SettingRepository;
 use App\Repository\Eloquent\UserRepository;
 use App\Repository\EloquentRepositoryInterface;
-use App\Repository\AreaRepositoryInterface;
 use App\Repository\FeatureOptionsRepositoryInterface;
 use App\Repository\FeatureRepositoryInterface;
 use App\Repository\HolidayRepositoryInterface;
 use App\Repository\InvoiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
 use App\Repository\MediaRepositoryInterface;
@@ -57,12 +62,9 @@ use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\Repository\PermissionRepositoryInterface;
 use App\Repository\PriceRepositoryInterface;
-use App\Repository\BusinessRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
-use App\Repository\SalonProductRepositoryInterface;
-use App\Repository\SalonServiceRepositoryInterface;
-use App\Repository\SettingRepositoryInterface;
 use App\Repository\SeatRepositoryInterface;
+use App\Repository\SettingRepositoryInterface;
 use App\Repository\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
@@ -107,6 +109,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SalonProductRepositoryInterface::class, SalonProductRepository::class);
         $this->app->bind(FeatureRepositoryInterface::class, FeatureRepository::class);
         $this->app->bind(FeatureOptionsRepositoryInterface::class, FeatureOptionsRepository::class);
+        $this->app->bind(CarProductRepositoryInterface::class, CarProductRepository::class);
 
     }
 

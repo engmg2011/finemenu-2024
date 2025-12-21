@@ -10,16 +10,20 @@ use App\Constants\CategoryTypes;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Item;
-use App\Repository\ChaletRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
+use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
-use App\Repository\SalonProductRepositoryInterface;
-use App\Repository\SalonServiceRepositoryInterface;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
+    const ItemableTypes = [
+        BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM
+    ];
 
     public function __construct(Item                                    $model,
                                 private MediaAction                     $mediaAction,
@@ -29,7 +33,8 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                                 private DiscountRepositoryInteface      $discountRepository,
                                 private ChaletRepositoryInterface       $chaletRepository,
                                 private SalonServiceRepositoryInterface $salonServiceRepository,
-                                private SalonProductRepositoryInterface $salonProductRepository)
+                                private SalonProductRepositoryInterface $salonProductRepository,
+                                private CarProductRepositoryInterface   $carProductRepository)
     {
         parent::__construct($model);
     }
@@ -105,11 +110,14 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($item, $data);
 
         // Create itemable model
-        if (in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON])) {
+        if (in_array($businessType, self::ItemableTypes )) {
             $itemableData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
             switch ($businessType) {
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::CARS_SHOWROOM:
+                    $itemable = $this->carProductRepository->createModel($itemableData);
                     break;
                 case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
@@ -139,12 +147,15 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($model, $data);
 
         // Create itemable model
-        if (isset($data['itemable']) && in_array($businessType, [BusinessTypes::CHALET, BusinessTypes::SALON])) {
+        if (isset($data['itemable']) && in_array($businessType, self::ItemableTypes)) {
             $data['itemable']['item_id'] = $id;
             $itemableData = $data['itemable'];
             switch ($businessType) {
                 case BusinessTypes::CHALET:
                     $itemable = $this->chaletRepository->set($itemableData);
+                    break;
+                case BusinessTypes::CARS_SHOWROOM:
+                    $itemable = $this->carProductRepository->set($itemableData);
                     break;
                 case BusinessTypes::SALON:
                     $category = Category::find($data['category_id']);
@@ -181,6 +192,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function destroy($id): ?bool
     {
         $this->localeAction->deleteEntityLocales(Item::find($id));
+        // TODO :: Delete itemable model
         return $this->delete($id);
     }
 
