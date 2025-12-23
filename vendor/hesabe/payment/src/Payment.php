@@ -60,7 +60,8 @@ class Payment
         $jsonData = json_decode($decryptedResponse, true);
 
         if (isset($jsonData['status']) && !$jsonData['status']) {
-            return 'Something went wrong';
+            \Log::critical("Hesabe : ".( $jsonData['message'] ?? "Error: Invalid data received" ));
+            return $jsonData['message'] ?? "Error: Invalid data received";
         }
 
         $token = $jsonData['response']['data'];

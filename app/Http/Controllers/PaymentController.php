@@ -28,7 +28,10 @@ class PaymentController extends Controller
         if(!$this->isPendingInvoice($referenceNumber))
             return redirect()->route('invoice.show', $referenceNumber);
         $checkoutLink = $this->paymentService->checkout($referenceNumber);
-        return redirect($checkoutLink);
+        if(str_contains($checkoutLink, 'http'))
+            return redirect($checkoutLink);
+        else
+            return $checkoutLink;
     }
 
     public function hesabeCompleted(Request $request ,$referenceNumber)
