@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('car_models', function (Blueprint $table) {
             $table->id();
+            $table->integer('sort')->default(0);
             $table->unsignedBigInteger('car_brand_id');
             $table->foreign('car_brand_id')->references('id')->on('car_brands')->onDelete('cascade');
         });

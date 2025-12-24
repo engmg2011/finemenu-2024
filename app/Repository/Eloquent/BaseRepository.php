@@ -7,7 +7,6 @@ namespace App\Repository\Eloquent;
 use App\Repository\EloquentRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class BaseRepository implements EloquentRepositoryInterface
 {
@@ -28,10 +27,6 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->create($data);
     }
 
-    /**
-     * @param array $data
-     * @return Boolean
-     */
     public function insert(array $data){
         return $this->model->insert($data);
     }

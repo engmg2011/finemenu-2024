@@ -29,7 +29,9 @@ use App\Repository\Eloquent\FeatureOptionsRepository;
 use App\Repository\Eloquent\FeatureRepository;
 use App\Repository\Eloquent\HolidayRepository;
 use App\Repository\Eloquent\InvoiceRepository;
-use App\Repository\Eloquent\Itemable\CarProductRepository;
+use App\Repository\Eloquent\Itemable\Cars\CarBrandRepository;
+use App\Repository\Eloquent\Itemable\Cars\CarModelRepository;
+use App\Repository\Eloquent\Itemable\Cars\CarProductRepository;
 use App\Repository\Eloquent\Itemable\ChaletRepository;
 use App\Repository\Eloquent\Itemable\SalonProductRepository;
 use App\Repository\Eloquent\Itemable\SalonServiceRepository;
@@ -50,6 +52,8 @@ use App\Repository\FeatureOptionsRepositoryInterface;
 use App\Repository\FeatureRepositoryInterface;
 use App\Repository\HolidayRepositoryInterface;
 use App\Repository\InvoiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\CarBrandRepositoryInterface;
+use App\Repository\ItemableInterfaces\CarModelRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
@@ -110,6 +114,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(FeatureRepositoryInterface::class, FeatureRepository::class);
         $this->app->bind(FeatureOptionsRepositoryInterface::class, FeatureOptionsRepository::class);
         $this->app->bind(CarProductRepositoryInterface::class, CarProductRepository::class);
+        $this->app->bind(CarModelRepositoryInterface::class, CarModelRepository::class);
+        $this->app->bind(CarBrandRepositoryInterface::class, CarBrandRepository::class);
 
     }
 

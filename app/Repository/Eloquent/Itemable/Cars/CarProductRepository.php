@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repository\Eloquent\Itemable;
+namespace App\Repository\Eloquent\Itemable\Cars;
 
 
-use App\Models\Items\CarProduct;
+use App\Models\Items\Cars\CarProduct;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\FeatureRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
