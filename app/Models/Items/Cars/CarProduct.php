@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models\Items;
+namespace App\Models\Items\Cars;
 
 use App\Models\Item;
+use App\Models\Items\Chalet;
 use App\Traits\Featurable;
 use App\Traits\Itemable;
 use Eloquent;
