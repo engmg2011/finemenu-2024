@@ -5,14 +5,15 @@ namespace App\Repository\Eloquent\Itemable;
 
 use App\Models\Items\Chalet;
 use App\Repository\Eloquent\BaseRepository;
+use App\Repository\FeatureRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
-use App\Repository\LocaleRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class ChaletRepository extends BaseRepository implements ChaletRepositoryInterface
 {
 
-    public function __construct(Chalet $model, private LocaleRepositoryInterface $localeAction)
+    public function __construct(Chalet $model,
+                                private readonly FeatureRepositoryInterface $featureRepository)
     {
         parent::__construct($model);
     }
