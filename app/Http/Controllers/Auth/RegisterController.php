@@ -109,6 +109,10 @@ class RegisterController extends Controller
 
     public function sendOTP($data, $otp)
     {
+        if(env('APP_ENV') !== 'production'){
+            \Log::info($otp);
+            return true;
+        }
         if(isset($data['phone']) && $data['phone'] !== "") {
             $sms = app(SmsService::class);
             try {
