@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 class ChaletRepository extends BaseRepository implements ChaletRepositoryInterface
 {
 
-    public function __construct(Chalet $model, private readonly FeatureRepositoryInterface $featureRepository)
+    public function __construct(Chalet $model,
+                                private readonly FeatureRepositoryInterface $featureRepository)
     {
         parent::__construct($model);
     }

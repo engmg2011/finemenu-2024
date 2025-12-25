@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Feature;
-use App\Models\Items\CarProduct;
+use App\Models\Items\Cars\CarProduct;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\FeatureOptionsRepository;
 use App\Repository\Eloquent\FeatureRepository;

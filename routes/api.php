@@ -3,6 +3,8 @@
 use App\Constants\ConfigurationConstants;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
+use App\Http\Controllers\Cars\CarBrandsController;
+use App\Http\Controllers\Cars\CarModelsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ContentsController;
 use App\Http\Controllers\DevicesController;
@@ -209,6 +211,27 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
         Route::post('/{id}/delete', [FeaturesController::class, 'destroy']);
     });
 
+    Route::group(['prefix' => 'car-brands'], function () {
+        Route::get('/', [CarBrandsController::class, 'index']);
+        Route::post('/', [CarBrandsController::class, 'create']);
+        Route::post('/sort', [CarBrandsController::class, 'sort']);
+        Route::group(['prefix' => '{brandId}'], function () {
+            Route::post('/', [CarBrandsController::class, 'update']);
+            Route::get('/', [CarBrandsController::class, 'show']);
+            Route::post('/delete', [CarBrandsController::class, 'destroy']);
+            Route::group(['prefix' => 'car-models'], function () {
+                Route::get('/', [CarModelsController::class, 'index']);
+                Route::post('/', [CarModelsController::class, 'create']);
+                Route::post('/sort', [CarModelsController::class, 'sort']);
+                Route::post('/{id}', [CarModelsController::class, 'update']);
+                Route::get('/{id}', [CarModelsController::class, 'show']);
+                Route::post('/{id}/delete', [CarModelsController::class, 'destroy']);
+            });
+        });
+    });
+
+
+
 });
 
 
@@ -242,3 +265,5 @@ Route::get('sendOS', function () {
         $subtitle = null
     );
 });
+
+Route::get('car-brands', [WebAppController::class, 'carBrands']);
