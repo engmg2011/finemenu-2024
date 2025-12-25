@@ -56,5 +56,11 @@ return [
         'rest_api_url' => env('ONESIGNAL_REST_API_URL', 'https://onesignal.com/api/v1'), // ✅ Add this
         'guzzle_client_timeout' => env('ONESIGNAL_TIMEOUT', 0), // Add this line
     ],
+    'sms' => [
+        'url'    => env('SMS_API_URL'),
+        'key'    => env('SMS_API_KEY'),
+        'sender' => env('SMS_SENDER'),
+    ],
+
 
 ];
