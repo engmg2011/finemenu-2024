@@ -12,10 +12,12 @@ use App\Providers\RouteServiceProvider;
 use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\UserRepositoryInterface;
+use App\Services\SmsService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -105,6 +107,37 @@ class RegisterController extends Controller
         return $tried->tries < $triesAvailable;
     }
 
+    public function sendOTP($data, $otp)
+    {
+        if(isset($data['phone']) && $data['phone'] !== "") {
+            $sms = app(SmsService::class);
+            try {
+                $msg = $sms->sendEnglish(
+                    $data['phone'],
+                    'Your OTP is ' . $otp
+                );
+                \Log::info($msg);
+                return true;
+            }catch (\Exception $e){
+                \Log::error($e->getMessage());
+                return false;
+            }
+        }
+        else{
+            try{
+                Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($data) {
+                    $message->to($data['email'])
+                        ->subject('Your OTP Code');
+                });
+                return true;
+            }catch (\Exception $e){
+                \Log::error($e->getMessage());
+                return false;
+            }
+        }
+
+    }
+
     /**
      * @param $data
      * @return void
@@ -112,7 +145,9 @@ class RegisterController extends Controller
     public function sendCodeProcess($data): bool
     {
         // TODO:: create a random code
-        $randomCode = '123456';
+        $randomCode = random_int(100000, 999999);
+        if(!$this->sendOTP($data, $randomCode))
+            return false;
 
         // TODO :: set $available_code_tries = 3
         $available_code_tries = 30;
