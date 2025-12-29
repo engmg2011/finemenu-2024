@@ -6,8 +6,8 @@
  *
  * Hint you can use direct in crontab
  *
- *  * * * * /usr/bin/curl -s -X GET "https://api-shalehi.menu-ai.net/cancel-pending-reservations"
- *  * * * * /usr/bin/curl -s -X GET "https://api-shalehi.menu-ai.net/queue-work"
+ *  * * * * /usr/bin/curl -s -X GET "https://api.shalehi.com/cancel-pending-reservations"
+ *  * * * * /usr/bin/curl -s -X GET "https://api.shalehi.com/queue-work"
  *
  *
  */

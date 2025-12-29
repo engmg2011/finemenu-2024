@@ -4,7 +4,6 @@
 namespace App\Traits;
 
 
-use App\Models\Feature;
 use App\Models\Item;
 
 trait Itemable
