@@ -63,13 +63,14 @@ $rentAmount = $totalCredit - $totalDebit;
     <!-- Booking details -->
 <div style="{{ $divStyle }}">
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
-        {{ $invoice->reservation->branch->locales[0]->name }}
+        {{ $invoice->reservation->branch->locales[0]->name ?? "" }}
         INVOICE
     </h2>
     @php
-        $logoSetting = collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo');
+        $logoSetting =isset($invoice->reservation->business->settings) ?
+         collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
         // create base64 image
-        if($logoSetting['data'][0]['src']){
+        if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
             $avatarUrl = $logoSetting['data'][0]['src'];
 
             // storage_path('app/public/10/5405_Shalehi_icon.png');
@@ -87,7 +88,7 @@ $rentAmount = $totalCredit - $totalDebit;
             $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
         }
     @endphp
-    @if($logoSetting['data'][0]['src'] ?? false)
+    @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false)
         <img id='base64image' src='{{ $imageData }}' alt=""
              style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
     @endif
