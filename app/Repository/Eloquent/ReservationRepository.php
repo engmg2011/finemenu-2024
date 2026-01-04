@@ -217,6 +217,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $resData['reservable'] = $olData['item'];
         $resData['reserved_for'] = $olData['user'];
         $resData['reserved_by'] = $olData['user'];
+        $resData['follower'] = $olData['follower'];
         $resData += array_only($olData, ['addons', 'invoices', 'discounts', 'subtotal_price', 'total_price']);
         return $resData;
     }
@@ -235,6 +236,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 'business_id' => request()->route('businessId'),
                 'branch_id' => request()->route('branchId'),
             ];
+        \Log::debug("reservation data", $reservationData);
+        $reservationData['data']['follower'] = isset($reservation['follower_id']) ? User::find($reservation['follower_id']) : null;
         if (isset($reservationData['id']) && $reservationData['id'])
             $this->update($reservationData['id'], $reservationData);
         else

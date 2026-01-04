@@ -8,6 +8,7 @@ use App\Models\Addon;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Price;
+use App\Models\User;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
 use Carbon\Carbon;
@@ -161,8 +162,6 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     {
         $data['user_id'] = auth('sanctum')->user()->id;
         $orderLine = $this->create($this->process($data));
-
-
         $this->processRelations($orderLine, $data, true);
         return $orderLine;
     }
