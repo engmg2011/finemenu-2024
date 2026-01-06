@@ -60,7 +60,12 @@ return [
         'url'    => env('SMS_API_URL'),
         'key'    => env('SMS_API_KEY'),
         'sender' => env('SMS_SENDER'),
+        'medium' => env('SMS_MEDIUM'),
     ],
-
+    'twilio' => [
+        'sid'   => env('TWILIO_SID'),
+        'token' => env('TWILIO_AUTH_TOKEN'),
+        'from'  => env('TWILIO_FROM'),
+    ],
 
 ];

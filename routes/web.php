@@ -85,4 +85,14 @@ Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
 Route::get('ar-pdf',[InvoicesController::class , 'arPdf']);
 
+Route::get('send-sms', function(\App\Services\SmsService $twilio)
+{
+    $otp = rand(1000, 9999);
+//    $twilio->sendByTwilio('+96565708188', $otp);
+    return response()->json([
+        'message' => 'OTP sent successfully'
+    ]);
+});
+
+
 

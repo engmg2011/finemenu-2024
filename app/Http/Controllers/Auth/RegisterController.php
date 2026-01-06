@@ -116,7 +116,7 @@ class RegisterController extends Controller
         if(isset($data['phone']) && $data['phone'] !== "") {
             $sms = app(SmsService::class);
             try {
-                $msg = $sms->sendEnglish(
+                $msg = $sms->sendSMS(
                     $data['phone'],
                     'Your OTP is ' . $otp
                 );

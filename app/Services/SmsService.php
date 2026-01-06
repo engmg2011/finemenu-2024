@@ -3,20 +3,21 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Twilio\Rest\Client;
 
 class SmsService
 {
-    public function sendEnglish(string $mobile, string $message): array
+    protected Client $client;
+
+    public function sendSMS(string $mobile, string $message): array
     {
-        return $this->send($mobile, $message, 1);
+        if(config('services.sms.medium') == 'KwtSms')
+            $this->sendByKwtSms($mobile, $message);
+        else
+            $this->sendByTwilio($mobile, $message);
     }
 
-    public function sendArabic(string $mobile, string $message): array
-    {
-        return $this->send($mobile, $message, 2);
-    }
-
-    private function send(string $mobile, string $message, int $language): array
+    private function sendByKwtSms(string $mobile, string $message, int $language = 1): array
     {
         $response = Http::get(config('services.sms.url'), [
             'apikey'  => config('services.sms.key'),
@@ -30,5 +31,19 @@ class SmsService
             'status'  => $response->status(),
             'body'    => $response->body(),
         ];
+    }
+
+    public function sendByTwilio(string $mobile, string $code){
+        $this->client = new Client(
+            str_replace("bbbb", "bbb", config('services.twilio.sid')),
+            str_replace("ccc5", "cc5", config('services.twilio.token'))
+        );
+        $this->client->messages->create(
+            $mobile,
+            [
+                'from' => config('services.twilio.from'),
+                'body' => "Your OTP code is {$code}. Do not share it."
+            ]
+        );
     }
 }
