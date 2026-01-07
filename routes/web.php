@@ -94,5 +94,11 @@ Route::get('send-sms', function(\App\Services\SmsService $twilio)
     ]);
 });
 
+Route::get('send-email', function (){
+    Mail::raw('Hello from Barq Solutions !', function ($message) {
+        $message->to('eng.mg2011@gmail.com')
+            ->subject('Test Email from Barq Solutions');
+    });
+});
 
 
