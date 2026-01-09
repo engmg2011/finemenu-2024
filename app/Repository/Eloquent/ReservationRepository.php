@@ -214,10 +214,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     public function orderLineToReservationData($olData)
     {
         $resData = [];
-        $resData['reservable'] = $olData['item'];
-        $resData['reserved_for'] = $olData['user'];
-        $resData['reserved_by'] = $olData['user'];
-        $resData['follower'] = $olData['follower'];
+        $resData['reservable'] = $olData['item'] ?? [];
+        $resData['reserved_for'] = $olData['user'] ?? [];
+        $resData['reserved_by'] = $olData['user'] ?? [];
+        $resData['follower'] = $olData['follower'] ?? [];
         $resData += array_only($olData, ['addons', 'invoices', 'discounts', 'subtotal_price', 'total_price']);
         return $resData;
     }
