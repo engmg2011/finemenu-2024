@@ -177,7 +177,7 @@ return [
          * Application Service Providers...
          */
         //Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
-//        App\Providers\TelescopeServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         App\Providers\RepositoryServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
 //        NotificationChannels\OneSignal\OneSignalServiceProvider::class,

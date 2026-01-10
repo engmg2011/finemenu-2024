@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\TelescopeAuth;
 use Laravel\Telescope\Http\Middleware\Authorize;
 use Laravel\Telescope\Watchers;
 
@@ -77,7 +78,8 @@ return [
 
     'middleware' => [
         'web',
-        'auth:sanctum'
+        'auth:sanctum',
+        TelescopeAuth::class
     ],
 
     /*
@@ -166,4 +168,5 @@ return [
 
         Watchers\ViewWatcher::class => env('TELESCOPE_VIEW_WATCHER', true),
     ],
+    'admins' => explode(",", env('TELESCOPE_ADMINS', "")) ?? [],
 ];
