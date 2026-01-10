@@ -36,7 +36,8 @@ class ReservationDataSeeder extends Seeder
                 "reserved_by" => $reservation->reservedBy,
                 "invoices" => $reservation->invoices,
                 "subtotal_price" => $price,
-                "total_price" => $price
+                "total_price" => $price,
+                "follower" => $reservation->follower
             ];
 
             $reservation->update(['data' => $cachedData]);

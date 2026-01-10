@@ -8,6 +8,7 @@ use App\Models\Addon;
 use App\Models\Item;
 use App\Models\OrderLine;
 use App\Models\Price;
+use App\Models\User;
 use App\Repository\OrderLineRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
 use Carbon\Carbon;
@@ -81,39 +82,39 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
      * @param bool $create
      * @return void
      */
-    public function processRelations(&$orderLine, &$data, bool $create = false)
+    public function processRelations(&$model, &$data, bool $create = false)
     {
         $item = $this->getItemWithRelations($data);
 
-        if (!isset($orderLine['subtotal_price']) || !isset($orderLine['total_price'])) {
-            $this->setOrderLinePrices($orderLine);
+        if (!isset($model['subtotal_price']) || !isset($model['total_price'])) {
+            $this->setOrderLinePrices($model);
         }
 
-        $orderLine['data'] = [];
+        $model['data'] = [];
 
         // apply discounts -- take care of sorting, must be first
-        $this->applyDiscounts($orderLine, $item);
+        $this->applyDiscounts($model, $item);
 
-        $this->applyAddons($orderLine, $item);
+        $this->applyAddons($model, $item, $data);
 
-        $this->applyInsurance($orderLine, $item);
+        $this->applyInsurance($model, $item);
 
         // caching orderLine item data
-        $orderLine['data'] += [
+        $model['data'] += [
             "item" => $item,
             "user" => auth()->user(),
-            'subtotal_price' => $orderLine['subtotal_price'],
-            'total_price' => $orderLine['total_price'],
+            'subtotal_price' => $model['subtotal_price'],
+            'total_price' => $model['total_price'],
         ];
 
-        $orderLine = tap(OrderLine::find($orderLine->id))->update([
-            'subtotal_price' => $orderLine['subtotal_price'],
-            'total_price' => $orderLine['total_price'],
-            'data' => $orderLine['data']
+        $model = tap(OrderLine::find($model->id))->update([
+            'subtotal_price' => $model['subtotal_price'],
+            'total_price' => $model['total_price'],
+            'data' => $model['data']
         ]);
 
         if (isset($data['reservation']))
-            $this->reservationRepository->set($item, $orderLine, $data['reservation']);
+            $this->reservationRepository->set($item, $model, $data['reservation']);
 
     }
 
@@ -131,18 +132,21 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         $orderLine['total_price'] = $itemPrice - $discountAmount;
     }
 
-    public function applyAddons(&$orderLine, $item)
+    public function applyAddons(&$model, $item, $data)
     {
         // orderLine addons data
         $addonsPrice = 0;
         $addons = $item['addons'] ?? [];
-        for ($i = 0; $i < count($addons); $i++) {
-            $addonsPrice += $addons[$i]['price'];
-            $addons[$i]['locales'] = Addon::with('locales')->find($addons[$i]['id'])?->locales ?? [];
+        if(isset($data['addon_ids']) && count($data['addon_ids']) > 0){
+            for ($i = 0; $i < count($addons); $i++) {
+                if(!in_array($addons[$i]['id'], $data['addon_ids'])) continue;
+                $addonsPrice += $addons[$i]['price'];
+                $addons[$i]['locales'] = Addon::with('locales')->find($addons[$i]['id'])?->locales ?? [];
+            }
         }
-        $orderLine['data'] += ["addons" => $addons];
-        $orderLine['total_price'] += $addonsPrice;
-        $orderLine['subtotal_price'] += $addonsPrice;
+        $model['data'] += ["addons" => $addons];
+        $model['total_price'] += $addonsPrice;
+        $model['subtotal_price'] += $addonsPrice;
     }
 
     public function applyInsurance(&$orderLine, $item)
@@ -158,8 +162,6 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
     {
         $data['user_id'] = auth('sanctum')->user()->id;
         $orderLine = $this->create($this->process($data));
-
-
         $this->processRelations($orderLine, $data, true);
         return $orderLine;
     }

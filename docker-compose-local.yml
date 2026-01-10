@@ -178,8 +178,8 @@ services:
         ports:
             - "8787:8888"
         environment:
-            - ALLOWED_SOURCES=['api-shalehi.menu-ai.net']
-            - HTTP_LOADER_ALLOWED_SOURCES=['api-shalehi.menu-ai.net','menu-ai.net','finemenu.net']
+            - ALLOWED_SOURCES=['api.shalehi.com']
+            - HTTP_LOADER_ALLOWED_SOURCES=['api.shalehi.com','menu-ai.net','finemenu.net']
             - HTTP_LOADER_FORWARD_ALLOWED_SOURCES=true
             - MAX_SOURCE_SIZE=10485760  # 10MB
             - ALLOW_UNSAFE_URL=True

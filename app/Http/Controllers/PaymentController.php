@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
 
-    public function __construct(private PaymentService  $paymentService = new PaymentService())
+    public function __construct(private PaymentService $paymentService = new PaymentService())
     {
     }
 
@@ -25,39 +25,37 @@ class PaymentController extends Controller
     {
         $this->paymentService = new PaymentService(new Hesabe());
         // disable multiple payment
-        if(!$this->isPendingInvoice($referenceNumber))
+        if (!$this->isPendingInvoice($referenceNumber))
             return redirect()->route('invoice.show', $referenceNumber);
         $checkoutLink = $this->paymentService->checkout($referenceNumber);
-        if(str_contains($checkoutLink, 'http'))
+        if (str_contains($checkoutLink, 'http'))
             return redirect($checkoutLink);
         else
             return $checkoutLink;
     }
 
-    public function hesabeCompleted(Request $request ,$referenceNumber)
+    public function hesabeCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
         return $this->paymentService->completed($request, $referenceNumber);
     }
 
-    public function success()
+    public function success(Request $request)
     {
-        $data = ["msg" => "Completed Successfully", "color" =>"green"];
-        $callback = session('paymentCallback');
-        if(isset($callback) && $callback !== ''){
-            session()->forget('paymentCallback');
-            return redirect($callback . '?success=true' );
+        $data = ["msg" => "Completed Successfully", "color" => "green"];
+        $callback = decrypt($request->query('encryptedData'));
+        if (isset($callback) && is_array($callback) && $callback['callbackUrl'] !== '') {
+            return redirect($callback['callbackUrl'] . '?success=true');
         }
         return view('payment.success', $data);
     }
 
-    public function failed()
+    public function failed(Request $request)
     {
-        $data = ["msg" => "Error: Invalid data received", "color" =>"red"];
-        $callback = session('payment-callback');
-        if(isset($callback) && $callback !== ''){
-            session()->forget('payment-callback');
-            return redirect($callback . '?success=false' );
+        $data = ["msg" => "Error: Invalid data received", "color" => "red"];
+        $callback = decrypt($request->query('encryptedData'));
+        if (isset($callback) && is_array($callback) && $callback['callbackUrl'] !== '') {
+            return redirect($callback['callbackUrl'] . '?success=false');
         }
         return view('payment.failed', $data);
     }

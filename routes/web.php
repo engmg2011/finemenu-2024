@@ -3,6 +3,7 @@
 use App\Events\MyEvent;
 use App\Http\Controllers\InvoicesController;
 use App\Jobs\ProcessPodcast;
+use App\Mail\TestQueuedMail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -84,5 +85,20 @@ Route::get('queue-work', function (){
 Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
 Route::get('ar-pdf',[InvoicesController::class , 'arPdf']);
+
+Route::get('send-sms', function(\App\Services\SmsService $twilio)
+{
+    $otp = rand(1000, 9999);
+//    $twilio->sendByTwilio('+96565708188', $otp);
+    return response()->json([
+        'message' => 'OTP sent successfully'
+    ]);
+});
+
+Route::get('send-email', function (){
+//    Mail::to('eng.mg2011@gmail.com')
+//        ->queue(new TestQueuedMail('Hello 👋 this email is queued'));
+//    return 'Mail queued';
+});
 
 

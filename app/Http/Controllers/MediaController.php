@@ -81,7 +81,7 @@ class MediaController extends Controller
         $file = $this->request->file('file');
         $file_type = $file->getMimeType();
 
-        $file_name = rand(1000, 10000) . '_' . $file->getClientOriginalName();
+        $file_name = rand(1000, 10000) . '_' . \Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).".".$file->clientExtension();
         $savePath = $user_id . '/';
         $fixFileName = str_replace(' ', '_', $file_name);
         $fixFileName = preg_replace('/\s+/', '_', $fixFileName);
