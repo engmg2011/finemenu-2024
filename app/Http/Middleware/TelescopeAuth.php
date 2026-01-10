@@ -15,7 +15,7 @@ class TelescopeAuth
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        if(  in_array( auth('sanctum')->user()->email,  config('telescope.admins' , []))) {
+        if(  in_array( auth('sanctum')->user()?->email ?? [],  config('telescope.admins' , []))) {
             return $next($request);
         }
         return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
