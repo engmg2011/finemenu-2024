@@ -3,6 +3,7 @@
 use App\Events\MyEvent;
 use App\Http\Controllers\InvoicesController;
 use App\Jobs\ProcessPodcast;
+use App\Mail\TestQueuedMail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -95,10 +96,9 @@ Route::get('send-sms', function(\App\Services\SmsService $twilio)
 });
 
 Route::get('send-email', function (){
-//    Mail::raw('Hello from Barq Solutions !', function ($message) {
-//        $message->to('eng.mg2011@gmail.com')
-//            ->subject('Test Email from Barq Solutions');
-//    });
+//    Mail::to('eng.mg2011@gmail.com')
+//        ->queue(new TestQueuedMail('Hello 👋 this email is queued'));
+//    return 'Mail queued';
 });
 
 

@@ -2,12 +2,22 @@
 
 namespace App\Exceptions;
 
+use App\Mail\ExceptionOccurredMail;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Log;
+use Mail;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    // Todo ::
+    protected $dontReport = [
+        \Illuminate\Validation\ValidationException::class,
+        \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
+    ];
+
     /**
+     * Todo ::
      * The list of the inputs that are never flashed to the session on validation exceptions.
      *
      * @var array<int, string>
@@ -27,4 +37,41 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    // override report method
+    public function report(Throwable $e): void
+    {
+        parent::report($e);
+
+        // Avoid spamming in the local environment
+        if (app()->environment('local') || app()->environment('development')) {
+            return;
+        }
+
+        // Avoid reporting HTTP exceptions (optional)
+        if ($this->isHttpException($e)) {
+            return;
+        }
+
+        try {
+            $exceptionData = [
+                'exceptionMessage' => $e->getMessage() ?? "Exception Message not found",
+                'line' => $e->getLine() ?? "Line number not found",
+                'trace' => $e->getTraceAsString() ?? "Trace not found",
+                'url' => request()?->fullUrl() ?? "URL not found",
+                'method' => request()?->method() ?? "Method not found",
+                'ip' => request()?->ip() ?? "IP not found",
+                'env' => app()->environment() ?? "Environment not found",
+            ];
+            Mail::to('eng.mg2011@gmail.com')
+                ->queue(new ExceptionOccurredMail($exceptionData));
+
+        } catch (Throwable $mailException) {
+            Log::error('Failed to send exception email', [
+                'mail_error' => $mailException->getMessage(),
+            ]);
+        }
+
+    }
+
 }
