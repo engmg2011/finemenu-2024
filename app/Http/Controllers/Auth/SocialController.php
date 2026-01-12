@@ -33,20 +33,20 @@ class SocialController extends Controller
             $user->update([
                 'provider_id' => $socialUser->id,
                 'provider' => $provider,
-                'name' => $socialUser->name,
+                'name' => $socialUser->name ?? explode('@', $socialUser->email)[0] ?? "No name",
                 'email' => $socialUser->email,
-                'password' => encrypt($socialUser->id),
+                'password' => bcrypt($socialUser->id),
                 'email_verified_at' => now(),
             ]);
         } else {
             // Find or create a user
             $user = User::create(
                 [
-                    'name' => $socialUser->name,
+                    'name' => $socialUser->name ?? explode('@', $socialUser->email)[0] ?? "No name",
                     'email' => $socialUser->email,
                     'provider' => $provider,
                     'provider_id' => $socialUser->id,
-                    'password' => encrypt($socialUser->id),
+                    'password' => bcrypt($socialUser->id),
                     'email_verified_at' => now(),
                 ]
             );

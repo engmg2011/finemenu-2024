@@ -61,7 +61,7 @@ Route::middleware([
 
 Route::get('auth/app-token', [SocialController::class, 'appToken']);
 Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
-Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
+Route::match(['get','post'], 'auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
 
 Route::get('job', function (){
     dispatch(new ProcessPodcast());
