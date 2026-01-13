@@ -28,6 +28,10 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     {
         if (!isset($data['business_id']))
             $data['business_id'] = request()->route('businessId');
+
+        if(empty($data['sort']))
+            $data['sort'] =  Category::where('menu_id', $data['menu_id'])->max('sort') + 1 ;
+
         return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort',
             'type', 'business_id', 'itemable_type', 'icon','icon-font-type']);
     }
