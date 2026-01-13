@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('car_brands', function (Blueprint $table) {
             $table->id();
             $table->string('icon')->nullable();
-            $table->integer('sort')->default(0);
+            $table->integer('sort')->nullable()->default(0);
         });
     }
 
