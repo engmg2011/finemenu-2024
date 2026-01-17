@@ -45,6 +45,7 @@ class PricesController extends Controller
      */
     public function show($id)
     {
+        $id = request()->route('id');
         return \response()->json($this->action->get($id));
     }
 
@@ -57,6 +58,7 @@ class PricesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $id = request()->route('id');
         return \response()->json($this->action->update($id,$request->all()));
     }
 
@@ -68,6 +70,7 @@ class PricesController extends Controller
      */
     public function destroy($id)
     {
+        $id = request()->route('id');
         return \response()->json($this->action->destroy($id));
     }
 }

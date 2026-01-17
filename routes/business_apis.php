@@ -15,6 +15,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\PricesController;
 use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SeatsController;
@@ -216,6 +217,14 @@ Route::group(['middleware' => ['throttle:300,1',
             });
 
             Route::get('notes', [BranchesController::class, 'notes']);
+
+            Route::group(['prefix' => 'prices'], function () {
+                Route::get('/', [PricesController::class, 'index']);
+                Route::get('/{id}', [PricesController::class, 'show']);
+                Route::post('/', [PricesController::class, 'create']);
+                Route::post('/{id}', [PricesController::class, 'update']);
+                Route::post('/{id}/delete', [PricesController::class, 'destroy']);
+            });
 
         });
 
