@@ -1,6 +1,7 @@
 <?php
 
 use App\Constants\RolesConstants;
+use App\Http\Controllers\AddonsController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\AreasController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
@@ -224,6 +226,22 @@ Route::group(['middleware' => ['throttle:300,1',
                 Route::post('/', [PricesController::class, 'create']);
                 Route::post('/{id}', [PricesController::class, 'update']);
                 Route::post('/{id}/delete', [PricesController::class, 'destroy']);
+            });
+
+            Route::group(['prefix' => 'discounts'], function () {
+                Route::get('/', [DiscountsController::class, 'index']);
+                Route::get('/{id}', [DiscountsController::class, 'show']);
+                Route::post('/', [DiscountsController::class, 'create']);
+                Route::post('/{id}', [DiscountsController::class, 'update']);
+                Route::post('/{id}/delete', [DiscountsController::class, 'destroy']);
+            });
+
+            Route::group(['prefix' => 'addons'], function () {
+                Route::get('/', [AddonsController::class, 'index']);
+                Route::get('/{id}', [AddonsController::class, 'show']);
+                Route::post('/', [AddonsController::class, 'create']);
+                Route::post('/{id}', [AddonsController::class, 'update']);
+                Route::post('/{id}/delete', [AddonsController::class, 'destroy']);
             });
 
         });

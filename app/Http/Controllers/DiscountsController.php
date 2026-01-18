@@ -37,18 +37,18 @@ class DiscountsController extends Controller
     {
         $data = $request->all();
         $business = Business::find($data['business_id']);
-        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
-        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        $data['from'] = businessToUtcConverter($data['from'], $business, 'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business, 'Y-m-d H:i:s');
         return \response()->json($this->repository->createModel($data));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($businessId, $id)
     {
         return \response()->json($this->repository->get($id));
     }
@@ -57,25 +57,25 @@ class DiscountsController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $businessId, $id)
     {
         $data = $request->all();
         $business = Business::find($data['business_id']);
-        $data['from'] = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
-        $data['to'] = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        $data['from'] = businessToUtcConverter($data['from'], $business, 'Y-m-d H:i:s');
+        $data['to'] = businessToUtcConverter($data['to'], $business, 'Y-m-d H:i:s');
         return \response()->json($this->repository->updateModel($id, $data));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($businessId, $id)
     {
         return response()->json($this->repository->destroy($id));
     }
