@@ -9,7 +9,7 @@ class SmsService
 {
     protected Client $client;
 
-    public function sendSMS(string $mobile, string $message): array
+    public function sendSMS(string $mobile, string $message)
     {
         if(config('services.sms.medium') == 'KwtSms')
             $this->sendByKwtSms($mobile, $message);
@@ -17,7 +17,7 @@ class SmsService
             $this->sendByTwilio($mobile, $message);
     }
 
-    private function sendByKwtSms(string $mobile, string $message, int $language = 1): array
+    private function sendByKwtSms(string $mobile, string $message, int $language = 1)
     {
         $response = Http::get(config('services.sms.url'), [
             'apikey'  => config('services.sms.key'),
