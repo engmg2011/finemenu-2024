@@ -94,7 +94,7 @@ class Hesabe implements PaymentProviderInterface
                         dispatch(new SendUpdateReservationNotification($invoice->reservation->id));
                     }
                     if ($invoice->order) {
-                        $invoice->order->update(['status' => PaymentConstants::ORDER_COMPLETED]);
+                        $invoice->order->update(['paid' => true]);
                         // todo :: check if required to update order cached data
                         event(new UpdateOrder($invoice->order_id));
                         // todo :: make it update
