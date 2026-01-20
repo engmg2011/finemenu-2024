@@ -23,6 +23,7 @@ use App\Repository\OrderRepositoryInterface;
 use App\Repository\ReservationRepositoryInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use function PHPUnit\Framework\isEmpty;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -92,7 +93,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         $branchId = request()->route('branchId');
         $menuId = Branch::find($branchId)->menu_id;
-        $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->toArray();
+        $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->unique()->toArray();
         if (count($menuIds) > 1 || $menuId !== $menuIds[0])
             abort(400, "Wrong Data");
     }
@@ -117,6 +118,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                     if ($business->type === BusinessTypes::CHALET) {
                         $this->reservationRepository->checkAllowedReservationUnits($reservationData, $business->id, $branchId);
                     }
+
+                    if($business->type === BusinessTypes::SALON) {
+                        $this->reservationRepository->isFollowerAvailable($reservationData, $business->id, $branchId);
+                    }
+
                 }
 
             }

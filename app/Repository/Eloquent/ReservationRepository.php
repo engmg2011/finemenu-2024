@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\Period\Period;
 use Spatie\Period\PeriodCollection;
+use function PHPUnit\Framework\isEmpty;
 
 
 class ReservationRepository extends BaseRepository implements ReservationRepositoryInterface
@@ -194,6 +195,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
             }
         }
+        if(Business::find($businessId)->type === BusinessTypes::SALON) {
+            if (isset($data['from']) && isset($data['to'])) {
+                $this->isFollowerAvailable($data, $reservation->business_id, $reservation->branch_id, $id);
+            }
+        }
 
         // TODO:: check if data['paid']
         $model = tap($reservation)
@@ -310,7 +316,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     // checking if there is current reservation
     public function getSameReservation($reservationData, $reservable_id, $businessId, $branchId)
     {
-        return Reservation::where('reserved_for_id', auth()->user()->id)
+        $res =  Reservation::where('reserved_for_id', auth()->user()->id)
             ->where('reservable_id', $reservable_id)
             ->where('from', $reservationData['from'])
             ->where('to', $reservationData['to'])
@@ -322,10 +328,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                     $query->where('unit', $reservationData['unit']);
             })
             ->first();
+        \Log::debug("same reservation", [$res] );
+        return $res;
+
     }
 
     // get current intersected reservations with the required period
-    public function currentReservations($data, $businessId, $branchId, $updateId = null)
+    public function currentReservations($data, $businessId, $branchId, $updateId = null, $checkSameItem = true)
     {
         $business = Business::find($businessId);
 
@@ -337,13 +346,16 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $endDate = (clone $data['to'])->addSeconds($reservationMargin);
 
         $reservable_id = $data['reservable_id'];
+        // todo :: test for same id
         return Reservation::
         select(['from', 'to' , 'unit'])
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
-            ->where('reservable_id', $reservable_id)
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
+            ->where(function ($query) use ($checkSameItem, $reservable_id) {
+                if ($checkSameItem)
+                    $query->where('reservable_id', $reservable_id);
+            })
             ->where(function ($query) use ($updateId) {
-                // todo :: check for same id
                 if ($updateId)
                     $query->where('id', '!=', $updateId);
             })
@@ -412,4 +424,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         }
     }
 
+    // If the employee (the service provider)not available in the same time
+    public function isFollowerAvailable($data, $businessId, $branchId, $updateId = null){
+        if(isEmpty($data['follower_id'])) {
+            \Log::error("follower_id is empty");
+            return true;
+        }
+        $reservations = $this->currentReservations($data, $businessId, $branchId, $updateId, false);
+        $followerReservations = $reservations->filter(fn($reservation) => $reservation['follower_id'] === $data['follower_id']);
+        if($followerReservations->count() > 0)
+            abort(400, "Follower isn't available, please choose different dates or try again later");
+    }
 }

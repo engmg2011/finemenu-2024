@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Constants\ConfigurationConstants;
 use App\Constants\PermissionsConstants;
 use App\Models\Device;
-use App\Models\Reservation;
 use App\Models\User;
 use App\Notifications\DBMailNotification;
 use Berkayk\OneSignal\OneSignalClient;
@@ -15,7 +14,7 @@ use Spatie\Permission\Models\Permission;
 
 class NotificationService
 {
-    public function __construct(public Reservation $reservation)
+    public function __construct(public int $branchId)
     {
     }
 
@@ -23,7 +22,7 @@ class NotificationService
     {
         $ownerId = $business->user_id;
 
-        $permissionName = PermissionsConstants::Branch . '.' . $this->reservation->branch_id;
+        $permissionName = PermissionsConstants::Branch . '.' . $this->branchId;
         $branchAdmins = User::permission($permissionName)->pluck('id')->toArray();
 
         $branchPermissions = Permission::where('name', 'like', $permissionName . '.%')->pluck('id');

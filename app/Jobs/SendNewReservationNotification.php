@@ -26,7 +26,7 @@ class SendNewReservationNotification implements ShouldQueue
     public function __construct($reservationId)
     {
         $this->reservation = Reservation::find($reservationId);
-        $this->notificationService = new NotificationService($this->reservation);
+        $this->notificationService = new NotificationService($this->reservation->branch_id);
     }
 
     public function msg()

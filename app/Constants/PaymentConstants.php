@@ -8,6 +8,10 @@ class PaymentConstants
     const RESERVATION_CANCELED = "canceled";
     const RESERVATION_COMPLETED = "completed";
 
+    const ORDER_PENDING = "pending";
+    const ORDER_CANCELED = "canceled";
+    const ORDER_COMPLETED = "completed";
+
     const INVOICE_CREDIT = "credit";
     const INVOICE_DEBIT = "debit";
 
