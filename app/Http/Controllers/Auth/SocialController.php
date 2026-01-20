@@ -35,7 +35,6 @@ class SocialController extends Controller
                 'provider' => $provider,
                 'name' => $socialUser->name ?? explode('@', $socialUser->email)[0] ?? "No name",
                 'email' => $socialUser->email,
-                'password' => bcrypt($socialUser->id),
                 'email_verified_at' => now(),
             ]);
         } else {
