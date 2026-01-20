@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
                 'ip' => request()?->ip() ?? "IP not found",
                 'env' => app()->environment() ?? "Environment not found",
             ];
-            Mail::to('eng.mg2011@gmail.com')
+            Mail::to('barq.solutions25@gmail.com')
                 ->queue(new ExceptionOccurredMail($exceptionData));
 
         } catch (Throwable $mailException) {
