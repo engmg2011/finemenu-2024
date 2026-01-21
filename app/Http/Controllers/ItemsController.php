@@ -49,6 +49,8 @@ class ItemsController extends Controller
     {
         $data = $request->all();
         $this->setUtcDates($data, $businessId);
+        if(isset($data['similar_ids']) && is_array($data['similar_ids']) && count($data['similar_ids']) > 0)
+            $this->repository->validateSimilarItems($data['menu_id']);
         return response()->json($this->repository->create($data));
     }
 
@@ -74,6 +76,9 @@ class ItemsController extends Controller
     {
         $data = $request->all();
         $this->setUtcDates($data, $businessId);
+        if(isset($data['similar_ids']) && is_array($data['similar_ids']) && count($data['similar_ids']) > 0) {
+            $this->repository->validateSimilarItems($data['similar_ids']);
+        }
         return response()->json($this->repository->updateModel($id, $request->all()));
     }
 

@@ -33,4 +33,6 @@ interface ItemRepositoryInterface
 
     public function syncHolidays($businessId ,$itemId);
 
+    public function validateSimilarItems( array $similarIds);
+
 }
