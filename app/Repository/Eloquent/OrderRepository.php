@@ -133,7 +133,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         if (isset($orderLines) && is_array($orderLines)) {
 
-            $itemIds = array_column($orderLines, 'item_id');
+            $itemIds = array_unique(array_column($orderLines, 'item_id'));
             $items = Item::with('itemable')
                 ->where('hide', false)
                 ->where('disable_ordering', false)
