@@ -12,6 +12,7 @@ use App\Providers\RouteServiceProvider;
 use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\UserRepositoryInterface;
+use App\Services\OtpMailService;
 use App\Services\SmsService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -129,10 +130,14 @@ class RegisterController extends Controller
         }
         else{
             try{
-                Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($data) {
+                app(OtpMailService::class)->send(
+                    $data['email'],
+                    $otp
+                );
+                /*Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($data) {
                     $message->to($data['email'])
                         ->subject('Your OTP Code');
-                });
+                });*/
                 return true;
             }catch (\Exception $e){
                 \Log::error($e->getMessage());
