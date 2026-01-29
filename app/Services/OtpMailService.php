@@ -15,12 +15,19 @@ class OtpMailService
         );
         $email->setSubject("Your verification code");
         $email->addTo($to);
+
+        $html = view('emails.otp', [
+            'otp' => $otp
+        ])->render();
+        $email->addContent("text/html", $html);
+
+        /*
         $email->addContent(
             "text/html",
             "<p>Your OTP code is:</p>
              <h2>{$otp}</h2>
              <p>This code expires in 5 minutes.</p>"
-        );
+        );*/
 
         $sendgrid = new \SendGrid(config('services.sendgrid.key'));
         $sendgrid->send($email);

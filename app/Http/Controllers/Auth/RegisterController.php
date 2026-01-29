@@ -134,10 +134,6 @@ class RegisterController extends Controller
                     $data['email'],
                     $otp
                 );
-                /*Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($data) {
-                    $message->to($data['email'])
-                        ->subject('Your OTP Code');
-                });*/
                 return true;
             }catch (\Exception $e){
                 \Log::error($e->getMessage());
@@ -225,7 +221,6 @@ class RegisterController extends Controller
     {
         $data = $request->all();
         $validator = $this->resetValidator($data);
-
 
         if (!$this->userFromData($data))
             return response()->json(['message' => 'User not found'], 400);
