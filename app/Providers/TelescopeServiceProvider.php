@@ -21,6 +21,11 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $isLocal = $this->app->environment('local');
 
         Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
+            // Ignore 404 HTTP requests
+            if ($entry->type === 'request') {
+                return $entry->content['response_status'] !== 404;
+            }
+
             // todo :: remove return uncomment to make it work with errors only
             return true;
 //            return $isLocal ||

@@ -4,6 +4,7 @@ use App\Events\MyEvent;
 use App\Http\Controllers\InvoicesController;
 use App\Jobs\ProcessPodcast;
 use App\Mail\TestQueuedMail;
+use App\Services\OtpMailService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -96,9 +97,33 @@ Route::get('send-sms', function(\App\Services\SmsService $twilio)
 });
 
 Route::get('send-email', function (){
+//    app(OtpMailService::class)->send(
+//        "eng.mg2011@gmail.com",
+//        '12345'
+//    );
 //    Mail::to('eng.mg2011@gmail.com')
 //        ->queue(new TestQueuedMail('Hello 👋 this email is queued'));
 //    return 'Mail queued';
+
+//    $email = new Mail;
+//    $email->setFrom("test@example.com", "Example User");
+//    $email->setSubject("Sending with SendGrid is Fun");
+//    $email->addTo("test@example.com", "Example User");
+//    $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
+//    $email->addContent(
+//        "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
+//    );
+//    $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
+//// $sendgrid->setDataResidency("eu");
+//// uncomment the above line if you are sending mail using a regional EU subuser
+//    try {
+//        $response = $sendgrid->send($email);
+//        print $response->statusCode() . "\n";
+//        print_r($response->headers());
+//        print $response->body() . "\n";
+//    } catch (Exception $e) {
+//        echo 'Caught exception: '. $e->getMessage() ."\n";
+//    }
 });
 
 

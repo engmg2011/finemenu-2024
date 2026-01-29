@@ -67,5 +67,10 @@ return [
         'token' => env('TWILIO_AUTH_TOKEN'),
         'from'  => env('TWILIO_FROM'),
     ],
+    'sendgrid' => [
+        'key'  => env('SENDGRID_API_KEY'),
+        'from' => env('SENDGRID_FROM'),
+        'name' => env('SENDGRID_FROM_NAME'),
+    ],
 
 ];

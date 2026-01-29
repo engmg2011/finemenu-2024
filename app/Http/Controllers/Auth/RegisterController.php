@@ -12,6 +12,7 @@ use App\Providers\RouteServiceProvider;
 use App\Repository\Eloquent\BusinessRepository;
 use App\Repository\Eloquent\PermissionRepository;
 use App\Repository\UserRepositoryInterface;
+use App\Services\OtpMailService;
 use App\Services\SmsService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -129,10 +130,10 @@ class RegisterController extends Controller
         }
         else{
             try{
-                Mail::send('emails.otp', ['otp' => $otp], function ($message) use ($data) {
-                    $message->to($data['email'])
-                        ->subject('Your OTP Code');
-                });
+                app(OtpMailService::class)->send(
+                    $data['email'],
+                    $otp
+                );
                 return true;
             }catch (\Exception $e){
                 \Log::error($e->getMessage());
@@ -220,7 +221,6 @@ class RegisterController extends Controller
     {
         $data = $request->all();
         $validator = $this->resetValidator($data);
-
 
         if (!$this->userFromData($data))
             return response()->json(['message' => 'User not found'], 400);
