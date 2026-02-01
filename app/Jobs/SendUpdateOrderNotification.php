@@ -54,20 +54,25 @@ class SendUpdateOrderNotification implements ShouldQueue
      */
     public function handle(): void
     {
-        $business = Business::with('locales')->find($this->order->business_id);
-        $adminIds = $this->notificationService->getManagersIds($business);
+        if($this->order->orderable_type !== get_class(new Branch())){
+            $business = Business::with('locales')->find($this->order->business_id);
+            $adminIds = $this->notificationService->getManagersIds($business);
 
-        $msg = $this->msg();
+            $msg = $this->msg();
 
-        $this->notificationService->sendDBNotifications([$this->order->reserved_for_id, ...$adminIds],
-            $msg['subject'], $msg['message']);
+            $this->notificationService->sendDBNotifications([$this->order->reserved_for_id, ...$adminIds],
+                $msg['subject'], $msg['message']);
 
-        try {
-            $this->notificationService->sendQrAppOSNotifications($msg['message'], $business, [$this->order->reserved_for_id]);
-            $this->notificationService->sendOrdersAppOSNotifications($msg['message'], $business, $adminIds);
-        } catch (\Exception $exception) {
-            \Log::error(json_encode(["msg" => "Couldn't send notification to multiple devices ",
-                "ex" => $exception->getMessage()]));
+            try {
+                $this->notificationService->sendQrAppOSNotifications($msg['message'], $business, [$this->order->reserved_for_id]);
+                $this->notificationService->sendOrdersAppOSNotifications($msg['message'], $business, $adminIds);
+            } catch (\Exception $exception) {
+                \Log::error(json_encode(["msg" => "Couldn't send notification to multiple devices ",
+                    "ex" => $exception->getMessage()]));
+            }
+        }
+        else{
+            \Log::debug("Order is not related to a business ". $this->order->id);
         }
     }
 }
