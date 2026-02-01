@@ -25,7 +25,11 @@ use Illuminate\Database\Eloquent\Model;
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
     const ItemableTypes = [
-        BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM
+        BusinessTypes::CHALET,
+        BusinessTypes::SALON,
+        BusinessTypes::CARS_SHOWROOM,
+        BusinessTypes::INFLUENCER,
+        BusinessTypes::RESTAURANT
     ];
 
     public function __construct(Item                                         $model,
