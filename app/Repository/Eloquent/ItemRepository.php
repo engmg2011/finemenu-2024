@@ -13,6 +13,9 @@ use App\Models\Item;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerServiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\Restaurant\RestaurantProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
@@ -25,16 +28,19 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM
     ];
 
-    public function __construct(Item                                    $model,
-                                private MediaAction                     $mediaAction,
-                                private LocaleRepository                $localeAction,
-                                private PriceRepository                 $priceAction,
-                                private AddonAction                     $addonAction,
-                                private DiscountRepositoryInteface      $discountRepository,
-                                private ChaletRepositoryInterface       $chaletRepository,
-                                private SalonServiceRepositoryInterface $salonServiceRepository,
-                                private SalonProductRepositoryInterface $salonProductRepository,
-                                private CarProductRepositoryInterface   $carProductRepository)
+    public function __construct(Item                                         $model,
+                                private MediaAction                          $mediaAction,
+                                private LocaleRepository                     $localeAction,
+                                private PriceRepository                      $priceAction,
+                                private AddonAction                          $addonAction,
+                                private DiscountRepositoryInteface           $discountRepository,
+                                private ChaletRepositoryInterface            $chaletRepository,
+                                private SalonServiceRepositoryInterface      $salonServiceRepository,
+                                private SalonProductRepositoryInterface      $salonProductRepository,
+                                private CarProductRepositoryInterface        $carProductRepository,
+                                private InfluencerProductRepositoryInterface $influencerProductRepository,
+                                private InfluencerServiceRepositoryInterface $influencerServiceRepository,
+                                private RestaurantProductRepositoryInterface $restaurantProductRepository)
     {
         parent::__construct($model);
     }
@@ -110,7 +116,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($item, $data);
 
         // Create itemable model
-        if (in_array($businessType, self::ItemableTypes )) {
+        if (in_array($businessType, self::ItemableTypes)) {
             $itemableData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
             switch ($businessType) {
                 case BusinessTypes::CHALET:
@@ -125,6 +131,16 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                         $itemable = $this->salonServiceRepository->createModel($itemableData);
                     else
                         $itemable = $this->salonProductRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::INFLUENCER:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->influencerServiceRepository->createModel($itemableData);
+                    else
+                        $itemable = $this->influencerProductRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::RESTAURANT:
+                    $itemable = $this->restaurantProductRepository->createModel($itemableData);
                     break;
                 default:
                     break;
@@ -163,6 +179,16 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                         $itemable = $this->salonServiceRepository->set($itemableData);
                     else
                         $itemable = $this->salonProductRepository->set($itemableData);
+                    break;
+                case BusinessTypes::INFLUENCER:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->influencerServiceRepository->set($itemableData);
+                    else
+                        $itemable = $this->influencerProductRepository->set($itemableData);
+                    break;
+                case BusinessTypes::RESTAURANT:
+                    $itemable = $this->restaurantProductRepository->set($itemableData);
                     break;
                 default:
                     break;

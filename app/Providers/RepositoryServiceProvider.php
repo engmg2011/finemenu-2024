@@ -33,6 +33,9 @@ use App\Repository\Eloquent\Itemable\Cars\CarBrandRepository;
 use App\Repository\Eloquent\Itemable\Cars\CarModelRepository;
 use App\Repository\Eloquent\Itemable\Cars\CarProductRepository;
 use App\Repository\Eloquent\Itemable\ChaletRepository;
+use App\Repository\Eloquent\Itemable\Influencer\InfluencerProductRepository;
+use App\Repository\Eloquent\Itemable\Influencer\InfluencerServiceRepository;
+use App\Repository\Eloquent\Itemable\Restaurant\RestaurantProductRepository;
 use App\Repository\Eloquent\Itemable\SalonProductRepository;
 use App\Repository\Eloquent\Itemable\SalonServiceRepository;
 use App\Repository\Eloquent\ItemRepository;
@@ -56,6 +59,9 @@ use App\Repository\ItemableInterfaces\CarBrandRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarModelRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerServiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\Restaurant\RestaurantProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
@@ -116,6 +122,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CarProductRepositoryInterface::class, CarProductRepository::class);
         $this->app->bind(CarModelRepositoryInterface::class, CarModelRepository::class);
         $this->app->bind(CarBrandRepositoryInterface::class, CarBrandRepository::class);
+        $this->app->bind(InfluencerServiceRepositoryInterface::class, InfluencerServiceRepository::class);
+        $this->app->bind(InfluencerProductRepositoryInterface::class, InfluencerProductRepository::class);
+        $this->app->bind(RestaurantProductRepositoryInterface::class, RestaurantProductRepository::class);
 
     }
 
