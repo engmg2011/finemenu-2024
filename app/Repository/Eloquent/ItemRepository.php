@@ -57,7 +57,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     public function process(array $data)
     {
         return array_only($data, ['category_id', 'user_id', 'sort', 'hide',
-            'disable_ordering', 'itemable_id', 'itemable_type']);
+            'disable_ordering', 'itemable_id', 'itemable_type', 'similar_ids']);
     }
 
     public static array $modelRelations = ['locales', 'media', 'prices.locales', 'addons.locales',
@@ -267,5 +267,19 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $item = $this->model->find($itemId);
         $item->holidays()->sync($holidaysData);
         return ['message' => 'Holidays synced successfully.'];
+    }
+
+    public function validateSimilarItems(array $similarIds )
+    {
+        if(count($similarIds)){
+            $similarIds[] = request()->route('id');
+            $itemIds = $this->model->select(['id', 'category_id']) ->whereIn('id', $similarIds)->get()->toArray();
+            if (count($itemIds) < count($similarIds) )
+                abort(400, "Wrong Data, Items don't exist");
+            $categoryIds = collect($itemIds)->pluck('category_id')->unique()->toArray();
+            $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->unique()->toArray();
+            if (count($menuIds) > 1 )
+                abort(400, "Wrong Data, Items don't belong to the same menu");
+        }
     }
 }

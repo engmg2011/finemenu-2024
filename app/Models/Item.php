@@ -71,7 +71,7 @@ class Item extends Model
         Priceable, Discountable, Addonable, Reservable, Settable;
 
     protected $guarded = ['id'];
-    protected $casts = ['hide' => 'boolean', 'disable_ordering' => 'boolean'];
+    protected $casts = ['hide' => 'boolean', 'disable_ordering' => 'boolean', 'similar_ids' => 'array'];
 
     public function user()
     {
