@@ -33,6 +33,8 @@ use App\Repository\Eloquent\Itemable\Cars\CarBrandRepository;
 use App\Repository\Eloquent\Itemable\Cars\CarModelRepository;
 use App\Repository\Eloquent\Itemable\Cars\CarProductRepository;
 use App\Repository\Eloquent\Itemable\ChaletRepository;
+use App\Repository\Eloquent\Itemable\Hotels\HotelProductRepository;
+use App\Repository\Eloquent\Itemable\Hotels\HotelServiceRepository;
 use App\Repository\Eloquent\Itemable\Influencer\InfluencerProductRepository;
 use App\Repository\Eloquent\Itemable\Influencer\InfluencerServiceRepository;
 use App\Repository\Eloquent\Itemable\Restaurant\RestaurantProductRepository;
@@ -59,6 +61,8 @@ use App\Repository\ItemableInterfaces\CarBrandRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarModelRepositoryInterface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\Hotel\HotelProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\Hotel\HotelServiceRepositoryInterface;
 use App\Repository\ItemableInterfaces\Influencer\InfluencerProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\Influencer\InfluencerServiceRepositoryInterface;
 use App\Repository\ItemableInterfaces\Restaurant\RestaurantProductRepositoryInterface;
@@ -125,6 +129,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(InfluencerServiceRepositoryInterface::class, InfluencerServiceRepository::class);
         $this->app->bind(InfluencerProductRepositoryInterface::class, InfluencerProductRepository::class);
         $this->app->bind(RestaurantProductRepositoryInterface::class, RestaurantProductRepository::class);
+        $this->app->bind(HotelProductRepositoryInterface::class, HotelProductRepository::class);
+        $this->app->bind(HotelServiceRepositoryInterface::class, HotelServiceRepository::class);
 
     }
 
