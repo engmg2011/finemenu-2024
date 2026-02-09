@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Actions\SubscriptionAction;
 use App\Constants\RolesConstants;
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\InitRegister;
 use App\Models\IpTries;
 use App\Models\User;
@@ -325,6 +326,10 @@ class RegisterController extends Controller
         if (isset($data['businessName']) && isset($data['businessType'])) {
             $data['dashboard_access'] = true;
             $data['is_employee'] = true;
+        }
+
+        if (isset($data['bid'])) {
+            $data['business_id'] = Branch::where('slug',$data['bid'])->first()?->business_id ?? '';
         }
 
         // Create user && assign general role

@@ -12,9 +12,9 @@ class SmsService
     public function sendSMS(string $mobile, string $message)
     {
         if(config('services.sms.medium') == 'KwtSms')
-            $this->sendByKwtSms($mobile, $message);
+            return $this->sendByKwtSms($mobile, $message);
         else
-            $this->sendByTwilio($mobile, $message);
+            return $this->sendByTwilio($mobile, $message);
     }
 
     private function sendByKwtSms(string $mobile, string $message, int $language = 1)

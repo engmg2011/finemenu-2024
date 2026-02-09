@@ -119,23 +119,21 @@ class Reservation extends Model
     {
         $reservationData = $this->data;
         if (!$reservationData) return null;
-
-        $total = $reservationData['total_price'] ?? null;
-        if (!$total) return null;
-
         $paidAmount = 0;
+        $totalCredit = 0;
         $invoices = $reservationData['invoices'] ?? [];
         foreach ($invoices as &$invoice) {
             if (isset($invoice['type']) && isset($invoice['status'])) {
+                if($invoice['type'] == PaymentConstants::INVOICE_CREDIT)
+                    $totalCredit = $totalCredit + $invoice['amount'];
                 if ($invoice['type'] === PaymentConstants::INVOICE_CREDIT
                     && $invoice['status'] === PaymentConstants::INVOICE_PAID) {
                     $paidAmount = $paidAmount + $invoice['amount'];
                 }
             }
         }
-
         return match (true) {
-            $paidAmount >= $total => PaymentConstants::RESERVATION_PAID,
+            $paidAmount >= $totalCredit  => PaymentConstants::RESERVATION_PAID,
             $paidAmount > 0 => PaymentConstants::RESERVATION_PARTIALLY_PAID,
             default => PaymentConstants::RESERVATION_NOT_PAID,
         };
