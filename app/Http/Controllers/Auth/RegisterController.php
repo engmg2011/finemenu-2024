@@ -238,16 +238,33 @@ class RegisterController extends Controller
         return response()->json(["message" => "Code sent, Please enter the code you have received"]);
     }
 
-    public function isValidCode($data)
+    public function isValidCode(&$data)
     {
-        return InitRegister::where(function ($query) use ($data) {
-                if (isset($data['phone']) && $data['phone'] !== "")
+        $verifying = "";
+        $matching = InitRegister::where(function ($query) use (&$data, &$verifying) {
+                if (isset($data['phone']) && $data['phone'] !== "") {
+                    $verifying = "phone";
                     return $query->where('phone', $data['phone']);
-                if (isset($data['email']) && $data['email'] !== "")
+                }
+                if (isset($data['email']) && $data['email'] !== "") {
+                    $verifying = "email";
                     return $query->where('email', $data['email']);
+                }
             })
             ->where('created_at', '>', Carbon::now()->subMinutes(15))
             ->where('code', $data['code'])->first();
+
+        if($matching !== null){
+            switch ($verifying){
+                case "email":
+                    $data['email_verified_at'] = Carbon::now();
+                    break;
+                case "phone":
+                    $data['phone_verified_at'] = Carbon::now();
+                    break;
+            }
+        }
+        return $matching !== null;
     }
 
 
@@ -267,15 +284,18 @@ class RegisterController extends Controller
         if (!$isValidCode)
             return response()->json(['message' => 'Wrong code, try again'], 400);
 
-
         if ($reset) {
-
             $user = $this->userFromData($data);
             if (!$user)
                 return response()->json(['message' => 'User not found'], 400);
 
+            $updateData = array_only($data, ['password' , 'email_verified_at', 'phone_verified_at']);
+
             if (isset($data['password']))
-                $user->update(['password' => bcrypt($data['password'])]);
+                $updateData['password'] = bcrypt($data['password']);
+
+            if(count($updateData))
+                $user->update($updateData);
 
             $token = $user->createToken('authToken');
             $device = $this->userRepository->userDevice($request, $user, $token);
@@ -318,7 +338,6 @@ class RegisterController extends Controller
             return response()->json(['message' => 'Wrong code, try again'], 400);
 
         $data['type'] = "";
-        $data['email_verified_at'] = Carbon::now();
 
         if (!isset($data['email']) || empty($data['email']))
             $data['email'] = $data['phone'] . '@' . env('APP_DOMAIN');
