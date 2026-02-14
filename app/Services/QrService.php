@@ -5,10 +5,12 @@ namespace App\Services;
 
 
 use App\Models\Branch;
+use App\Models\Item;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use QrCode;
 
 
 class QrService
@@ -117,6 +119,26 @@ class QrService
             ->generate();
     }
 
+    public function generateItemQrCode(string $content)
+    {
+
+        // Create a renderer with SVG backend and style
+        $renderer = new ImageRenderer(
+            new RendererStyle(400), // 400 is the size of the QR code
+            new SvgImageBackEnd()
+        );
+
+        // Instantiate the Writer with the renderer
+        $writer = new Writer($renderer);
+
+
+        // Write the QR code to a file
+        $qrCode = $writer->writeString($content);
+
+        // Output the QR code as an SVG
+        header('Content-Type: image/svg+xml');
+        echo $qrCode;
+    }
 
 
 
