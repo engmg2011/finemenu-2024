@@ -88,6 +88,7 @@ Route::group(['middleware' => ['throttle:300,1',
 
                     Route::group(['prefix' => 'items' ], function () {
                         Route::get('/', [ItemsController::class, 'index']);
+                        Route::get('{itemId}/qr-code', [ItemsController::class, 'qrCode']);
                     });
 
                     Route::group(['prefix' => 'orders'], function () {
