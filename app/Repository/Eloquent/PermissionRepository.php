@@ -132,15 +132,17 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         $user->assignRole(RolesConstants::BRANCH_MANAGER);
     }
 
-    public function setUserPermissions($branchId, $userId, $permissions)
+    public function setUserPermissions($branchId, $userId, $permissions, $applyAll = false)
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         $user = User::find($userId);
         $businessId = (int)request()->route('businessId');
 
-        if (auth('sanctum')->user()->email !== "eng.mg2011" . "@gmail.com" &&
-            auth('sanctum')->user()->id !== Business::find($businessId)->user_id) {
-            abort(403, "Not permitted");
+        if(!$applyAll){
+            if (auth('sanctum')->user()->email !== "eng.mg2011" . "@gmail.com" &&
+                auth('sanctum')->user()->id !== Business::find($businessId)->user_id) {
+                abort(403, "Not permitted");
+            }
         }
 
         $actions = PermissionActions::getConstants();
@@ -161,7 +163,9 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         foreach ($services as $service) {
             foreach ($actions as $action) {
                 $prem = PermissionsConstants::Branch.".$branchId.$service.$action";
-                if (in_array("$service.$action", $permissions)) {
+                if($applyAll) {
+                    $newPermissions[] = $prem;
+                } else if (in_array("$service.$action", $permissions)) {
                     $newPermissions[] = $prem;
                 }
             }
