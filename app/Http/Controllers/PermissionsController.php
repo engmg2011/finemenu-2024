@@ -31,7 +31,6 @@ class PermissionsController extends Controller
     public function setUserPermissions()
     {
         $branchId = request()->route('branchId');
-
         $userId = request()->route('userId');
         $permissions= request('permissions');
 
