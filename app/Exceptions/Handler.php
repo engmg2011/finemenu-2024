@@ -10,7 +10,7 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    // Todo ::
+
     protected $dontReport = [
         \Illuminate\Validation\ValidationException::class,
         \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
@@ -48,8 +48,8 @@ class Handler extends ExceptionHandler
             return;
         }
 
-        // Avoid reporting HTTP exceptions (optional)
-        if ($this->isHttpException($e)) {
+        // Respect $dontReport
+        if (! $this->shouldReport($e)) {
             return;
         }
 
