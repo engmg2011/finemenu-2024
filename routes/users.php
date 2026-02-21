@@ -22,6 +22,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () 
     Route::get('unread-notifications', [UsersController::class, 'unreadNotificationsCount']);
 });
 
+Route::group(['prefix' => 'verify', 'middleware' => 'auth:sanctum'], function () {
+    Route::post('send-otp', [UsersController::class, 'sendOTP']);
+    Route::post('check-code', [UsersController::class, 'validateCode']);
+});
+
 Route::group(['prefix' => 'auth'], function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::post('register', [RegisterController::class, 'register']);

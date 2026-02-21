@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Resources\DataResource;
 use App\Models\Category;
 use App\Models\User;
@@ -126,7 +127,15 @@ class UsersController extends Controller
         if (isset($data['photo']))
             $user->updateProfilePhoto($data['photo']);
 
-        return \response()->json($this->userRepository->updateModel($id, $request->all()));
+        $data = $request->all();
+
+        if(isset($data['phone']) && $data['phone'] !== $user->phone)
+            $data['phone_verified_at'] = null;
+
+        if(isset($data['email']) && $data['email'] !== $user->email)
+            $data['email_verified_at'] = null;
+
+        return \response()->json($this->userRepository->updateModel($id, $data));
     }
 
     /**
@@ -214,6 +223,67 @@ class UsersController extends Controller
         return response()->json([
             'unread_count' => $user->unreadNotifications()->count(),
         ]);
+    }
+
+
+    protected function validator(array $data, array $extraValidation = []): \Illuminate\Contracts\Validation\Validator
+    {
+        return Validator::make($data, $extraValidation + [
+                'email' => ['string', 'email', 'max:255', isset($data['id']) ? Rule::unique('users')->ignore($data['id']) : 'unique:users'],
+                'phone' => ['string', 'min:8', 'max:15', isset($data['id']) ? Rule::unique('users')->ignore($data['id']) : 'unique:users'],
+                'phone_required' => Rule::requiredIf(fn() => !isset($data['email']) && !isset($data['phone'])),
+            ], [
+            'phone_required' => "phone or email required"
+        ]);
+    }
+
+    public function sendOTP(Request $request): JsonResponse
+    {
+        $data = $request->all();
+        $data['id'] = $request->user()?->id;
+        $validator = $this->validator($data);
+
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
+
+        $registerController = app(RegisterController::class);
+
+        if (!$registerController->IpCanRegister())
+            return response()->json(['message' => 'Too many tries, try again later.'], 400);
+
+        if (!$registerController->sendCodeProcess($data))
+            return response()->json(['message' => 'Too many code tries, try again later.'], 400);
+
+        return response()->json(["message" => "Code sent, Please enter the code you have received"]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function validateCode(Request $request, $reset = false): JsonResponse
+    {
+        $data = $request->all();
+        $user = $request->user();
+        if (!$user)
+            return response()->json(['message' => 'User not found'], 400);
+        $data['id'] = $user->id;
+        $validator = $this->validator($data, ['code' => ['required']]);
+
+        if ($validator->fails())
+            return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
+
+        $registerController = app(RegisterController::class);
+        $isValidCode = $registerController->isValidCode($data);
+        if (!$isValidCode)
+            return response()->json(['message' => 'Wrong code, try again'], 400);
+
+        $updateData = array_only($data, [ 'email_verified_at', 'phone_verified_at']);
+
+        if (count($updateData))
+            $user->update($updateData);
+
+        return response()->json($user);
     }
 
 }
