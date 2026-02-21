@@ -104,6 +104,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                 if (\request('type'))
                     $query->where('type', request('type'));
             })
+            ->where('app_hidden', false)
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 

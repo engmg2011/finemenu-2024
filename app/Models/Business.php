@@ -72,6 +72,7 @@ class Business extends Model
 
     protected $guarded = ['id'];
     protected $table = "business";
+    protected $casts = ['app_hidden' => 'boolean'];
 
     public function user()
     {
