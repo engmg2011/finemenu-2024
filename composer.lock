@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9af4920969b95f2b965c9aecffc32bd",
+    "content-hash": "e141cd9e90f1ecea5c7fa4d24dd93e91",
     "packages": [
         {
             "name": "ar-php/ar-php",
@@ -324,6 +324,133 @@
                 }
             ],
             "time": "2025-02-13T15:07:54+00:00"
+        },
+        {
+            "name": "barryvdh/laravel-httpcache",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/laravel-httpcache.git",
+                "reference": "f144418abd896db4e6495cfc33ad4f56a66c9e66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/laravel-httpcache/zipball/f144418abd896db4e6495cfc33ad4f56a66c9e66",
+                "reference": "f144418abd896db4e6495cfc33ad4f56a66c9e66",
+                "shasum": ""
+            },
+            "require": {
+                "barryvdh/laravel-stack-middleware": "^1.0",
+                "illuminate/support": "^9|^10|^11.0|^12.0",
+                "php": "^8",
+                "symfony/console": "^6|^7.0",
+                "symfony/http-kernel": "^6|^7.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7|^8|^9.0|^10.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Barryvdh\\HttpCache\\ServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "0.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\HttpCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "HttpCache for Laravel",
+            "keywords": [
+                "cache",
+                "esi",
+                "httpcache",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/barryvdh/laravel-httpcache/issues",
+                "source": "https://github.com/barryvdh/laravel-httpcache/tree/v1.0.2"
+            },
+            "time": "2025-02-21T15:57:16+00:00"
+        },
+        {
+            "name": "barryvdh/laravel-stack-middleware",
+            "version": "v1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/laravel-stack-middleware.git",
+                "reference": "fe455bafe2871613ed630a9181938235928474fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/laravel-stack-middleware/zipball/fe455bafe2871613ed630a9181938235928474fb",
+                "reference": "fe455bafe2871613ed630a9181938235928474fb",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^9|^10|^11|^12",
+                "php": "^8.1",
+                "symfony/http-kernel": "^6|^7"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7|^8|^9|^10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Stack": "Barryvdh\\StackMiddleware\\Facade"
+                    },
+                    "providers": [
+                        "Barryvdh\\StackMiddleware\\ServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\StackMiddleware\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "Stack Middleware for Laravel",
+            "keywords": [
+                "StackPHP",
+                "laravel",
+                "middleware",
+                "stack"
+            ],
+            "support": {
+                "issues": "https://github.com/barryvdh/laravel-stack-middleware/issues",
+                "source": "https://github.com/barryvdh/laravel-stack-middleware/tree/v1.4.2"
+            },
+            "time": "2025-02-21T15:56:41+00:00"
         },
         {
             "name": "berkayk/onesignal-laravel",

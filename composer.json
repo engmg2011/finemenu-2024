@@ -11,6 +11,7 @@
         "arcanedev/log-viewer": "^10.0",
         "bacon/bacon-qr-code": "^2.0",
         "barryvdh/laravel-dompdf": "^3.1",
+        "barryvdh/laravel-httpcache": "^1.0",
         "berkayk/onesignal-laravel": "^2.4",
         "beyondcode/laravel-websockets": "^1.14",
         "carlos-meneses/laravel-mpdf": "^2.1",
