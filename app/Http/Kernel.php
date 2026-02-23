@@ -30,6 +30,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use Spatie\ResponseCache\Middlewares\CacheResponse;
+use Spatie\ResponseCache\Middlewares\DoNotCacheResponse;
 
 class Kernel extends HttpKernel
 {
@@ -47,7 +49,8 @@ class Kernel extends HttpKernel
         PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
-        ConvertEmptyStringsToNull::class
+        ConvertEmptyStringsToNull::class,
+        CacheResponse::class,
     ];
 
     /**
@@ -94,6 +97,7 @@ class Kernel extends HttpKernel
         'role' => RoleMiddleware::class,
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
-        'recaptcha' => RecaptchaMiddleware::class
+        'recaptcha' => RecaptchaMiddleware::class,
+        'doNotCacheResponse' => DoNotCacheResponse::class,
     ];
 }
