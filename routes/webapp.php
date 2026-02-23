@@ -13,6 +13,7 @@ use App\Http\Controllers\ReservationsController;
 use App\Http\Controllers\SeatsController;
 use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
+use Spatie\ResponseCache\Middlewares\CacheResponse;
 
 // Routes for api/webapp
 Route::group(['prefix' => 'webapp',
@@ -22,7 +23,8 @@ Route::group(['prefix' => 'webapp',
 
     Route::get('menus/{id}', [WebAppController::class, 'nestedMenu']);
 
-    Route::get('branches/{slug}', [WebAppController::class, 'branchMenu'])->middleware('ttl:20');
+    Route::get('branches/{slug}', [WebAppController::class, 'branchMenu'])
+        ->middleware(CacheResponse::class.':30'); ;
 
     Route::get('branches/{slug}/menu-type', [WebAppController::class, 'menuType']);
 
