@@ -2,7 +2,6 @@
 
 use App\Constants\ConfigurationConstants;
 use App\Constants\RolesConstants;
-use App\Http\Controllers\AddonsController;
 use App\Http\Controllers\Cars\CarBrandsController;
 use App\Http\Controllers\Cars\CarModelsController;
 use App\Http\Controllers\CategoriesController;
@@ -10,7 +9,6 @@ use App\Http\Controllers\ContentsController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
-use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FeaturesController;
 use App\Http\Controllers\LocalesController;
@@ -26,6 +24,7 @@ use App\Http\Controllers\WebAppController;
 use App\Http\Middleware\SetRequestModel;
 use Berkayk\OneSignal\OneSignalClient;
 use Illuminate\Support\Facades\Route;
+use Spatie\ResponseCache\ResponseCache;
 
 
 /*
@@ -241,3 +240,7 @@ Route::get('sendOS', function () {
 });
 
 Route::get('car-brands', [WebAppController::class, 'carBrands']);
+
+Route::get('purge-cache', function (ResponseCache $responseCache) {
+    $responseCache->forget('/api/webapp/branches/shalehi');
+});

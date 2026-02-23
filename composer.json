@@ -32,6 +32,7 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "socialiteproviders/apple": "^5.7",
         "spatie/laravel-permission": "^6.1",
+        "spatie/laravel-responsecache": "^7.7",
         "spatie/period": "^2.4",
         "twilio/sdk": "^8.10"
     },

@@ -21,6 +21,7 @@ use App\Repository\ItemableInterfaces\Restaurant\RestaurantProductRepositoryInte
 use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
+use App\Services\CachingService;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
@@ -165,6 +166,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $item->itemable()->associate($itemable);
             $item->save();
         }
+        CachingService::clearMenuCache($item->category_id);
 
         return Item::with(self::$modelRelations)->find($item->id);
     }
@@ -220,6 +222,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $model->itemable()->associate($itemable);
             $model->save();
         }
+        CachingService::clearMenuCache($model->category_id);
         return $this->model->with(self::$modelRelations)->find($model->id);
     }
 
@@ -230,6 +233,9 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 Item::where('id', $id)->update(['sort' => $index + 1]);
             }
         });
+//        App::make('http_cache.store')->purge(url('/').'/api/webapp/branches/');
+
+        CachingService::clearMenuCache(Item::find($data['sortedIds'][0])?->category_id);
         return true;
     }
 
