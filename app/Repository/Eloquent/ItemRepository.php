@@ -134,8 +134,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $item->itemable()->associate($itemable);
             $item->save();
         }
-        CachingService::clearMenuCache($item->category_id);
-
+        app('App\Services\CachingService')->clearMenuCache($item->category_id);
         return Item::with(self::$modelRelations)->find($item->id);
     }
 
@@ -184,7 +183,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 Item::where('id', $id)->update(['sort' => $index + 1]);
             }
         });
-        CachingService::clearMenuCache(Item::find($data['sortedIds'][0])?->category_id);
+        app('App\Services\CachingService')->clearMenuCache(Item::find($data['sortedIds'][0])?->category_id);
         return true;
     }
 
