@@ -2,13 +2,17 @@
 
 namespace App\Services;
 
-use App;
 use App\Models\Business;
 use App\Models\Category;
+use Spatie\ResponseCache\ResponseCache;
 
 class CachingService
 {
-    public static function clearMenuCache($category_id = null , $business_id = null)
+    public function __construct(public ResponseCache $responseCache)
+    {
+    }
+
+    public function clearMenuCache($category_id = null , $business_id = null)
     {
         $businessBranches = [];
 
@@ -23,8 +27,8 @@ class CachingService
         }
         \Log::debug($businessBranches);
         foreach ($businessBranches as $branch){
-            app('Spatie\ResponseCache\ResponseCache')->forget('/api/webapp/branches/'.$branch->slug);
-            \Log::debug('Cache cleared for url: '.url('/').'/api/webapp/branches/'.$branch->slug);
+            $this->responseCache->forget('/api/webapp/branches/'.$branch->slug);
+            \Log::debug('Cache cleared for url:  /api/webapp/branches/'.$branch->slug);
         }
 
     }
