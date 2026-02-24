@@ -23,8 +23,9 @@ Route::group(['prefix' => 'webapp',
 
     Route::get('menus/{id}', [WebAppController::class, 'nestedMenu']);
 
+    // caching for 24 hours
     Route::get('branches/{slug}', [WebAppController::class, 'branchMenu'])
-        ->middleware(CacheResponse::class.':30'); ;
+        ->middleware(CacheResponse::class.':86400'); ;
 
     Route::get('branches/{slug}/menu-type', [WebAppController::class, 'menuType']);
 

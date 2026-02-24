@@ -19,6 +19,7 @@ use App\Repository\ItemRepositoryInterface;
 use App\Services\CachingService;
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\ResponseCache\ResponseCache;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
@@ -35,7 +36,8 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                                 private ChaletRepositoryInterface       $chaletRepository,
                                 private SalonServiceRepositoryInterface $salonServiceRepository,
                                 private SalonProductRepositoryInterface $salonProductRepository,
-                                private CarProductRepositoryInterface   $carProductRepository)
+                                private CarProductRepositoryInterface   $carProductRepository,
+                                private ResponseCache                   $responseCache)
     {
         parent::__construct($model);
     }
@@ -112,7 +114,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->relations($item, $data);
 
         // Create itemable model
-        if (in_array($businessType, self::ItemableTypes )) {
+        if (in_array($businessType, self::ItemableTypes)) {
             $itemableData = ($data['itemable'] ?? []) + ['item_id' => $item->id];
             switch ($businessType) {
                 case BusinessTypes::CHALET:
@@ -134,7 +136,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $item->itemable()->associate($itemable);
             $item->save();
         }
-        app('App\Services\CachingService')->clearMenuCache($item->category_id);
+        app(CachingService::class)->clearMenuCache($item->category_id);
         return Item::with(self::$modelRelations)->find($item->id);
     }
 
@@ -172,7 +174,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             $model->itemable()->associate($itemable);
             $model->save();
         }
-        app('App\Services\CachingService')->clearMenuCache($model->category_id);
+        app(CachingService::class)->clearMenuCache($model->category_id);
         return $this->model->with(self::$modelRelations)->find($model->id);
     }
 
@@ -183,10 +185,9 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                 Item::where('id', $id)->update(['sort' => $index + 1]);
             }
         });
-        app('App\Services\CachingService')->clearMenuCache(Item::find($data['sortedIds'][0])?->category_id);
+        app(CachingService::class)->clearMenuCache(Item::find($data['sortedIds'][0])?->category_id);
         return true;
     }
-
 
     public function get(int $id)
     {
@@ -195,7 +196,9 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
     public function destroy($id): ?bool
     {
-        $this->localeAction->deleteEntityLocales(Item::find($id));
+        $item = Item::find($id);
+        $this->localeAction->deleteEntityLocales($item);
+        app(CachingService::class)->clearMenuCache($item->category_id);
         // TODO :: Delete itemable model
         return $this->delete($id);
     }
@@ -223,16 +226,16 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         return ['message' => 'Holidays synced successfully.'];
     }
 
-    public function validateSimilarItems(array $similarIds )
+    public function validateSimilarItems(array $similarIds)
     {
-        if(count($similarIds)){
+        if (count($similarIds)) {
             $similarIds[] = request()->route('id');
-            $itemIds = $this->model->select(['id', 'category_id']) ->whereIn('id', $similarIds)->get()->toArray();
-            if (count($itemIds) < count($similarIds) )
+            $itemIds = $this->model->select(['id', 'category_id'])->whereIn('id', $similarIds)->get()->toArray();
+            if (count($itemIds) < count($similarIds))
                 abort(400, "Wrong Data, Items don't exist");
             $categoryIds = collect($itemIds)->pluck('category_id')->unique()->toArray();
             $menuIds = Category::whereIn('id', $categoryIds)->pluck('menu_id')->unique()->toArray();
-            if (count($menuIds) > 1 )
+            if (count($menuIds) > 1)
                 abort(400, "Wrong Data, Items don't belong to the same menu");
         }
     }
