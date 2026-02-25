@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 
 use App\Actions\MediaAction;
 use App\Actions\SubscriptionAction;
+use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Category;
 use App\Models\DietPlan;
@@ -104,6 +105,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
                 if (\request('type'))
                     $query->where('type', request('type'));
             })
+            ->where('app_hidden', false)
             ->orderByDesc('id')->paginate(request('per-page', 15));
     }
 
@@ -126,9 +128,18 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     public function registerNewOwner(Request $request, $user)
     {
         $businessData = $this->businessService->registerationBusinessData($request, $user);
-        // create restaurant & assign owner permission
+        // create a business and assign owner permission
         $business = $this->createModel($businessData);
         $user->update(['business_id' => $business->id]);
+        // To allow dashboard pages access
+        $this->setOwnerAllServicesPermissions($business->id, $user->id);
+    }
+
+    public function setOwnerAllServicesPermissions($businessId , $userId)
+    {
+        \request()->request->add(['dashboard_access' => true]);
+        $branchId = Branch::where('business_id', $businessId)->first()->id;
+        $this->permissionRepository->setUserPermissions($branchId, $userId, [], true);
     }
 
     public function deleteItem(Item $item)

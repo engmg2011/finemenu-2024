@@ -47,7 +47,7 @@ class Kernel extends HttpKernel
         PreventRequestsDuringMaintenance::class,
         ValidatePostSize::class,
         TrimStrings::class,
-        ConvertEmptyStringsToNull::class,
+        ConvertEmptyStringsToNull::class
     ];
 
     /**
@@ -94,6 +94,6 @@ class Kernel extends HttpKernel
         'role' => RoleMiddleware::class,
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
-        'recaptcha' => RecaptchaMiddleware::class,
+        'recaptcha' => RecaptchaMiddleware::class
     ];
 }
