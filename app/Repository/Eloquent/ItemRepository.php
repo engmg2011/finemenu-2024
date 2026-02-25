@@ -13,6 +13,11 @@ use App\Models\Item;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
+use App\Repository\ItemableInterfaces\Hotel\HotelProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\Hotel\HotelServiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerProductRepositoryInterface;
+use App\Repository\ItemableInterfaces\Influencer\InfluencerServiceRepositoryInterface;
+use App\Repository\ItemableInterfaces\Restaurant\RestaurantProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
@@ -24,19 +29,29 @@ use Spatie\ResponseCache\ResponseCache;
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
     const ItemableTypes = [
-        BusinessTypes::CHALET, BusinessTypes::SALON, BusinessTypes::CARS_SHOWROOM
+        BusinessTypes::CHALET,
+        BusinessTypes::SALON,
+        BusinessTypes::CARS_SHOWROOM,
+        BusinessTypes::INFLUENCER,
+        BusinessTypes::RESTAURANT,
+        BusinessTypes::HOTEL
     ];
 
-    public function __construct(Item                                    $model,
-                                private MediaAction                     $mediaAction,
-                                private LocaleRepository                $localeAction,
-                                private PriceRepository                 $priceAction,
-                                private AddonAction                     $addonAction,
-                                private DiscountRepositoryInteface      $discountRepository,
-                                private ChaletRepositoryInterface       $chaletRepository,
-                                private SalonServiceRepositoryInterface $salonServiceRepository,
-                                private SalonProductRepositoryInterface $salonProductRepository,
-                                private CarProductRepositoryInterface   $carProductRepository,
+    public function __construct(Item                                         $model,
+                                private MediaAction                          $mediaAction,
+                                private LocaleRepository                     $localeAction,
+                                private PriceRepository                      $priceAction,
+                                private AddonAction                          $addonAction,
+                                private DiscountRepositoryInteface           $discountRepository,
+                                private ChaletRepositoryInterface            $chaletRepository,
+                                private SalonServiceRepositoryInterface      $salonServiceRepository,
+                                private SalonProductRepositoryInterface      $salonProductRepository,
+                                private CarProductRepositoryInterface        $carProductRepository,
+                                private InfluencerProductRepositoryInterface $influencerProductRepository,
+                                private InfluencerServiceRepositoryInterface $influencerServiceRepository,
+                                private RestaurantProductRepositoryInterface $restaurantProductRepository,
+                                private HotelProductRepositoryInterface      $hotelProductRepository,
+                                private HotelServiceRepositoryInterface      $hotelServiceRepository,
                                 private ResponseCache                   $responseCache)
     {
         parent::__construct($model);
@@ -130,6 +145,23 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                     else
                         $itemable = $this->salonProductRepository->createModel($itemableData);
                     break;
+                case BusinessTypes::INFLUENCER:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->influencerServiceRepository->createModel($itemableData);
+                    else
+                        $itemable = $this->influencerProductRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::RESTAURANT:
+                    $itemable = $this->restaurantProductRepository->createModel($itemableData);
+                    break;
+                case BusinessTypes::HOTEL:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->hotelServiceRepository->createModel($itemableData);
+                    else
+                        $itemable = $this->hotelProductRepository->createModel($itemableData);
+                    break;
                 default:
                     break;
             }
@@ -167,6 +199,23 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
                         $itemable = $this->salonServiceRepository->set($itemableData);
                     else
                         $itemable = $this->salonProductRepository->set($itemableData);
+                    break;
+                case BusinessTypes::INFLUENCER:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->influencerServiceRepository->set($itemableData);
+                    else
+                        $itemable = $this->influencerProductRepository->set($itemableData);
+                    break;
+                case BusinessTypes::HOTEL:
+                    $category = Category::find($data['category_id']);
+                    if ($category->type === CategoryTypes::SERVICE)
+                        $itemable = $this->hotelServiceRepository->set($itemableData);
+                    else
+                        $itemable = $this->hotelProductRepository->set($itemableData);
+                    break;
+                case BusinessTypes::RESTAURANT:
+                    $itemable = $this->restaurantProductRepository->set($itemableData);
                     break;
                 default:
                     break;
