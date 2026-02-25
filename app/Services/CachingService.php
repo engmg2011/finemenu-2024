@@ -14,8 +14,13 @@ class CachingService
 
     public function clearMenuCache($category_id = null , $business_id = null)
     {
-        $businessBranches = [];
 
+        app(\Spatie\ResponseCache\ResponseCache::class)->clear();
+
+        // todo : make it depends on branch
+        // the error because of the middleware
+        $businessBranches = [];
+        /*
         if($business_id){
             $businessBranches = Business::find($business_id)->branches;
         }
@@ -29,7 +34,7 @@ class CachingService
         foreach ($businessBranches as $branch){
             $this->responseCache->forget('/api/webapp/branches/'.$branch->slug);
             \Log::debug('Cache cleared for url:  /api/webapp/branches/'.$branch->slug);
-        }
+        }*/
 
     }
 

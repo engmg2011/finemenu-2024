@@ -6,9 +6,11 @@ namespace App\Repository\Eloquent;
 use App\Actions\MediaAction;
 use App\Constants\CategoryTypes;
 use App\Models\Category;
+use App\Models\Item;
 use App\Models\Menu;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
+use App\Services\CachingService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -72,6 +74,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         $model = $this->model->create($this->process($data));
         $this->modelRelations($model, $data);
+        app(CachingService::class)->clearMenuCache($model->id);
         return $this->get($model->id);
     }
 
@@ -82,6 +85,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $model = tap($this->model->find($id))
             ->update($this->process($data));
         $this->modelRelations($model, $data);
+
+        app(CachingService::class)->clearMenuCache($id);
         return $this->get($id);
     }
 
@@ -92,6 +97,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             $this->model->find($id)->update(['sort' => $sort]);
             $sort++;
         }
+        if(isset($data['sortedIds'][0]))
+        app(CachingService::class)->clearMenuCache($data['sortedIds'][0]);
         return true;
     }
 
@@ -116,6 +123,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     public function destroy($businessId, $id)
     {
         $this->localeRepository->deleteEntityLocales($this->model->find($id));
+        app(CachingService::class)->clearMenuCache($id);
         return Category::destroy($id);
     }
 

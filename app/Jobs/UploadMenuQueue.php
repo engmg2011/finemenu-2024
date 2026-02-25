@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Menu;
 use App\Repository\Eloquent\CategoryRepository;
 use App\Repository\Eloquent\ItemRepository;
+use App\Services\CachingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -96,5 +97,7 @@ class UploadMenuQueue implements ShouldQueue
             $mediaAction->storeMedia($this->myFile['uploadedFilePath'], $this->myFile['fileType'], $item_name, $savingCategory);
         }
         $mediaAction->storeMedia($this->myFile['uploadedFilePath'], $this->myFile['fileType'], $item_name, $item);
+        
+        app(CachingService::class)->clearMenuCache(null , $menu->business_id);
     }
 }

@@ -98,7 +98,7 @@ class RegisterController extends Controller
      */
     public function IpCanRegister(): bool
     {
-        $triesAvailable = 5;
+        $triesAvailable = 9;
         $tried = IpTries::where('ip', '=', $_SERVER['REMOTE_ADDR'])
             ->where('created_at', '>', Carbon::now()->subMinutes(15))->first();
         if (is_null($tried))
