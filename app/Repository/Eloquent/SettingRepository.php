@@ -10,6 +10,7 @@ use App\Models\Business;
 use App\Models\Setting;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\SettingRepositoryInterface;
+use App\Services\CachingService;
 use Illuminate\Database\Eloquent\Model;
 
 class SettingRepository extends BaseRepository implements SettingRepositoryInterface
@@ -69,6 +70,8 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $this->setSettable($relationModel, $data);
         $this->relationsProcess($relationModel, $data);
         $data['user_id'] = auth('sanctum')->user()->id;
+
+        app(CachingService::class)->clearMenuCache();
         return $this->model->create($this->process($data));
     }
 
@@ -81,6 +84,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     {
         $this->setSettable($relationModel, $data);
         $this->relationsProcess($relationModel, $data);
+        app(CachingService::class)->clearMenuCache();
         return tap($this->model->find($data['id']))
             ->update($this->process($data));
     }
@@ -95,6 +99,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $this->setSettable($relationModel, $deleteData);
         unset($deleteData['user_id']);
         $setting = $this->model->where($deleteData)->find($data['id']);
+        app(CachingService::class)->clearMenuCache();
         if ($setting)
             return $setting->delete();
         abort(400, "No data found!");
@@ -139,6 +144,7 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
             else
                 $this->createSetting($relationModel, $setting);
         }
+        app(CachingService::class)->clearMenuCache();
         return $this->listSettings($relationModel);
     }
 
