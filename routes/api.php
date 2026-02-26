@@ -242,5 +242,6 @@ Route::get('sendOS', function () {
 Route::get('car-brands', [WebAppController::class, 'carBrands']);
 
 Route::get('purge-cache', function (ResponseCache $responseCache) {
-    $responseCache->forget('/api/webapp/branches/shalehi');
+//    $responseCache->forget('/api/webapp/branches/shalehi');
+    app(\Spatie\ResponseCache\ResponseCache::class)->clear();
 });
