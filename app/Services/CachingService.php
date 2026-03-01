@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Business;
 use App\Models\Category;
+use App\Models\Menu;
+use Carbon\Carbon;
 use Spatie\ResponseCache\ResponseCache;
 
 class CachingService
@@ -15,7 +17,9 @@ class CachingService
     public function clearMenuCache($category_id = null , $business_id = null)
     {
 
+
         app(\Spatie\ResponseCache\ResponseCache::class)->clear();
+        Menu::query()->update(['last_updated_at' => Carbon::now()]);
 
         // todo : make it depends on branch
         // the error because of the middleware
