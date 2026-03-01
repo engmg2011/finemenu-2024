@@ -20,4 +20,10 @@ class AuditService
         ]);
     }
 
+    public function backup($businessId)
+    {
+        $audits = Audit::where('business_id', $businessId)->get();
+        return compact('audits');
+    }
+
 }

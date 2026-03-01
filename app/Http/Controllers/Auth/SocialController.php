@@ -25,7 +25,7 @@ class SocialController extends Controller
     public function handleProviderCallback($provider)
     {
         // Get user information from the provider
-        $socialUser = Socialite::driver($provider)->user();
+        $socialUser = Socialite::driver($provider)->stateless()->user();
 
         // check if user with the same email exists
         $user = User::where('email', $socialUser->email)->first();

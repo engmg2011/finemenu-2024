@@ -6,8 +6,10 @@ namespace App\Repository\Eloquent;
 use App\Actions\MediaAction;
 use App\Constants\CategoryTypes;
 use App\Models\Category;
-use App\Models\Item;
+use App\Models\Locales;
+use App\Models\Media;
 use App\Models\Menu;
+use App\Models\Setting;
 use App\Repository\CategoryRepositoryInterface;
 use App\Repository\SettingRepositoryInterface;
 use App\Services\CachingService;
@@ -17,9 +19,9 @@ use Illuminate\Support\Collection;
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
 
-    public function __construct(Category                                    $model,
-                                protected LocaleRepository                  $localeRepository,
-                                private MediaAction                         $mediaAction,
+    public function __construct(Category                           $model,
+                                protected LocaleRepository         $localeRepository,
+                                private MediaAction                $mediaAction,
                                 private SettingRepositoryInterface $settingRepository
     )
     {
@@ -31,11 +33,11 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         if (!isset($data['business_id']))
             $data['business_id'] = request()->route('businessId');
 
-        if(empty($data['sort']))
-            $data['sort'] =  Category::where('menu_id', $data['menu_id'])->max('sort') + 1 ;
+        if (empty($data['sort']))
+            $data['sort'] = Category::where('menu_id', $data['menu_id'])->max('sort') + 1;
 
         return array_only($data, ['menu_id', 'parent_id', 'user_id', 'business_id', 'sort',
-            'type', 'business_id', 'itemable_type', 'icon','icon-font-type']);
+            'type', 'business_id', 'itemable_type', 'icon', 'icon-font-type']);
     }
 
     public function list()
@@ -97,8 +99,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             $this->model->find($id)->update(['sort' => $sort]);
             $sort++;
         }
-        if(isset($data['sortedIds'][0]))
-        app(CachingService::class)->clearMenuCache($data['sortedIds'][0]);
+        if (isset($data['sortedIds'][0]))
+            app(CachingService::class)->clearMenuCache($data['sortedIds'][0]);
         return true;
     }
 
@@ -165,6 +167,19 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             $categories->push($created_category);
         }
         return $categories;
+    }
+
+    public function backup($businessId)
+    {
+        $categories = Menu::where('business_id', $businessId)->get();
+        $categoryIds = $categories->pluck('id')->toArray();
+        $locales = Locales::where(['localizable_type' => Category::class])
+                ->whereIn('localizable_id', $categoryIds)->get();
+        $media = Media::where('mediable_type', Category::class)
+                ->whereIn('mediable_id', $categoryIds)->get();
+        $settings = Setting::where('settable_type', Category::class)
+            ->whereIn('settable_id', $categoryIds)->get();
+        return compact('categories', 'locales', 'media', 'settings');;
     }
 
 }

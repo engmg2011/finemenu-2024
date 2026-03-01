@@ -94,4 +94,9 @@ class AreaRepository extends BaseRepository implements AreaRepositoryInterface
         );
     }
 
+    public function backup($businessId)
+    {
+        $areas = Area::where('business_id', $businessId)->get();
+        return compact('areas');
+    }
 }

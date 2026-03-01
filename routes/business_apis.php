@@ -58,6 +58,9 @@ Route::group(['middleware' => ['throttle:300,1',
 
         Route::group(['prefix' => '{businessId}'], function () {
 
+            Route::get('backup', [BusinessController::class, 'backup']);
+            Route::post('restore', [BusinessController::class, 'restore']);
+
             Route::group(['prefix' => 'menus'], function () {
                 Route::get('/', [MenusController::class, 'index']);
                 Route::get('/{id}', [MenusController::class, 'show']);

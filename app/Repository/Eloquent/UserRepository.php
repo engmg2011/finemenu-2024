@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Device;
 use App\Models\LoginSession;
+use App\Models\Setting;
 use App\Models\User;
 use App\Repository\UserRepositoryInterface;
 use App\Services\QrService;
@@ -312,6 +313,15 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function destroy($id): ?bool
     {
         return $this->find($id)?->delete();
+    }
+
+
+    public function backup($businessId)
+    {
+        $users = Branch::where('business_id', $businessId)->get();
+        $settings = Setting::where('settable_type', User::class)
+            ->where('settable_id', $businessId)->get();
+        return compact('users', 'settings');
     }
 
 

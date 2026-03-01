@@ -233,4 +233,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             ->paginate(request('per-page', 15));
     }
 
+    public function backup($businessId)
+    {
+        $invoices = Invoice::where('business_id', $businessId)->get();
+        return compact('invoices');
+    }
+
 }

@@ -435,4 +435,10 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if($followerReservations->count() > 0)
             abort(400, "Follower isn't available, please choose different dates or try again later");
     }
+
+    public function backup($businessId)
+    {
+        $reservations = Reservation::where('business_id', $businessId)->get();
+        return compact('reservations');
+    }
 }

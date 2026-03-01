@@ -10,6 +10,8 @@ use App\Constants\CategoryTypes;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\Locales;
+use App\Models\Media;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\ItemableInterfaces\CarProductRepositoryInterface;
 use App\Repository\ItemableInterfaces\ChaletRepositoryInterface;
@@ -287,5 +289,15 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
             if (count($menuIds) > 1)
                 abort(400, "Wrong Data, Items don't belong to the same menu");
         }
+    }
+
+    public function backup($categoryIds)
+    {
+        $items = Item::whereIn('category_id', $categoryIds)->get();
+        $itemIds = $items->pluck('id')->toArray();
+        $locales = Locales::where(['localizable_type' => Item::class])
+                ->whereIn('localizable_id',$itemIds)->get() ;
+        $media = Media::where('mediable_type', Media::class);
+        return compact('items', 'locales', 'media');
     }
 }

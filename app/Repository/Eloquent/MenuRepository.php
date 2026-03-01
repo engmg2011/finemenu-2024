@@ -3,7 +3,10 @@
 namespace App\Repository\Eloquent;
 
 use App\Constants\CategoryTypes;
+use App\Models\Branch;
+use App\Models\Locales;
 use App\Models\Menu;
+use App\Models\Setting;
 use App\Repository\MenuRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 
@@ -112,6 +115,16 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
         if ($count === 0)
             return $businessName;
         return slug($businessName);
+    }
+
+    public function backup($businessId)
+    {
+        $menus = Menu::where('business_id', $businessId)->get();
+        $locales =  Locales::where(['localizable_type' => Branch::class])
+            ->whereIn('localizable_id',$menus->pluck('id')->toArray())->get() ;
+        $settings = Setting::where('settable_type', Menu::class)
+            ->whereIn('settable_id', $menus->pluck('id')->toArray())->get();
+        return compact('menus', 'locales', 'settings');
     }
 
 }

@@ -100,4 +100,9 @@ class SeatRepository extends BaseRepository implements SeatRepositoryInterface
         );
     }
 
+    public function backup($businessId)
+    {
+        $seats = Seat::where('business_id', $businessId)->get();
+        return compact('seats');
+    }
 }
