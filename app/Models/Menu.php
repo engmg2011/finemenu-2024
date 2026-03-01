@@ -44,6 +44,7 @@ class Menu extends Model
 
     protected $guarded = ['id'];
     public $timestamps = false;
+    protected $casts = ['last_updated_at'=>'datetime'];
 
 
     public function categories(): HasMany {

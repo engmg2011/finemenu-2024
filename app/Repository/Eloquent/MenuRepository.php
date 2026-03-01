@@ -26,7 +26,7 @@ class MenuRepository extends BaseRepository implements MenuRepositoryInterface
 
     public function process($businessId, array $data)
     {
-        return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id', 'type']);
+        return array_only($data, ['slug', 'name', 'business_id', 'sort', 'user_id', 'type', 'last_updated_at']);
     }
 
     public function relations($model, $data)
