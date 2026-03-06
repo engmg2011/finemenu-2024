@@ -70,7 +70,7 @@ class LoginController extends Controller
         if ($validator->fails())
             return response()->json(["message" => "Error occurred", 'errors' => $validator->errors()], 400);
 
-        $user = User::where(array_only($data, ['email', 'phone']))
+        $user = User::where(array_only($data, ['email', 'phone']))->whereNull('deleted_at')
             ->with(UserRepository::LoginUserRelations)->first();
 
         if (!($user && Hash::check($data['password'], $user->password)))
