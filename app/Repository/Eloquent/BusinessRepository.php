@@ -214,16 +214,11 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
 
     public function backup($businessId)
     {
-        $business = Business::with('locales', 'settings')->find($businessId);
-        foreach ($business->locales as $locale) {
+        $business = Business::with('locales', 'settings',
+            'branches.locales','branches.settings')->find($businessId);
+        foreach ($business->locales as $locale)
             $locale->id = null;
-        }
         return $business;
-//        $locales = Locales::where(['localizable_type' => Business::class,
-//            'localizable_id' => $businessId])->get();
-//        $settings = Setting::where('settable_type', Business::class)
-//            ->where('settable_id', $businessId)->get();
-//        return compact('business', 'locales', 'settings');
     }
 
     public function restore($data)
@@ -231,29 +226,6 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         $data = json_decode(json_encode($data), true);
         $data['user_id'] = auth('sanctum')->id();
         $data['creator_id'] = auth('sanctum')->id();
-//        $s = [];
-//        $p = new StdClass();
-//        $p->id = 123;
-//        $s['dd'] = $p;
-//        return json_decode(json_encode(["test"=>"test"]), true);
-
-        foreach ($data['settings'] as $setting) {
-//            return json_decode(json_encode($setting), true);
-//            $s[] = json_decode(json_encode($setting), true);
-            $s[] =  $setting ;
-        }
-        $data['settings'] = $s;
-//        return $data['settings'];
-
-        $business = $this->createModel($data);
-
-        return $business;
-//        $business->locales()->createMany($data['locales']);
-
-//        $business->update($business);
-//        $business->locales()->delete();
-//        $business->locales()->createMany($data['business']['locales']);
-//        $business->settings()->delete();
-//        $business->settings()->createMany($data['business']['settings']);
+        Business::create($data);
     }
 }

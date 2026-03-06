@@ -86,11 +86,12 @@ class BranchRepository extends BaseRepository implements BranchRepositoryInterfa
 
     public function backup($businessId)
     {
-        $branches = Branch::where('business_id', $businessId)->get();
-        $locales =  Locales::where(['localizable_type' => Branch::class])
-                ->whereIn('localizable_id',$branches->pluck('id')->toArray())->get() ;
-
-        return compact('branches', 'locales');
+        return Branch::with('locales', 'settings')->where('business_id', $businessId)->get();
     }
 
+    public function restore($data)
+    {
+        $data = json_decode(json_encode($data), true);
+        return $this->createModel($data);
+    }
 }
