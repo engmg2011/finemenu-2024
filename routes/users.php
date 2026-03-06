@@ -43,6 +43,7 @@ Route::group(['prefix' => 'users/{modelId}',
     ]], function () {
     Route::get('/', [UsersController::class, 'index']);
     Route::post('/', [UsersController::class, 'update']);
+    Route::post('/delete', [UsersController::class, 'destroy']);
     Route::get('/items', [UsersController::class, 'userItems']);
     Route::get('/settings', [SettingsController::class, 'listSettings']);
     Route::post('/settings', [SettingsController::class, 'createSetting']);

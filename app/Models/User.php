@@ -128,6 +128,7 @@ class User extends Authenticatable
         'control' => 'array',
         'dashboard_access' => 'boolean',
         'is_employee' => 'boolean',
+        'deleted_at' => 'datetime'
     ];
 
     /**

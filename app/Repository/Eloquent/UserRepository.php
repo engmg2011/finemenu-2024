@@ -32,11 +32,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function processUser(array $data)
     {
-        if(isset($data['is_employee']))
+        if (isset($data['is_employee']))
             $data['is_employee'] = filter_var($data['is_employee'], FILTER_VALIDATE_BOOLEAN);
 
         return array_only($data, ['name', 'email', 'phone', 'currency',
-            'password', 'email_verified_at','phone_verified_at',
+            'password', 'email_verified_at', 'phone_verified_at',
             'business_id', 'dashboard_access', 'is_employee']);
     }
 
@@ -49,13 +49,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function search($businessId, array $data)
     {
-        return User::where(function ($query) use ($businessId) {
-            return $query->where('business_id', $businessId)
-                ->orWhereHas('business', function ($query) use ($businessId) {
-                    $query->where('id', $businessId);
-                });
-//                    ->orWhereNull('business_id');
-        })
+        return User::whereNull('deleted_at')
+            ->where(function ($query) use ($businessId) {
+                return $query->where('business_id', $businessId)
+                    ->orWhereHas('business', function ($query) use ($businessId) {
+                        $query->where('id', $businessId);
+                    });
+            })
             ->where(function ($query) use ($data) {
                 return $query->where('name', 'like', "%{$data['search']}%")
                     ->orWhere('email', 'like', "%{$data['search']}%")
@@ -121,21 +121,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $query->where('email', 'like', "%{$email}%");
         if ($phone)
             $query->where('phone', 'like', "%{$phone}%");
-        if($withSettings)
+        if ($withSettings)
             $query->with('settings');
 
         $query->where(fn($q) => $isEmployee ? $q->where('is_employee', $isEmployee) : $q);
 
-        if($formatData)
-            $query->select('id', 'name','profile_photo_path')
+        if ($formatData)
+            $query->select('id', 'name', 'profile_photo_path')
                 ->with('settings', function ($query) {
                     $query->where('key', 'shifts');
                 });
-        else if($withSettings)
+        else if ($withSettings)
             $query->with('settings');
         return $query->where('business_id', $businessId)->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
+
     public function get(int $id)
     {
         return $this->model->with('contacts')->find($id);
@@ -309,9 +310,37 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     }
 
-    public function destroy($id): ?bool
+    /**
+     * The user can delete his own account or the owner | Supervisor | Admin can delete any account
+     * @param $id
+     */
+    public function destroy($id)
     {
-        return $this->find($id)?->delete();
+        $id = intval($id);
+        $authUser = User::find(auth()->user()->id);
+        $user = User::find($id);
+        if ($authUser->id === $id) {
+            $user->deleted_at = Carbon::now();
+            $user->save();
+            return [ "message" => "User deleted successfully" ];
+        }
+        $businessId = $user->business_id;
+        if ($businessId) {
+            if ($authUser->hasAnyRole(UserTypes::SUPERVISOR, UserTypes::ADMIN, UserTypes::OWNER)) {
+                $controlData = $authUser->control;
+                if (is_array($controlData)) {
+                    foreach ($controlData as &$control) {
+                        if (intval($control['business_id']) === intval($businessId)) {
+                            $user = $this->model->find($id);
+                            $user->deleted_at = Carbon::now();
+                            $user->save();
+                            return [ "message" => "User deleted successfully" ];
+                        }
+                    }
+                }
+            }
+        }
+        abort(400, "You don't have permission to delete this user");
     }
 
 
