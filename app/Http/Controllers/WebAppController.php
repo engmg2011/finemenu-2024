@@ -9,10 +9,22 @@ use App\Models\Branch;
 use App\Models\Device;
 use App\Models\Menu;
 use App\Notifications\OneSignalNotification;
+use App\Repository\AreaRepositoryInterface;
+use App\Repository\BranchRepositoryInterface;
 use App\Repository\BusinessRepositoryInterface;
+use App\Repository\CategoryRepositoryInterface;
 use App\Repository\Eloquent\Itemable\Cars\CarBrandRepository;
+use App\Repository\InvoiceRepositoryInterface;
+use App\Repository\ItemRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
+use App\Repository\ReservationRepositoryInterface;
+use App\Repository\SeatRepositoryInterface;
+use App\Repository\UserRepositoryInterface;
+use App\Services\AuditService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Storage;
 
 class WebAppController extends Controller
 {
@@ -109,4 +121,63 @@ class WebAppController extends Controller
     {
         return response()->json(app(CarBrandRepository::class)->listModel());
     }
+
+
+    public function backup($businessId)
+    {
+        $usersBup = app(UserRepositoryInterface::class)->backup($businessId);
+        $businessBup = app(BusinessRepositoryInterface::class)->backup($businessId);
+//        $branchesBup = app(BranchRepositoryInterface::class)->backup($businessId);
+//        $menusBup = app(MenuRepositoryInterface::class)->backup($businessId);
+//        $categoriesBup = app(CategoryRepositoryInterface::class)->backup($businessId);
+//        $categoryIds = $categoriesBup['categories']->pluck('id')->toArray();
+//        $itemsBup = app(ItemRepositoryInterface::class)->backup($categoryIds);
+//        $reservationsBup = app(ReservationRepositoryInterface::class)->backup($businessId);
+//        $invoicesBup = app(InvoiceRepositoryInterface::class)->backup($businessId);
+//        $auditBup = app(AuditService::class)->backup($businessId);
+//        $areasBup = app(AreaRepositoryInterface::class)->backup($businessId);
+//        $seatsBup = app(SeatRepositoryInterface::class)->backup($businessId);
+
+        $data = [
+            'users' => $usersBup,
+            'business' => $businessBup,
+//            'branches' => $branchesBup,
+//            'menus' => $menusBup,
+//            'categories' => $categoriesBup,
+//            'items' => $itemsBup,
+//            'reservations' => $reservationsBup,
+//            'invoices' => $invoicesBup,
+//            'audit' => $auditBup,
+//            'areas' => $areasBup,
+//            'seats' => $seatsBup,
+        ];
+        $encrypted = encrypt($data);
+        $file = "backups/business_".$businessId."_".Carbon::now()->format("y-m-d_H:i").".backup";
+        Storage::put($file, $encrypted);
+        return json_encode(url($file));
+    }
+
+    public function restore(Request $request, $businessId)
+    {
+        $file = $request->file('file');
+        $data = decrypt(file_get_contents($file));
+//        return $data ;
+
+        $res = app(BusinessRepositoryInterface::class)->restore($data['business']);
+//        $res = app(UserRepositoryInterface::class)->restore($data['users']);
+
+//        app(BranchRepositoryInterface::class)->restore($data['businessId']);
+//        app(MenuRepositoryInterface::class)->restore($data['businessId']);
+//        app(CategoryRepositoryInterface::class)->restore($data['businessId']);
+//
+//        app(ItemRepositoryInterface::class)->restore($data['categoryIds']);
+//        app(ReservationRepositoryInterface::class)->restore($data['businessId']);
+//        app(InvoiceRepositoryInterface::class)->restore($data['businessId']);
+//        app(AuditService::class)->restore($data['businessId']);
+//        app(AreaRepositoryInterface::class)->restore($data['businessId']);
+//        app(SeatRepositoryInterface::class)->restore($data['businessId']);
+        return $res;
+    }
+
+
 }

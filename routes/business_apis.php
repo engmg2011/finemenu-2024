@@ -2,13 +2,12 @@
 
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
+use App\Http\Controllers\AreasController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
-use App\Http\Controllers\AreasController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
@@ -19,10 +18,10 @@ use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PricesController;
 use App\Http\Controllers\ReservationsController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SeatsController;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\UsersController;
 use App\Http\Middleware\SameBusinessMiddleware;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +36,9 @@ if (!function_exists('businessRoles')) {
     }
 }
 
+Route::group(['middleware' => ['throttle:300,1','auth:sanctum',]], function () {
+    Route::post('business/{id}/restore', [\App\Http\Controllers\WebAppController::class, 'restore']);
+});
 // Admin and business users
 Route::group(['middleware' => ['throttle:300,1',
     'auth:sanctum', 'role:' . businessRoles()
@@ -58,8 +60,8 @@ Route::group(['middleware' => ['throttle:300,1',
 
         Route::group(['prefix' => '{businessId}'], function () {
 
-            Route::get('backup', [BusinessController::class, 'backup']);
-            Route::post('restore', [BusinessController::class, 'restore']);
+            Route::get('backup', [\App\Http\Controllers\WebAppController::class, 'backup']);
+//            Route::post('restore', [\App\Http\Controllers\WebAppController::class, 'restore']);
 
             Route::group(['prefix' => 'menus'], function () {
                 Route::get('/', [MenusController::class, 'index']);
@@ -89,7 +91,7 @@ Route::group(['middleware' => ['throttle:300,1',
                     Route::post('', [BranchesController::class, 'update']);
                     Route::post('/delete', [BranchesController::class, 'destroy']);
 
-                    Route::group(['prefix' => 'items' ], function () {
+                    Route::group(['prefix' => 'items'], function () {
                         Route::get('/', [ItemsController::class, 'index']);
                         Route::get('{itemId}/qr-code', [ItemsController::class, 'qrCode']);
                     });

@@ -11,7 +11,7 @@ interface BusinessRepositoryInterface
 {
     public function process(&$data): array;
 
-    public function createModel(array $data): Model;
+    public function createModel(array $data);
 
     public function setModelRelations(&$model, &$data);
 

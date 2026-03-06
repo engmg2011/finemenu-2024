@@ -18,6 +18,7 @@ use App\Services\BusinessService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use stdClass;
 
 class BusinessRepository extends BaseRepository implements BusinessRepositoryInterface
 {
@@ -46,7 +47,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         return array_only($data, ['name', 'user_id', 'passcode', 'creator_id', 'slug', 'type']);
     }
 
-    public function createModel(array $data): Model
+    public function createModel( $data)
     {
         $data['user_id'] = $data['user_id'] ?? auth('sanctum')->user()->id;
         if (!isset($data['name']) && isset($data['locales']))
@@ -73,8 +74,12 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
             $this->localeAction->setLocales($model, $data['locales']);
         if (isset($data['media']) && count($data['media']))
             $this->mediaAction->setMedia($model, $data['media']);
-        if (isset($data['settings']) && count($data['settings']))
-            $this->settingAction->set($model, $data['settings']);
+        if (isset($data['settings']) && count($data['settings'])) {
+            if(is_array($data['settings']))
+                $this->settingAction->setSettings($model, $data);
+            else
+                $this->settingAction->set($model, $data['settings']);
+        }
     }
 
     public function updateModel($id, array $data): Model
@@ -204,5 +209,51 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
         $expiry = (new Carbon())->addDays($package->days)->format('Y-m-d H:i:s');
         $this->subscriptionAction->create(['creator_id' => $user->id, 'user_id' => $user->id,
             'package_id' => $package->id, 'from' => Carbon::now(), 'to' => $expiry]);
+    }
+
+
+    public function backup($businessId)
+    {
+        $business = Business::with('locales', 'settings')->find($businessId);
+        foreach ($business->locales as $locale) {
+            $locale->id = null;
+        }
+        return $business;
+//        $locales = Locales::where(['localizable_type' => Business::class,
+//            'localizable_id' => $businessId])->get();
+//        $settings = Setting::where('settable_type', Business::class)
+//            ->where('settable_id', $businessId)->get();
+//        return compact('business', 'locales', 'settings');
+    }
+
+    public function restore($data)
+    {
+        $data = json_decode(json_encode($data), true);
+        $data['user_id'] = auth('sanctum')->id();
+        $data['creator_id'] = auth('sanctum')->id();
+//        $s = [];
+//        $p = new StdClass();
+//        $p->id = 123;
+//        $s['dd'] = $p;
+//        return json_decode(json_encode(["test"=>"test"]), true);
+
+        foreach ($data['settings'] as $setting) {
+//            return json_decode(json_encode($setting), true);
+//            $s[] = json_decode(json_encode($setting), true);
+            $s[] =  $setting ;
+        }
+        $data['settings'] = $s;
+//        return $data['settings'];
+
+        $business = $this->createModel($data);
+
+        return $business;
+//        $business->locales()->createMany($data['locales']);
+
+//        $business->update($business);
+//        $business->locales()->delete();
+//        $business->locales()->createMany($data['business']['locales']);
+//        $business->settings()->delete();
+//        $business->settings()->createMany($data['business']['settings']);
     }
 }

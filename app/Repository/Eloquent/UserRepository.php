@@ -33,6 +33,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function processUser(array $data)
     {
+        if($data['business_id'] == "")
+            $data['business_id'] = null;
+
         if(isset($data['is_employee']))
             $data['is_employee'] = filter_var($data['is_employee'], FILTER_VALIDATE_BOOLEAN);
 
@@ -318,11 +321,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function backup($businessId)
     {
-        $users = Branch::where('business_id', $businessId)->get();
-        $settings = Setting::where('settable_type', User::class)
-            ->where('settable_id', $businessId)->get();
-        return compact('users', 'settings');
+        $users = User::with('settings')->where('business_id', $businessId)->get();
+//        $settings = Setting::where('settable_type', User::class)
+//            ->where('settable_id', $businessId)->get();
+        return  $users;
     }
 
+    public function restore($data)
+    {
+        $data = json_decode(json_encode($data), true);
+        $models = [];
+        foreach ($data as $user) {
+
+            $user['password'] = $this->generateRandomString();
+            $models[] = $this->createModel($user);
+        }
+        return $models;
+//        $business->locales()->createMany($data['locales']);
+
+//        $business->update($business);
+//        $business->locales()->delete();
+//        $business->locales()->createMany($data['business']['locales']);
+//        $business->settings()->delete();
+//        $business->settings()->createMany($data['business']['settings']);
+    }
 
 }
