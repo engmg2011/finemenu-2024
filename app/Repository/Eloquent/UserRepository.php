@@ -80,7 +80,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function list()
     {
-        return User::orderByDesc('id')->paginate(request('per-page', 15));
+        return User::orderByDesc('id')->whereNull('deleted_at')->paginate(request('per-page', 15));
     }
 
     public function listModel()
@@ -133,7 +133,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 });
         else if ($withSettings)
             $query->with('settings');
-        return $query->where('business_id', $businessId)->orderBy($sortBy, $sortType)
+        return $query->where('business_id', $businessId)->whereNull('deleted_at')
+            ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
 
