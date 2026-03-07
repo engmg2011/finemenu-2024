@@ -234,5 +234,14 @@ class MediaAction
         return true;
     }
 
+    public function deleteMultiple($data)
+    {
+        foreach ($data['deletedIds'] as $index => $id) {
+            app(MediaRepository::class)->delete($id);
+        }
+        return [
+            "message" => "Media deleted successfully"
+        ];
+    }
 
 }

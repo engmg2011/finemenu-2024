@@ -8,7 +8,6 @@ use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ConfigurationsController;
 use App\Http\Controllers\AreasController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
@@ -194,6 +193,7 @@ Route::group(['middleware' => ['throttle:300,1',
                     Route::post('holidays/sync', [ItemsController::class, 'syncHolidays']);
                     Route::post('delete', [ItemsController::class, 'destroy']);
                     Route::post('media/sort', [MediaController::class, 'itemMediaSort']);
+                    Route::post('media/delete', [MediaController::class, 'itemMediaDelete']);
                 });
             });
 
