@@ -10,13 +10,7 @@ use Carbon\Carbon;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Invoice - {{ $invoice['reference_id'] }} </title>
-
-    <!-- Bootstrap CSS -->
-    {{--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">--}}
-
-    <title>Hello, world!</title>
 </head>
-<body>
 <style>
     html {
         padding: 0 !important;
@@ -72,9 +66,9 @@ $rentAmount = $totalCredit - $totalDebit;
         // create base64 image
         if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
             $avatarUrl = $logoSetting['data'][0]['src'];
-
+            $storageUrl = str_replace("http://", "https://", url('/storage'));
             // storage_path('app/public/10/5405_Shalehi_icon.png');
-            $avatarUrl = str_replace(url('/storage'), "/app/public", $avatarUrl);
+            $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
             $avatarUrl = storage_path($avatarUrl);
             $arrContextOptions=array(
                 "ssl"=>array(
@@ -83,12 +77,17 @@ $rentAmount = $totalCredit - $totalDebit;
                 ),
             );
             $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-            $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
-            $avatarBase64Data = base64_encode($avatarData);
-            $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+            $imageData = null;
+            try{
+                $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
+                $avatarBase64Data = base64_encode($avatarData);
+                $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+            }catch (Exception $e){
+                \Log::error("Can't get content for : ". $avatarUrl);
+            }
         }
     @endphp
-    @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false)
+    @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false && $imageData != null)
         <img id='base64image' src='{{ $imageData }}' alt=""
              style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
     @endif

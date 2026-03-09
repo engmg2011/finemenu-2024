@@ -114,7 +114,6 @@ class MediaController extends Controller
         ]);
     }
 
-
     public function itemMediaSort(Request $request, $businessId, $itemId)
     {
         $request->validate([
@@ -129,4 +128,20 @@ class MediaController extends Controller
         }
         return response()->json($this->action->sort($data));
     }
+
+    public function itemMediaDelete(Request $request, $businessId, $itemId)
+    {
+        $request->validate([
+           'deletedIds' => 'array',
+        ]);
+        $data = $request->all();
+        $mediaIds = $data['deletedIds'];
+        $dbMediaIds = Media::where('mediable_id', $itemId)
+            ->whereIn('id',$mediaIds)->pluck('id');
+        if(count($dbMediaIds) !== count($mediaIds)) {
+            abort(400,'Wrong data');
+        }
+        return response()->json($this->action->deleteMultiple($data));
+    }
+
 }
