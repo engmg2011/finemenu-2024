@@ -184,21 +184,29 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $randomString;
     }
 
+    public function getDomain()
+    {
+        $host = request()->getHost();
+        $parts = explode('.', $host);
+        return implode('.', array_slice($parts, -2));
+    }
+
     public function getBranchSubUser($branchId, $userType): User
     {
         $branch = Branch::find($branchId);
         $userSlug = $branch->slug . '-' . $userType;
-        $userEmail = $userSlug . '@menu-ai.net';
+        $userEmail = $userSlug . '@' . $this->getDomain();
         for ($i = 0; $i < 100; $i++) {
             if (!User::where('email', $userEmail)->exists())
                 break;
-            $userEmail = $userSlug . '-' . rand(0, 100) . '@menu-ai.net';
+            $userEmail = $userSlug . '-' . rand(0, 100) . '@' . $this->getDomain();
         }
         $subUser = User::create(['email' => $userEmail,
             'name' => $userSlug,
             'type' => $userType,
             'password' => $this->generateRandomString(),
             'business_id' => $branch->business_id,
+            'is_employee' => true,
         ]);
         $subUser->assignRole($userType);
         $this->permissionRepository->createBranchPermission($branchId, $subUser);
@@ -323,7 +331,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if ($authUser->id === $id) {
             $user->deleted_at = Carbon::now();
             $user->save();
-            return [ "message" => "User deleted successfully" ];
+            return ["message" => "User deleted successfully"];
         }
         $businessId = $user->business_id;
         if ($businessId) {
@@ -335,7 +343,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                             $user = $this->model->find($id);
                             $user->deleted_at = Carbon::now();
                             $user->save();
-                            return [ "message" => "User deleted successfully" ];
+                            return ["message" => "User deleted successfully"];
                         }
                     }
                 }
