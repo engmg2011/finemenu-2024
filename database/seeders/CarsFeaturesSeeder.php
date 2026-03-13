@@ -191,4 +191,47 @@ class CarsFeaturesSeeder extends Seeder
 
         }
     }
+
+
+    public function updateIcons()
+    {
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%engine_type%'); })->first()?->update(['icon'=>'engine']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%engine_capacity_cc%'); })->first()?->update(['icon'=>'engine-outline']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%horsepower_hp%'); })->first()?->update(['icon'=>'speedometer']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%transmission%'); })->first()?->update(['icon'=>'car-shift-pattern']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%drive_type%'); })->first()?->update(['icon'=>'car-4x4']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%fuel_tank_capacity_liters%'); })->first()?->update(['icon'=>'fuel']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%fuel_consumption%'); })->first()?->update(['icon'=>'leaf']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%eco_mode%'); })->first()?->update(['icon'=>'leaf-circle']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%body_type%'); })->first()?->update(['icon'=>'car-side']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%led_headlights%'); })->first()?->update(['icon'=>'car-light-high']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%daytime_running_lights%'); })->first()?->update(['icon'=>'car-light-dimmed']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%alloy_wheels%'); })->first()?->update(['icon'=>'tire']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%sunroof%'); })->first()?->update(['icon'=>'car-convertible']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%power_mirrors%'); })->first()?->update(['icon'=>'car-door']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%seat_material%'); })->first()?->update(['icon'=>'car-seat']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%seat_adjustment%'); })->first()?->update(['icon'=>'seat-recline-normal']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%climate_control%'); })->first()?->update(['icon'=>'air-conditioner']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%heated_seats%'); })->first()?->update(['icon'=>'seat']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%steering_wheel_controls%'); })->first()?->update(['icon'=>'steering']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%ambient_lighting%'); })->first()?->update(['icon'=>'lightbulb-on-outline']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%airbags%'); })->first()?->update(['icon'=>'airbag']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%abs%'); })->first()?->update(['icon'=>'car-brake-abs']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%traction_control%'); })->first()?->update(['icon'=>'car-traction-control']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%lane_assist%'); })->first()?->update(['icon'=>'car-lane']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%blind_spot_monitor%'); })->first()?->update(['icon'=>'car-arrow-right']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%rear_view_camera%'); })->first()?->update(['icon'=>'camera-rear']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%infotainment_screen_size_inches%'); })->first()?->update(['icon'=>'monitor-dashboard']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%apple_carplay%'); })->first()?->update(['icon'=>'apple']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%android_auto%'); })->first()?->update(['icon'=>'android']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%bluetooth%'); })->first()?->update(['icon'=>'bluetooth']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%wireless_charging%'); })->first()?->update(['icon'=>'cellphone-wireless']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%keyless_entry%'); })->first()?->update(['icon'=>'keyless']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%push_start_button%'); })->first()?->update(['icon'=>'engine-start']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%cruise_control%'); })->first()?->update(['icon'=>'speedometer-medium']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%power_tailgate%'); })->first()?->update(['icon'=>'car-back']);
+         Feature::whereHas('locales', function($q){ $q->where('name','like','%parking_sensors%'); })->first()?->update(['icon'=>'parking']);
+
+
+    }
 }
