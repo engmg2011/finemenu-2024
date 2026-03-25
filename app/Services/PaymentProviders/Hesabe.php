@@ -33,6 +33,11 @@ class Hesabe implements PaymentProviderInterface
 
         $invoice = Invoice::with('forUser')
             ->where('reference_id', $referenceNumber)->first();
+
+        if (!$invoice) {
+            abort(400, "Invoice Not found for reference ".$referenceNumber );
+        }
+
         $paymentData = [
             "merchantCode" => env('HESABE_MERCHANT_CODE'),
             "amount" => $invoice->amount,
