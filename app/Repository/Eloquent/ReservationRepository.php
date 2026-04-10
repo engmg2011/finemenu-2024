@@ -338,12 +338,19 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     {
         $business = Business::find($businessId);
 
-        // Reservation Margin Before and after any reservation
-        $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
-
-        // UTC dates as it's inner function
-        $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
-        $endDate = (clone $data['to'])->addSeconds($reservationMargin);
+        // todo:: make it configurable
+        $enableMarginCheck = false;
+        if($enableMarginCheck){
+            // Reservation Margin Before and after any reservation
+            $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
+            // UTC dates as it's an inner function
+            $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
+            $endDate = (clone $data['to'])->addSeconds($reservationMargin);
+        }
+        else {
+            $startDate = (clone $data['from']);
+            $endDate = (clone $data['to']);
+        }
 
         $reservable_id = $data['reservable_id'];
         // todo :: test for same id
