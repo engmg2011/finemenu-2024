@@ -339,7 +339,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $business = Business::find($businessId);
 
         // todo:: make it configurable
-        $enableMarginCheck = false;
+        $enableMarginCheck = true;
         if($enableMarginCheck){
             // Reservation Margin Before and after any reservation
             $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
