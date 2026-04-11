@@ -290,8 +290,10 @@ class RegisterController extends Controller
 
             $updateData = array_only($data, ['password' , 'email_verified_at', 'phone_verified_at']);
 
-            if (isset($data['password']))
+            if (isset($data['password'])) {
                 $updateData['password'] = bcrypt($data['password']);
+                $user->tokens()->delete();
+            }
 
             if(count($updateData))
                 $user->update($updateData);

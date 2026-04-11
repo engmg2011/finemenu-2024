@@ -175,4 +175,32 @@ class ChaletsFeaturesSeeder extends Seeder
 
         }
     }
+
+    function updateIcons()
+    {
+         Feature::where(['key' => 'total_bedrooms'])->first()?->update(['icon'=>'bed']);
+         Feature::where(['key' => 'master_bedrooms'])->first()?->update(['icon'=>'bed-king']);
+         Feature::where(['key' => 'living_rooms'])->first()?->update(['icon'=>'sofa']);
+         Feature::where(['key' => 'gathering_rooms_majlis'])->first()?->update(['icon'=>'account-group']);
+         Feature::where(['key' => 'maids_room'])->first()?->update(['icon'=>'broom']);
+         Feature::where(['key' => 'pool_type'])->first()?->update(['icon'=>'pool']);
+         Feature::where(['key' => 'pool_has_shutters'])->first()?->update(['icon'=>'window-shutter']);
+         Feature::where(['key' => 'pool_has_heating'])->first()?->update(['icon'=>'hot-tub']);
+         Feature::where(['key' => 'fully_equipped_kitchen'])->first()?->update(['icon'=>'chef-hat']);
+         Feature::where(['key' => 'basic_kitchen'])->first()?->update(['icon'=>'stove']);
+         Feature::where(['key' => 'preparatory_kitchen'])->first()?->update(['icon'=>'silverware-fork-knife']);
+         Feature::where(['key' => 'outdoor_seating_area'])->first()?->update(['icon'=>'table-chair']);
+         Feature::where(['key' => 'bbq_equipment'])->first()?->update(['icon'=>'grill']);
+         Feature::where(['key' => 'kids_playground'])->first()?->update(['icon'=>'slide']);
+         Feature::where(['key' => 'kayak_available'])->first()?->update(['icon'=>'']);
+         Feature::where(['key' => 'garden'])->first()?->update(['icon'=>'flower']);
+         Feature::where(['key' => 'baby_foot_foosball_table'])->first()?->update(['icon'=>'soccer']);
+         Feature::where(['key' => 'tennis_table_ping_pong'])->first()?->update(['icon'=>'table-tennis']);
+         Feature::where(['key' => 'hockey_table_air_hockey'])->first()?->update(['icon'=>'hockey-puck']);
+         Feature::where(['key' => 'cinema_home_theater'])->first()?->update(['icon'=>'movie-open']);
+         Feature::where(['key' => 'tv'])->first()?->update(['icon'=>'television']);
+         Feature::where(['key' => 'elevator'])->first()?->update(['icon'=>'elevator']);
+         Feature::where(['key' => 'parking'])->first()?->update(['icon'=>'parking']);
+         Feature::where(['key' => 'free_wifi'])->first()?->update(['icon'=>'wifi']);
+    }
 }

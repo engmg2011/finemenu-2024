@@ -53,9 +53,11 @@ class PaymentController extends Controller
     public function failed(Request $request)
     {
         $data = ["msg" => "Error: Invalid data received", "color" => "red"];
-        $callback = decrypt($request->query('encryptedData'));
-        if (isset($callback) && is_array($callback) && $callback['callbackUrl'] !== '') {
-            return redirect($callback['callbackUrl'] . '?success=false');
+        if($request->query('encryptedData')) {
+            $callback = decrypt($request->query('encryptedData'));
+            if (isset($callback) && is_array($callback) && $callback['callbackUrl'] !== '') {
+                return redirect($callback['callbackUrl'] . '?success=false');
+            }
         }
         return view('payment.failed', $data);
     }
