@@ -39,7 +39,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             'amount', 'data', 'external_link', 'reference_id',
             'note', 'type', 'status', 'status_changed_at', 'payment_type',
             'reservation_id', 'order_id', 'order_line_id', 'invoice_by_id', 'invoice_for_id',
-            'business_id', 'branch_id', 'paid_at', 'due_at'
+            'business_id', 'branch_id', 'paid_at', 'due_at', 'description'
         ]);
     }
 

@@ -55,7 +55,9 @@ class Hesabe implements PaymentProviderInterface
             "mobile_number" => $invoice->forUser?->phone,
             "email" => $invoice->forUser?->email,
             "webhookUrl" => route('payment.hesabe-completed', ['referenceId' => $referenceNumber]),
+            'description' => $invoice->description ?? "",
         ];
+        \Log::debug(json_encode($paymentData));
         return $this->payment->checkout($paymentData);
     }
 
