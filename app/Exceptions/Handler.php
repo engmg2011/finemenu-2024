@@ -53,7 +53,7 @@ class Handler extends ExceptionHandler
             return;
         }
 
-        try {
+       /* try {
             $exceptionData = [
                 'exceptionMessage' => $e->getMessage() ?? "Exception Message not found",
                 'line' => $e->getLine() ?? "Line number not found",
@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
             Log::error('Failed to send exception email', [
                 'mail_error' => $mailException->getMessage(),
             ]);
-        }
+        }*/
 
     }
 
