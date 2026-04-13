@@ -19,8 +19,6 @@ class PaymentService
     {
         // TODO :: Check solution without editing Hesabe package
         $callBack = request()->get('CallbackURL', false);
-//        if ($callBack)
-//            session(['paymentCallback' => $callBack]);
         return $this->provider->checkout($referenceNumber, $callBack);
     }
 
