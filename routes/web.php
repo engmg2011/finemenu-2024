@@ -127,4 +127,10 @@ Route::get('send-email', function (){
 //    }
 });
 
+Route::get('optimize-reservations', function (){
+   forEach (\App\Models\Reservation::all() as $reservation){
+       app('App\Repository\Eloquent\ReservationRepository')->setReservationCashedData($reservation->id);
+   }
+});
+
 

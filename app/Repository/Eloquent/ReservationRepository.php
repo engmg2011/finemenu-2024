@@ -271,12 +271,25 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                 $price -= $invoice->amount;
         }
 
+        // Remove not wanted data in caching
+        $clone_reservable = json_decode(json_encode($reservation->reservable), true);
+        $clone_reservable['itemable'] = null;
+
+        $reservedForData = json_decode(json_encode( $reservation->reservedFor), true);
+        $reservedForData['business_control'] = null;
+
+        $reservedByData = json_decode(json_encode( $reservation->reservedBy), true);
+        $reservedByData['business_control'] = null;
+
+        $followerData = json_decode(json_encode( $reservation->follower), true);
+        $followerData['business_control'] = null;
+
         $cachedData = [];
         $cachedData += [
-            "reservable" => $reservation->reservable,
-            "reserved_for" => $reservation->reservedFor,
-            "reserved_by" => $reservation->reservedBy,
-            "follower" => $reservation->follower,
+            "reservable" => $clone_reservable,
+            "reserved_for" => $reservedForData,
+            "reserved_by" => $reservedByData,
+            "follower" => $followerData,
             "invoices" => $reservation->invoices,
             "subtotal_price" => $price,
             "total_price" => $price
