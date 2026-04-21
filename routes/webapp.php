@@ -75,6 +75,8 @@ Route::group(['prefix' => 'webapp',
                     Route::get('/', [AreasController::class, 'index']);
                     Route::get('/{areaId}/seats', [SeatsController::class, 'index']);
                 });
+
+                Route::get('reservables/filter', [ReservationsController::class, 'filterReservables']);
             });
         });
 
