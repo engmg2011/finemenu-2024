@@ -273,7 +273,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         // Remove not wanted data in caching
         $clone_reservable = json_decode(json_encode($reservation->reservable), true);
-        $clone_reservable['itemable'] = null;
+        $clone_reservable['itemable']['featuresData'] = null;
 
         $reservedForData = json_decode(json_encode( $reservation->reservedFor), true);
         $reservedForData['business_control'] = null;
@@ -454,5 +454,26 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerReservations = $reservations->filter(fn($reservation) => $reservation['follower_id'] === $data['follower_id']);
         if($followerReservations->count() > 0)
             abort(400, "Follower isn't available, please choose different dates or try again later");
+    }
+
+    public function filterReservables($data)
+    {
+        $from = $data['from'];
+        $to = $data['to'];
+
+        $chalets = Item::whereHas('itemable')
+            ->with('itemable', 'locales')
+            ->withCount(['reservations as reserved_units' => function ($q) use ($from, $to) {
+                $q->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
+                    ->where('from', '<', $to)
+                    ->where('to', '>', $from);
+            }])
+            ->havingRaw('reserved_units < (
+                SELECT units
+                FROM chalets
+                WHERE chalets.id = items.itemable_id
+            )')
+            ->get();
+        return $chalets;
     }
 }
