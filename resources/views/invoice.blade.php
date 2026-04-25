@@ -11,29 +11,6 @@ use Carbon\Carbon;
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Invoice - {{ $invoice['reference_id'] }} </title>
 </head>
-<style>
-    html {
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 12px;
-        text-transform: uppercase;
-    }
-
-    body {
-        font-family: DejaVu Sans, serif; /* To Accept Arabic */
-        direction: ltr;
-        text-align: left;
-        padding: 0;
-        margin: 0 auto;
-        /*max-width: 600px;*/
-    }
-
-    @media (min-width: 1024px) {
-        html {
-            font-size: 12px;
-        }
-    }
-</style>
 <body style="background-color:#fff;color:#000;text-align:left;">
 <?php
 $reservation = $invoice['reservation'];
@@ -42,7 +19,7 @@ $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5
 
 
 $invoicesList = $invoice->reservation->invoices;
-$invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->push($invoice);
+$invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->prepend($invoice);
 
 
 $creditInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT);
@@ -52,61 +29,62 @@ $debitInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstant
 $totalDebit = $debitInvoices->sum('amount');
 
 $rentAmount = $totalCredit - $totalDebit;
+$logoSetting =isset($invoice->reservation->business->settings) ?
+ collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
+// create base64 image
+if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
+    $avatarUrl = $logoSetting['data'][0]['src'];
+    $storageUrl = str_replace("http://", "https://", url('/storage'));
+    // storage_path('app/public/10/5405_Shalehi_icon.png');
+    $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
+    $avatarUrl = storage_path($avatarUrl);
+    $arrContextOptions=array(
+        "ssl"=>array(
+            "verify_peer"=>false,
+            "verify_peer_name"=>false,
+        ),
+    );
+    $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
+    $imageData = null;
+    try{
+        $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
+        $avatarBase64Data = base64_encode($avatarData);
+        $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+    }catch (Exception $e){
+        \Log::error("Can't get content for : ". $avatarUrl);
+    }
+}
 ?>
 
-    <!-- Booking details -->
+
 <div style="{{ $divStyle }}">
+
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
         {{ $invoice->reservation->branch->locales[0]->name ?? "" }}
-        INVOICE
+        BOOKING INVOICE
     </h2>
-    @php
-        $logoSetting =isset($invoice->reservation->business->settings) ?
-         collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
-        // create base64 image
-        if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
-            $avatarUrl = $logoSetting['data'][0]['src'];
-            $storageUrl = str_replace("http://", "https://", url('/storage'));
-            // storage_path('app/public/10/5405_Shalehi_icon.png');
-            $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
-            $avatarUrl = storage_path($avatarUrl);
-            $arrContextOptions=array(
-                "ssl"=>array(
-                    "verify_peer"=>false,
-                    "verify_peer_name"=>false,
-                ),
-            );
-            $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-            $imageData = null;
-            try{
-                $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
-                $avatarBase64Data = base64_encode($avatarData);
-                $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
-            }catch (Exception $e){
-                \Log::error("Can't get content for : ". $avatarUrl);
-            }
-        }
-    @endphp
     @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false && $imageData != null)
         <img id='base64image' src='{{ $imageData }}' alt=""
              style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
     @endif
-    <p style="margin: 8px 0px">
-        <span>Booking :</span>
-        <span style="font-weight:bold;">#{{ $invoice['reference_id'] }}</span>
-    </p>
-    <p style="margin: 8px 0px">
-        <span>Status:</span> <span style="font-weight:bold;">{{ $invoice['status'] }}</span>
-    </p>
+
     <?php
     $checkIn = Carbon::parse($reservation['from']);
     $checkOut = Carbon::parse($reservation['to']);
     $nights = $checkIn->copy()->startOfDay()->diffInDays($checkOut->copy()->startOfDay());
     ?>
     <p style="margin: 8px 0px">
-        <span>Details:</span>
         <span
-            style="font-weight:bold;">Chalet {{  $reservable['locales'][0]['name'] ?? "" }}, {{ $nights }} nights</span>
+            style="font-weight:bold;">
+            Booking {{  $reservable['locales'][0]['name'] ?? "" }} , {{ $nights }} nights
+            @if($reservation['unit']) , Unit ( {{$reservation['unit']}} ) @endif
+        </span>
+    </p>
+    <p>
+        <b> Total Rent </b>: {{ $rentAmount }} KWD<br>
+    </p>
+    <p>
+        <b> Insurance </b>: {{ $totalDebit }} KWD
     </p>
     <p style="margin: 8px 0px">
         <span>Check-in:</span>
@@ -123,22 +101,7 @@ $rentAmount = $totalCredit - $totalDebit;
         <span
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
     </p>
-</div>
 
-<!-- Chalet info -->
-<div style="{{ $divStyle }}">
-    <h3 style="margin: 8px 0 10px">Chalet details</h3>
-    <p style="margin: 8px 0px">
-        <span>Chalet Name:</span>
-        <span
-            style="font-weight:bold;">{{  $reservable['locales'][0]['name'] ?? "" }}</span>
-    </p>
-    @if($reservation['unit'])
-        <p>
-            <span>Unit:</span>
-            <span style="font-weight:bold;">{{$reservation['unit']}}</span>
-        </p>
-    @endif
     @if(isset($reservable['itemable']) && isset($reservable['itemable']['address']) && $reservable['itemable']['address']['en'] ?? false )
         <p>
             <span>Address:</span>
@@ -153,47 +116,22 @@ $rentAmount = $totalCredit - $totalDebit;
                 Google Maps Location</a>
         </p>
     @endif
-</div>
-
-<!-- Customer & payment info -->
-<div style="{{ $divStyle }}">
-    <h3 style="margin: 8px 0 10px">Customer details</h3>
-    <p style="margin: 8px 0px">
-        <span>Name:</span> <span style="font-weight:bold;">
-                {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
-    </p>
-    <p style="margin: 8px 0px">
-        <span>Email:</span>
-        <span style="font-weight:bold;">
-                {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
-    </p>
-    <p style="margin: 8px 0px">
-        <span>Booking Unit:</span>
-        <span style="font-weight:bold;">{{ $reservation['unit'] ?? "" }}</span>
-    </p>
-</div>
-<div style="{{ $divStyle }}">
-
-    <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
-        INVOICES LIST
-    </h2>
-    <p>
-        <b> Rent </b>: {{ $rentAmount }} KWD<br>
-    </p>
-    <p>
-        <b> Insurance </b>: {{ $totalDebit }} KWD
-    </p>
 
     @foreach ($invoices as $index => $inv)
-        @if($index !== 0)
+        @if($inv->id === $invoice->id)
+            <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
+                CURRENT INVOICE
+            </h2>
+        @elseif($index === 1)
+            <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
+                OTHER BOOKING INVOICES
+            </h2>
+        @else
             <hr/>
         @endif
-        <h3 style="margin: 8px 0 10px"># Invoice {{ $inv->id }}
-            @if($inv->id === $invoice->id)
-                <span style="font-size: .8em; line-height: 1rem; color:#666">
-                     ( Current invoice )
-                </span>
-            @endif
+        <h3 style="margin: 8px 0 10px">Invoice # {{ $inv->id }}
+            @if($inv['status'] === PaymentConstants::INVOICE_PAID) <span class="paid">✓</span>
+            @else  <span class="unpaid">!</span> @endif
         </h3>
         <p>
             <span>Type:</span>
@@ -206,8 +144,12 @@ $rentAmount = $totalCredit - $totalDebit;
         </p>
         <p>
             <span>Status:</span>
-            <span
-                style="font-weight:bold;"> {{ $inv['status'] === PaymentConstants::INVOICE_PAID ? 'Paid' : 'Unpaid' }}</span>
+
+            @if($inv['status'] === PaymentConstants::INVOICE_PAID)
+                <span style="font-weight:bold;">  Paid </span>
+            @else
+                <span style="font-weight:bold;"> Unpaid </span>
+            @endif
         </p>
 
         @if($invoice['paid_at'])
@@ -224,7 +166,72 @@ $rentAmount = $totalCredit - $totalDebit;
                 <span style="font-weight:bold;"> Refundable after checkout.
             @endif
         </p>
+
+        @if($inv->id === $invoice->id)
+            <!-- Other info after current invoice-->
+            <p>
+                <span>REFERENCE ID:</span>
+                <span style="font-weight:bold;">### {{ $invoice['reference_id'] }} ### </span>
+            </p>
+            <p>
+                <span>Customer Name:</span> <span style="font-weight:bold;">
+            {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
+            </p>
+            <p>
+                <span>Customer Email:</span>
+                <span style="font-weight:bold;">
+            {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
+            </p>
+        @endif
+
     @endforeach
 </div>
+
+
+<style>
+    html {
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    body {
+        font-family: DejaVu Sans, serif; /* To Accept Arabic */
+        direction: ltr;
+        text-align: left;
+        padding: 0;
+        margin: 0 auto;
+        /*max-width: 600px;*/
+    }
+    p, h2, h3{
+        padding: 0 8px;
+    }
+
+    @media (min-width: 1024px) {
+        html {
+            font-size: 12px;
+        }
+    }
+    .paid,.unpaid{
+        width: 12px;
+        height: 12px;
+        color: white;
+        border-radius: 100%;
+        padding: 3px;
+        margin-left: 8px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .paid{
+        background: green;
+    }
+    .unpaid{
+        background: grey;
+    }
+
+
+</style>
 </body>
 </html>
