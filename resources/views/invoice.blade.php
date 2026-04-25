@@ -55,17 +55,13 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
     }
 }
 ?>
-
-
 <div style="{{ $divStyle }}">
-
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
         {{ $invoice->reservation->branch->locales[0]->name ?? "" }}
-        BOOKING INVOICE
+        BOOKING
     </h2>
     @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false && $imageData != null)
-        <img id='base64image' src='{{ $imageData }}' alt=""
-             style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
+        <img id='base64image' src='{{ $imageData }}' alt="" style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
     @endif
 
     <?php
@@ -73,7 +69,7 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
     $checkOut = Carbon::parse($reservation['to']);
     $nights = $checkIn->copy()->startOfDay()->diffInDays($checkOut->copy()->startOfDay());
     ?>
-    <p style="margin: 8px 0px">
+    <p>
         <span
             style="font-weight:bold;">
             Booking {{  $reservable['locales'][0]['name'] ?? "" }} , {{ $nights }} nights
@@ -81,22 +77,24 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
         </span>
     </p>
     <p>
-        <b> Total Rent </b>: {{ $rentAmount }} KWD<br>
+        <span> Total Rent </span>:
+        <span style="font-weight:bold;">{{ $rentAmount }} KWD </span><br>
     </p>
     <p>
-        <b> Insurance </b>: {{ $totalDebit }} KWD
+        <span> Insurance </span>:
+        <span style="font-weight:bold;">{{ $totalDebit }} KWD</span>
     </p>
-    <p style="margin: 8px 0px">
+    <p>
         <span>Check-in:</span>
         <span
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['from'] ) , $reservation->business_id)->format('d-m-Y g:i A') }} </span>
     </p>
-    <p style="margin: 8px 0px">
+    <p>
         <span>Check-out:</span>
         <span
             style="font-weight:bold;"> {{ utcToBusinessConverter(Carbon::parse( $reservation['to'] ) , $reservation->business_id)->format('d-m-Y g:i A') }}</span>
     </p>
-    <p style="margin: 8px 0px">
+    <p>
         <span>Booking Date:</span>
         <span
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
@@ -129,7 +127,7 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
         @else
             <hr/>
         @endif
-        <h3 style="margin: 8px 0 10px">Invoice # {{ $inv->id }}
+        <h3 style="margin: 8px 0 10px">Invoice #{{ $inv->id }}
             @if($inv['status'] === PaymentConstants::INVOICE_PAID) <span class="paid">✓</span>
             @else  <span class="unpaid">!</span> @endif
         </h3>
@@ -214,8 +212,8 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
         }
     }
     .paid,.unpaid{
-        width: 12px;
-        height: 12px;
+        width: 10px;
+        height: 10px;
         color: white;
         border-radius: 100%;
         padding: 3px;
