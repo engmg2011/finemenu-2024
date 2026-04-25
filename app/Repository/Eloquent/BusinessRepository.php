@@ -138,6 +138,7 @@ class BusinessRepository extends BaseRepository implements BusinessRepositoryInt
     public function setOwnerAllServicesPermissions($businessId , $userId)
     {
         \request()->request->add(['dashboard_access' => true]);
+        \request()->request->add(['businessId' => $businessId]);
         $branchId = Branch::where('business_id', $businessId)->first()->id;
         $this->permissionRepository->setUserPermissions($branchId, $userId, [], true);
     }
