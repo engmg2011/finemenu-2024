@@ -39,7 +39,7 @@ use Spatie\ResponseCache\ResponseCache;
 */
 
 // Don't move down
-Route::group(['middleware' => ['auth:sanctum', 'throttle:500,1']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:1000,1']], function () {
     Route::post('/pusher/auth', [PusherAuthController::class, 'authenticate']);
     Route::group(['prefix' => 'media'], function () {
         Route::post('upload', [MediaController::class, 'postUpload']);
@@ -62,7 +62,7 @@ Route::group(['prefix' => 'features'], function () {
 });
 
 // TODO :: put admin only roles
-Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]], function () {
+Route::group(['middleware' => ['auth:sanctum', 'throttle:1000,1', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]], function () {
 
     Route::group(['prefix' => 'locales'], function () {
         Route::post("", [LocalesController::class, 'createModel']);
@@ -159,7 +159,7 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:300,1', 'role:' . Roles
 
 
 // TODO :: move admin only routes to here and make admin users
-Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1',
+Route::group(['middleware' => ['auth:sanctum', 'throttle:1000,1',
     SetRequestModel::class,
     'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER]
 ], function () {
