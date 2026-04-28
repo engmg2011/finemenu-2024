@@ -150,7 +150,7 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
             @endif
         </p>
 
-        @if($invoice['paid_at'])
+        @if($inv['paid_at'])
             <p>
                 <span>Paid AT:</span>
                 <span
