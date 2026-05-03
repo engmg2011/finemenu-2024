@@ -38,7 +38,7 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-    'middleware' => ['auth:sanctum', 'throttle:300,1', SetRequestModel::class
+    'middleware' => ['auth:sanctum', 'throttle:1000,1', SetRequestModel::class
         //, CheckUserModel::class
     ]], function () {
     Route::get('/', [UsersController::class, 'index']);

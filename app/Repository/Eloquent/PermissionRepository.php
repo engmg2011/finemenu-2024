@@ -106,7 +106,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     public function setControlData($branchId, $user)
     {
         $controlData = $user->control;
-        $businessId = request()->route('businessId');
+        $businessId = request()->route('businessId') ?? request('businessId');
         $isFound = false;
         if (is_array($controlData)) {
             foreach ($controlData as &$control) {
@@ -124,7 +124,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         }
         if (!$isFound) {
             $controlData[] = [
-                'business_id' => request()->route('businessId'),
+                'business_id' => $businessId ,
                 'branch_ids' => [$branchId]
             ];
         }

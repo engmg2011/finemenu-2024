@@ -335,7 +335,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
         $businessId = $user->business_id;
         if ($businessId) {
-            if ($authUser->hasAnyRole(UserTypes::SUPERVISOR, UserTypes::ADMIN, UserTypes::OWNER)) {
+            if ($authUser->hasAnyRole(UserTypes::SUPERVISOR, UserTypes::ADMIN, UserTypes::OWNER) ||
+            Business::find($businessId)->user_id === $authUser->id) {
                 $controlData = $authUser->control;
                 if (is_array($controlData)) {
                     foreach ($controlData as &$control) {

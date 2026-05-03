@@ -143,4 +143,14 @@ class ReservationsController extends Controller
         checkUserPermission($user, \request()->route('branchId'),
             PermissionServices::Reservations, PermissionActions::Delete);
     }
+
+
+    public function filterReservables(Request $request){
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date',
+        ]);
+        $data = $request->all();
+        return response()->json($this->repository->filterReservables($data));
+    }
 }

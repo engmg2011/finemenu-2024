@@ -37,7 +37,7 @@ if (!function_exists('businessRoles')) {
 }
 
 // Admin and business users
-Route::group(['middleware' => ['throttle:300,1',
+Route::group(['middleware' => ['throttle:1000,1',
     'auth:sanctum', 'role:' . businessRoles()
 ]
 ], function () {
@@ -277,7 +277,7 @@ Route::group(['prefix' => 'business', 'middleware' =>
 });
 
 // no auth
-Route::group(['middleware' => 'throttle:60,1', 'prefix' => 'business/{businessId}/'], function () {
+Route::group(['middleware' => 'throttle:1000,1', 'prefix' => 'business/{businessId}/'], function () {
     Route::get('/', [UsersController::class, 'index']);
     Route::get('config', [ConfigurationsController::class, 'getBusinessConfig']);
     Route::get('/employees', [UsersController::class, 'employees']);
