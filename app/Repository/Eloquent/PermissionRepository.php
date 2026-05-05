@@ -160,6 +160,25 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
             $this->setControlData($branchId, $user);
         }
 
+        // create permissions for branch if not exist'
+        $premSlug = PermissionsConstants::Branch.".".$branchId;
+        $existingPermissions = Permission::where('name','like',"$premSlug%")->pluck('name')->toArray();
+        $permissionsToCreate = [];
+
+        foreach ($services as $service) {
+            foreach ($actions as $action) {
+                $prem = PermissionsConstants::Branch.".$branchId.$service.$action";
+                if (!in_array($prem, $existingPermissions)) {
+                    $permissionsToCreate[] = ['name' => $prem, 'guard_name' => 'web'];
+                }
+                if ($applyAll || in_array("$service.$action", $permissions)) {
+                    $newPermissions[] = $prem;
+                }
+            }
+        }
+        // Bulk insert (faster)
+        Permission::insert($permissionsToCreate);
+
         foreach ($services as $service) {
             foreach ($actions as $action) {
                 $prem = PermissionsConstants::Branch.".$branchId.$service.$action";
