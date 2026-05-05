@@ -20,6 +20,7 @@ class PermissionServices
     const Areas = "areas";
     const Seats = "seats";
     const Settings = "settings";
+    const Statistics = "statistics";
 
     public static function getConstants(): array
     {
