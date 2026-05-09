@@ -199,7 +199,12 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
         $business = Business::find($businessId);
-        $query = $this->model->query();
+        $query = $this->model->query()->leftJoin('reservations', 'reservations.id', '=', 'invoices.reservation_id')
+            ->select('invoices.*', 'reservations.status as reservation_status');
+        if ($request->has('reference_id'))
+            $query->where('reference_id', $request->reference_id);
+        if ($request->has('amount'))
+            $query->where('amount', $request->amount);
         if ($request->has('status'))
             $query->where('status', $request->status);
         if ($request->has('type'))
@@ -208,10 +213,15 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('payment_type', $request->payment_type);
         if ($request->has('reservable_id'))
             $query->where('reservable_id', $request->reservable_id);
-        if ($request->has('by_user_id'))
-            $query->where('by_user_id', $request->by_user_id);
-        if ($request->has('for_user_id'))
-            $query->where('for_user_id', $request->for_user_id);
+        if ($request->has('invoice_by_id'))
+            $query->where('invoice_by_id', $request->invoice_by_id);
+        if ($request->has('invoice_for_id'))
+            $query->where('invoice_for_id', $request->invoice_for_id);
+        if ($request->has('reservation_status')) {
+            $query->whereHas('reservation', function ($query) use ($request) {
+                return $query->where('status', $request->reservation_status);
+            });
+        }
         // carbon date end of day business to utc TZ
         if ($request->has('from') && $request->has('to')) {
             $from = businessToUtcConverter($request->from, $business);
@@ -228,7 +238,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
-        return $query->where(['branch_id' => $branchId, 'business_id' => $businessId])
+        return $query->where(['invoices.branch_id' => $branchId, 'invoices.business_id' => $businessId])
             ->orderBy($sortBy, $sortType)
             ->paginate(request('per-page', 15));
     }
