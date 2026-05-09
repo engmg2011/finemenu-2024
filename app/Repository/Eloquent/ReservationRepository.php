@@ -32,8 +32,6 @@ use function PHPUnit\Framework\isEmpty;
 
 class ReservationRepository extends BaseRepository implements ReservationRepositoryInterface
 {
-    private $businessId;
-    private $branchId;
 
     public const Relations = ['reservable.locales', 'order', 'reservedBy.contacts',
         'reservedFor.contacts', 'invoices', 'branch.settings', 'business.settings', 'follower', 'seat.locales'];
@@ -145,43 +143,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->paginate(request('per-page', 15));
     }
 
-    public function validateData($data)
-    {
-        request()->validate([
-            'reserved_for_id' => 'required|integer|exists:users,id',
-            'follower_id' => 'required|integer|exists:users,id',
-            'status' => 'required|string|max:50',
-            'from' => 'required|date|date_format:Y-m-d H:i:s',
-            'to' => 'required|date|date_format:Y-m-d H:i:s',
-            'invoices.*.invoice_for_id' => 'required|integer|exists:users,id',
-            'invoices.*.amount' => 'required|numeric',
-            'invoices.*.type' => 'nullable|string|max:50',
-            'invoices.*.status' => 'nullable|string|max:50',
-            'invoices.*.payment_type' => 'nullable|string|max:50',
-            'invoices.*.note' => 'nullable|string|max:250',
-            'invoices.*.description' => 'nullable|string|max:250',
-        ],
-            [
-                'invoices.*.type' => 'Invoice type must be one of predefined values.',
-                'invoices.*.status' => 'Status description must be one of predefined values.',
-                'invoices.*.payment_type' => 'Payment type must be one of predefined values.',
-                'invoices.*.note' => 'Note must not exceed 250 characters.',
-                'invoices.*.description.max' => 'Invoice description must not exceed 250 characters.',
-            ]);
-        if (Business::find($this->businessId)->type === BusinessTypes::CHALET) {
-            $this->checkAllowedReservationUnits($data, $this->businessId, $this->branchId);
-        }
-    }
 
     public function create(array $data): Model
     {
-        $this->branchId = request()->route('branchId');
-        $this->businessId = request()->route('businessId');
+        $branchId = request()->route('branchId');
+        $businessId = request()->route('businessId');
 
-        $this->validateData($data);
-
-        $data['reserved_by_id'] = auth('sanctum')->user()->id;
-        $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
+        if (Business::find($businessId)->type === BusinessTypes::CHALET) {
+            $this->checkAllowedReservationUnits($data, $businessId, $branchId);
+        }
 
         $model = $this->model->create($this->process($data));
         $this->setModelRelations($model, $data);
@@ -189,7 +159,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if (!$model->data)
             $this->setReservationCashedData($model->id);
 
-        AuditService::log(AuditServices::Reservations, $model->id, "Created booking " . $model->id, $this->businessId, $this->branchId);
+        AuditService::log(AuditServices::Reservations, $model->id, "Created booking " . $model->id, $businessId, $branchId);
 
         event(new NewReservation($model->id));
         dispatch(new SendNewReservationNotification($model->id));

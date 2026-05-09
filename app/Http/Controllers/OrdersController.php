@@ -14,6 +14,9 @@ use Illuminate\Http\Response;
 
 class OrdersController extends Controller
 {
+    private $businessId;
+    private $branchId;
+    private $business;
 
     public function __construct(protected OrderRepositoryInterface $orderRepository)
     {
@@ -30,6 +33,32 @@ class OrdersController extends Controller
         return DataResource::collection($ordersList);
     }
 
+    function datesConversion(&$data)
+    {
+        if (isset($data['order_lines']) && is_array($data['order_lines'])) {
+            for ($i = 0; $i < count($data['order_lines']); $i++) {
+                if (isset($data['order_lines'][$i]['reservation'])) {
+                    $data['order_lines'][$i]['reservation']['from'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['from'], $this->business);
+                    $data['order_lines'][$i]['reservation']['to'] =
+                        businessToUtcConverter($data['order_lines'][$i]['reservation']['to'], $this->business);
+                }
+            }
+        }
+    }
+
+    public function validateCreation()
+    {
+//        \request()->validate([
+//            'order_lines' => 'required|array',
+//            'order_lines.*.item_id' => 'required|exists:items,id',
+//            'order_lines.*.count' => 'required|integer|min:1',
+//            'order_lines.*.reservation' => 'nullable|array',
+//            'order_lines.*.reservation.from' => 'required|date',
+//            'order_lines.*.reservation.to' => 'required|date|after:order_lines.*.reservation.from',
+//        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -38,22 +67,18 @@ class OrdersController extends Controller
      */
     public function create(Request $request)
     {
+        $this->validateCreation();
+
         // todo:: check if not exceeds BusinessSettings['EnableReservationsTill'] using getBusinessSettingByKey('EnableReservationsTill')
         $data = $request->all();
         $data['business_id'] = request()->route('businessId');
         $data['branch_id'] = request()->route('branchId');
-        $business = Business::find($data['business_id']);
-        if (isset($data['order_lines']) && is_array($data['order_lines'])) {
-            for ($i = 0; $i < count($data['order_lines']); $i++) {
-                if (isset($data['order_lines'][$i]['reservation'])) {
-                    $data['order_lines'][$i]['reservation']['from'] =
-                        businessToUtcConverter($data['order_lines'][$i]['reservation']['from'], $business);
-                    $data['order_lines'][$i]['reservation']['to'] =
-                        businessToUtcConverter($data['order_lines'][$i]['reservation']['to'], $business);
-                }
-            }
-        }
-        return \response()->json($this->orderRepository->create($data, $business));
+        $this->businessId = $data['business_id'];
+        $this->business = Business::find($data['business_id']);
+        $this->branchId = $data['branch_id'];
+        $this->datesConversion($data);
+
+        return \response()->json($this->orderRepository->create($data, $this->business));
     }
 
     /**

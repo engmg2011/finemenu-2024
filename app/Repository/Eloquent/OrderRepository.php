@@ -108,6 +108,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                     $reservationData = $data['order_lines'][$i]['reservation'];
                     $reservable_id = $data['order_lines'][$i]['item_id'];
 
+//                    $this->reservationRepository->validateData($reservationData);
+
                     // check if user created same reservation before and not paid
                     $sameUserReservation = $this->reservationRepository->getSameReservation($reservationData, $reservable_id, $business->id, $branchId);
                     if ($sameUserReservation)
@@ -172,7 +174,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         $this->validateCategoriesInBranch($data['order_lines']);
 
-        // checking if exists reservation
+        // checking if any reservation exists
         $this->checkAllowedReservationsOrDie($data, $business, $data['branch_id']);
 
         // checking if items are available

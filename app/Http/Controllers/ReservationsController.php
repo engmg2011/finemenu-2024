@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\BusinessTypes;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionServices;
 use App\Http\Resources\DataResource;
@@ -14,6 +15,9 @@ use Illuminate\Http\Response;
 
 class ReservationsController extends Controller
 {
+
+    private $businessId;
+    private $branchId;
 
     public function __construct(protected ReservationRepositoryInterface $repository)
     {
@@ -98,12 +102,47 @@ class ReservationsController extends Controller
 
         $data['from'] = businessToUtcConverter($data['from'], $business);
         $data['to'] = businessToUtcConverter($data['to'], $business);
+
+        $data['reserved_by_id'] = auth('sanctum')->user()->id;
+        $data['reserved_for_id'] = request()->get('reserved_for_id') ?? auth('sanctum')->user()->id;
+    }
+
+
+    public function validateData()
+    {
+        request()->validate([
+            'follower_id' => 'required|integer|exists:users,id',
+            'status' => 'required|string|max:50',
+            'from' => 'required|date|date_format:Y-m-d H:i:s',
+            'to' => 'required|date|date_format:Y-m-d H:i:s',
+            'reserved_for_id' => 'required|integer|exists:users,id',
+            'invoices.*.invoice_for_id' => 'required|integer|exists:users,id',
+            'invoices.*.amount' => 'required|numeric',
+            'invoices.*.type' => 'nullable|string|max:50',
+            'invoices.*.status' => 'nullable|string|max:50',
+            'invoices.*.payment_type' => 'nullable|string|max:50',
+            'invoices.*.note' => 'nullable|string|max:250',
+            'invoices.*.description' => 'nullable|string|max:2500',
+        ],
+        [
+            'invoices.*.amount' => 'Invalid invoice amount.',
+            'invoices.*.type' => 'Invoice type must be one of predefined values.',
+            'invoices.*.status' => 'Status description must be one of predefined values.',
+            'invoices.*.payment_type' => 'Payment type must be one of predefined values.',
+            'invoices.*.note' => 'Note must not exceed 250 characters.',
+            'invoices.*.description.max' => 'Invoice description must not exceed 2500 characters.',
+        ]);
     }
 
     public function create(Request $request)
     {
         $data = $request->all();
         $this->prepareData($data);
+
+        request()->merge(['reserved_for_id' => $data['reserved_for_id'], 'reserved_by_id' => $data['reserved_by_id']]);
+
+        $this->validateData();
+
         return \response()->json($this->repository->create($data));
     }
 
