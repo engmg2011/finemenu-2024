@@ -227,7 +227,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $from = businessToUtcConverter($request->from, $business);
             $toEOD = Carbon::parse($request->to)->endOfDay();
             $to = businessToUtcConverter($toEOD, $business);
-            $query->whereBetween('created_at', [$from, $to]);
+            $query->whereBetween('invoices.created_at', [$from, $to]);
         }
 
         if ($request->has('paid_from') && $request->has('paid_to')) {
