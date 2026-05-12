@@ -86,5 +86,41 @@ if (!function_exists('utcToBusinessConverter')) {
 }
 
 
+if (! function_exists('_ـ_')) {
+    /**
+     * Translate the given message.
+     *
+     * @param  string|null  $key
+     * @param  array  $locales
+     * @param  string|null  $locale
+     * @return string|array|null
+     */
+    function ___($locales = [], $locale = null)
+    {
+        if (is_null($locales)) {
+            return $locales;
+        }
+        if($locales instanceof \Illuminate\Database\Eloquent\Collection){
+            if (count($locales) === 0) return $locales;
+            if (count($locales) === 1) return $locales[0];
+            foreach ($locales as $item) {
+                if (isset($item->locale) && $item->locale === $locale) {
+                    return $item->data ?? null;
+                }
+            }
+        }
+        if (is_array($locales)) {
+            if (count($locales) === 0) return $locales;
+            if (count($locales) === 1) return $locales[0];
+            foreach ($locales as $item) {
+                if (isset($item['locale']) && $item['locale'] === $locale) {
+                    return $item;
+                }
+            }
+            return $locales[0];
+        }
+    }
+}
+
 
 

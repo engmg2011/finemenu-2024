@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App;
 use App\Constants\AuditServices;
+use App\Constants\PaymentConstants;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use Exception;
 use Illuminate\Http\Request;
 
 // Fixing arabic in pdf file
@@ -86,9 +89,57 @@ class InvoicesController extends Controller
 
     public function showInvoice($referenceId)
     {
+        $lang = request('lang' , 'en');
+        App::setLocale($lang);
+
         $invoice = Invoice::with(InvoiceRepository::Relations)
             ->where('reference_id', $referenceId)->firstOrFail();
-        return view('invoice', compact('invoice'));
+
+
+        $reservation = $invoice['reservation'];
+        $reservable = $invoice['reservation']['data']['reservable'];
+        $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
+
+
+        $invoicesList = $invoice->reservation->invoices;
+        $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->prepend($invoice);
+
+
+        $creditInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT);
+        $totalCredit = $creditInvoices->sum('amount');
+
+        $debitInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_DEBIT);
+        $totalDebit = $debitInvoices->sum('amount');
+
+        $rentAmount = $totalCredit - $totalDebit;
+        $logoSetting =isset($invoice->reservation->business->settings) ?
+            collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
+        // create base64 image
+        if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
+            $avatarUrl = $logoSetting['data'][0]['src'];
+            $storageUrl = str_replace("http://", "https://", url('/storage'));
+            // storage_path('app/public/10/5405_Shalehi_icon.png');
+            $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
+            $avatarUrl = storage_path($avatarUrl);
+            $arrContextOptions=array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );
+            $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
+            $imageData = null;
+            try{
+                $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
+                $avatarBase64Data = base64_encode($avatarData);
+                $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
+            }catch (Exception $e){
+                \Log::error("Can't get content for : ". $avatarUrl);
+            }
+        }
+        return view('invoice', compact('invoice',
+            'reservation', 'reservable', 'divStyle', 'imageData'
+            , 'rentAmount', 'totalCredit', 'totalDebit', 'invoices'));
     }
 
     public function download($referenceId){
