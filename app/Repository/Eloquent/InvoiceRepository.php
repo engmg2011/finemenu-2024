@@ -219,7 +219,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('invoice_for_id', $request->invoice_for_id);
         if ($request->has('reservation_status')) {
             $query->whereHas('reservation', function ($query) use ($request) {
-                return $query->where('status', $request->reservation_status);
+                return $query->where('reservations.status', $request->reservation_status);
             });
         }
         // carbon date end of day business to utc TZ
