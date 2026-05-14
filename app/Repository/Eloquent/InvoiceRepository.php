@@ -206,7 +206,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         if ($request->has('amount'))
             $query->where('amount', $request->amount);
         if ($request->has('status'))
-            $query->where('status', $request->status);
+            $query->where('invoices.status', $request->status);
         if ($request->has('type'))
             $query->where('type', $request->type);
         if ($request->has('payment_type'))
@@ -217,11 +217,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('invoice_by_id', $request->invoice_by_id);
         if ($request->has('invoice_for_id'))
             $query->where('invoice_for_id', $request->invoice_for_id);
-        if ($request->has('reservation_status')) {
-            $query->whereHas('reservation', function ($query) use ($request) {
-                return $query->where('reservations.status', $request->reservation_status);
-            });
-        }
+        if ($request->has('reservation_status'))
+            $query->where('reservation_status', $request->reservation_status );
+
         // carbon date end of day business to utc TZ
         if ($request->has('from') && $request->has('to')) {
             $from = businessToUtcConverter($request->from, $business);
