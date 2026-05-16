@@ -16,13 +16,16 @@ class InvoicesExport
             'Reference ID',
             'Created At',
             'Paid At',
+            'Guest Name',
+            'Guest Email',
+            'Guest Phone',
         ];
     }
 
     public function rows(array $invoices): array
     {
         return collect($invoices)->map(function ($invoice) {
-
+            $guest = $invoice['for_user'] ?? null;
             return [
                 $invoice['id'],
                 $invoice['amount'],
@@ -34,6 +37,9 @@ class InvoicesExport
                 $invoice['reference_id'],
                 $invoice['created_at'],
                 $invoice['paid_at'],
+                $guest? $guest['name'] : null,
+                $guest? $guest['email'] : null,
+                $guest? $guest['phone'] : null,
             ];
         })->toArray();
     }

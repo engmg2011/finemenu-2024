@@ -202,6 +202,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $businessId = request()->route('businessId');
         $business = Business::find($businessId);
         $query = $this->model->query()->leftJoin('reservations', 'reservations.id', '=', 'invoices.reservation_id')
+            ->with('forUser')
             ->select('invoices.*', 'reservations.status as reservation_status');
         if ($request->has('reference_id'))
             $query->where('reference_id', $request->reference_id);
@@ -254,8 +255,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
     {
         $data = $this->filter($request)->get()->toArray();
         $report = new InvoicesExport();
+        $timeNow = Carbon::now()->format('Y-m-d_H-i-s');
         return app(ExcelExportService::class)->download(
-            'invoices.xlsx',
+            'invoices_'.$timeNow.'.xlsx',
             $report->headers(),
             $report->rows($data)
         );
