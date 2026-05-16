@@ -11,6 +11,8 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use App\Services\Export\ExcelExportService;
+use App\Services\Export\Reports\InvoicesExport;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Carbon\Carbon;
@@ -206,7 +208,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         if ($request->has('amount'))
             $query->where('amount', $request->amount);
         if ($request->has('status'))
-            $query->where('status', $request->status);
+            $query->where('invoices.status', $request->status);
         if ($request->has('type'))
             $query->where('type', $request->type);
         if ($request->has('payment_type'))
@@ -217,11 +219,9 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             $query->where('invoice_by_id', $request->invoice_by_id);
         if ($request->has('invoice_for_id'))
             $query->where('invoice_for_id', $request->invoice_for_id);
-        if ($request->has('reservation_status')) {
-            $query->whereHas('reservation', function ($query) use ($request) {
-                return $query->where('status', $request->reservation_status);
-            });
-        }
+        if ($request->has('reservation_status'))
+            $query->where('reservation_status', $request->reservation_status );
+
         // carbon date end of day business to utc TZ
         if ($request->has('from') && $request->has('to')) {
             $from = businessToUtcConverter($request->from, $business);
@@ -238,9 +238,29 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
-        return $query->where(['invoices.branch_id' => $branchId, 'invoices.business_id' => $businessId])
-            ->orderBy($sortBy, $sortType)
-            ->paginate(request('per-page', 15));
+        $query = $query->where([
+            'invoices.branch_id' => $branchId,
+            'invoices.business_id' => $businessId
+        ])->orderBy($sortBy, $sortType);
+        return $query;
     }
+
+    public function getInvoices(Request $request)
+    {
+        return $this->filter($request)->paginate(request('per-page', 15));
+    }
+
+    public function exportInvoices(Request $request)
+    {
+        $data = $this->filter($request)->get()->toArray();
+        $report = new InvoicesExport();
+        return app(ExcelExportService::class)->download(
+            'invoices.xlsx',
+            $report->headers(),
+            $report->rows($data)
+        );
+    }
+
+
 
 }
