@@ -11,6 +11,8 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use App\Services\Export\ExcelExportService;
+use App\Services\Export\Reports\InvoicesExport;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Carbon\Carbon;
@@ -236,9 +238,29 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
-        return $query->where(['invoices.branch_id' => $branchId, 'invoices.business_id' => $businessId])
-            ->orderBy($sortBy, $sortType)
-            ->paginate(request('per-page', 15));
+        $query = $query->where([
+            'invoices.branch_id' => $branchId,
+            'invoices.business_id' => $businessId
+        ])->orderBy($sortBy, $sortType);
+        return $query;
     }
+
+    public function getInvoices(Request $request)
+    {
+        return $this->filter($request)->paginate(request('per-page', 15));
+    }
+
+    public function exportInvoices(Request $request)
+    {
+        $data = $this->filter($request)->get()->toArray();
+        $report = new InvoicesExport();
+        return app(ExcelExportService::class)->download(
+            'invoices.xlsx',
+            $report->headers(),
+            $report->rows($data)
+        );
+    }
+
+
 
 }

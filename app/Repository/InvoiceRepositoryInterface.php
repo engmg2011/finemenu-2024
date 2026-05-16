@@ -20,7 +20,9 @@ interface InvoiceRepositoryInterface
 
     public function list($conditions = null);
 
-    public function filter(Request $request);
+    public function getInvoices(Request $request);
+
+    public function exportInvoices(Request $request);
 
     public function setForReservation(Reservation $reservation, array &$invoices);
 
