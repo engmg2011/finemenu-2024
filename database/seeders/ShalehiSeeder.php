@@ -40,7 +40,7 @@ class ShalehiSeeder extends Seeder
     {
         $user = [
             'name' => $data['employee'] ?? "employee",
-            'email' => "employee-" . strtoupper(uniqid()) . "@shalehi.net",
+            'email' => "employee-" . strtoupper(uniqid()) . "@shalehi.com",
             'password' => bcrypt(uniqid() . uniqid()),
         ];
         return User::firstOrCreate(['name' => $data['employee'] ?? "employee"], $user);
@@ -50,7 +50,7 @@ class ShalehiSeeder extends Seeder
     {
         $user = [
             'name' => $data['client'],
-            'email' => "client-" . strtoupper(uniqid()) . "@shalehi.net",
+            'email' => "client-" . strtoupper(uniqid()) . "@shalehi.com",
             'phone' => @$data['phone'],
             'password' => bcrypt(uniqid() . uniqid()),
         ];

@@ -9,56 +9,18 @@ use Carbon\Carbon;
     <!-- Required meta tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Invoice - {{ $invoice['reference_id'] }} </title>
+    <title>{{__("invoices.Invoice")}} - {{ $invoice['reference_id'] }} </title>
 </head>
-<body style="background-color:#fff;color:#000;text-align:left;">
-<?php
-$reservation = $invoice['reservation'];
-$reservable = $invoice['reservation']['data']['reservable'];
-$divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
-
-
-$invoicesList = $invoice->reservation->invoices;
-$invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->prepend($invoice);
-
-
-$creditInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT);
-$totalCredit = $creditInvoices->sum('amount');
-
-$debitInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_DEBIT);
-$totalDebit = $debitInvoices->sum('amount');
-
-$rentAmount = $totalCredit - $totalDebit;
-$logoSetting =isset($invoice->reservation->business->settings) ?
- collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
-// create base64 image
-if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
-    $avatarUrl = $logoSetting['data'][0]['src'];
-    $storageUrl = str_replace("http://", "https://", url('/storage'));
-    // storage_path('app/public/10/5405_Shalehi_icon.png');
-    $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
-    $avatarUrl = storage_path($avatarUrl);
-    $arrContextOptions=array(
-        "ssl"=>array(
-            "verify_peer"=>false,
-            "verify_peer_name"=>false,
-        ),
-    );
-    $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-    $imageData = null;
-    try{
-        $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
-        $avatarBase64Data = base64_encode($avatarData);
-        $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
-    }catch (Exception $e){
-        \Log::error("Can't get content for : ". $avatarUrl);
-    }
-}
-?>
+<body style="background-color:#fff;color:#000;text-align:left;
+{{ App::currentLocale() === 'ar' ? 'direction:rtl; text-align:right' : 'direction:ltr; text-align:left' }}">
 <div style="{{ $divStyle }}">
     <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
-        {{ $invoice->reservation->branch->locales[0]->name ?? "" }}
-        BOOKING
+        {{ __("invoices.Booking from") }} {{ ___($invoice->reservation->branch->locales)?->name ?? "" }}
+        @if(App::currentLocale() === 'ar' )
+            <div class="float-left"><a href="{{ url()->current() }}?lang=en">English</a>  </div>
+        @else
+            <div class="float-right"><a href="{{ url()->current() }}?lang=ar">عربي</a> </div>
+        @endif
     </h2>
     @if(isset($logoSetting['data']) && $logoSetting['data'][0]['src'] ?? false && $imageData != null)
         <img id='base64image' src='{{ $imageData }}' alt="" style="max-width:100px; max-height: 100px; float: right; margin: 10px"/>
@@ -72,87 +34,83 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
     <p>
         <span
             style="font-weight:bold;">
-            Booking {{  $reservable['locales'][0]['name'] ?? "" }} , {{ $nights }} nights
-            @if($reservation['unit']) , Unit ( {{$reservation['unit']}} ) @endif
+            {{ __("invoices.Booking") }} {{  ___($reservable['locales'] , 'ar')['name'] ?? "" }} ,  {{ $nights }} {{ __("invoices.nights") }}
+            @if($reservation['unit']) , {{ __("invoices.Unit") }} ( {{$reservation['unit']}} ) @endif
         </span>
     </p>
     <p>
-        <span> Total Rent </span>:
-        <span style="font-weight:bold;">{{ $rentAmount }} KWD </span><br>
+        <span> {{ __("invoices.Total Rent") }} </span>:
+        <span style="font-weight:bold;">{{ $rentAmount }} {{ __("invoices.KWD") }} </span><br>
     </p>
     <p>
-        <span> Insurance </span>:
-        <span style="font-weight:bold;">{{ $totalDebit }} KWD</span>
+        <span> {{ __("invoices.Insurance") }} </span>:
+        <span style="font-weight:bold;">{{ $totalDebit }} {{ __("invoices.KWD") }}</span>
     </p>
     <p>
-        <span>Check-in:</span>
+        <span>{{ __("invoices.Check-in") }}:</span>
         <span
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['from'] ) , $reservation->business_id)->format('d-m-Y g:i A') }} </span>
     </p>
     <p>
-        <span>Check-out:</span>
+        <span>{{ __("invoices.Check-out") }}:</span>
         <span
             style="font-weight:bold;"> {{ utcToBusinessConverter(Carbon::parse( $reservation['to'] ) , $reservation->business_id)->format('d-m-Y g:i A') }}</span>
     </p>
     <p>
-        <span>Booking Date:</span>
+        <span>{{ __("invoices.Booking Date") }}:</span>
         <span
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
     </p>
 
     @if(isset($reservable['itemable']) && isset($reservable['itemable']['address']) && $reservable['itemable']['address']['en'] ?? false )
         <p>
-            <span>Address:</span>
+            <span>{{ __("invoices.Address") }}:</span>
             <span style="font-weight:bold;">
                     {{ $reservable['itemable']['address']['en'] ?? "" }}</span>
         </p>
     @endif
     @if( isset($reservable['itemable']['latitude']) )
         <p style="margin-top:10px;">
-            <span>Location:</span>
+            <span>{{ __("invoices.Location") }}:</span>
             <a href="{{ "https://www.google.com/maps/@".$reservable['itemable']['latitude'].",".$reservable['itemable']['longitude'].",15z" }}">
-                Google Maps Location</a>
+                {{ __("invoices.Google Maps Location") }}</a>
         </p>
     @endif
 
     @foreach ($invoices as $index => $inv)
         @if($inv->id === $invoice->id)
             <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
-                CURRENT INVOICE
+                {{ __("invoices.CURRENT INVOICE") }}
             </h2>
         @elseif($index === 1)
             <h2 style="background: #ccc;padding: 8px; font-size:1.2rem; text-transform: uppercase;margin-top:0">
-                OTHER BOOKING INVOICES
+                {{ __("invoices.OTHER BOOKING INVOICES") }}
             </h2>
         @else
             <hr/>
         @endif
-        <h3 style="margin: 8px 0 10px">Invoice #{{ $inv->id }}
+        <h3 style="margin: 8px 0 10px">{{ __("invoices.Invoice") }} #{{ $inv->id }}
             @if($inv['status'] === PaymentConstants::INVOICE_PAID) <span class="paid">✓</span>
             @else  <span class="unpaid">!</span> @endif
         </h3>
         <p>
-            <span>Type:</span>
-            <span style="font-weight:bold;"> {{ ucfirst($inv['type']) }} </span>
-        </p>
-        <p>
-            <span>Amount:</span>
-            <span style="font-weight:bold;"> {{ $inv['amount'] }} KWD</span>
+            <span>{{ __("invoices.Amount") }}:</span>
+            <span style="font-weight:bold;"> {{ $inv['amount'] }} {{ __("invoices.KWD") }}</span>
 
         </p>
         <p>
-            <span>Status:</span>
+            <span>{{ __("invoices.Status") }}:</span>
 
             @if($inv['status'] === PaymentConstants::INVOICE_PAID)
-                <span style="font-weight:bold;">  Paid </span>
+                <span style="font-weight:bold;">  {{ __("invoices.Paid") }} </span>
             @else
-                <span style="font-weight:bold;"> Unpaid </span>
+                <span style="font-weight:bold;"> {{ __("invoices.Unpaid") }} </span>
             @endif
         </p>
 
         @if($inv['paid_at'])
             <p>
-                <span>Paid AT:</span>
+                <span>{{ __("invoices.Paid AT") }}:</span>
                 <span
                     style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $inv['paid_at'] ) , $reservation->business_id)   }}</span>
             </p>
@@ -160,23 +118,23 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
 
         <p>
             @if($inv['type'] == 'debit')
-                <span>Note:</span>
-                <span style="font-weight:bold;"> Refundable after checkout.
+                <span>{{ __("invoices.Note") }}:</span>
+                <span style="font-weight:bold;"> {{ __("invoices.Refundable after checkout") }}.
             @endif
         </p>
 
         @if($inv->id === $invoice->id)
             <!-- Other info after current invoice-->
             <p>
-                <span>REFERENCE ID:</span>
-                <span style="font-weight:bold;">### {{ $invoice['reference_id'] }} ### </span>
+                <span>{{ __("invoices.REFERENCE ID") }}:</span>
+                <span style="font-weight:bold;"> ### {{ $invoice['reference_id'] }} ### </span>
             </p>
             <p>
-                <span>Customer Name:</span> <span style="font-weight:bold;">
+                <span>{{ __("invoices.Customer Name") }}:</span> <span style="font-weight:bold;">
             {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
             </p>
             <p>
-                <span>Customer Email:</span>
+                <span>{{ __("invoices.Customer Email") }}:</span>
                 <span style="font-weight:bold;">
             {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
             </p>
@@ -184,7 +142,7 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
 
     @endforeach
 </div>
-
+<hr>
 
 <style>
     html {
@@ -228,8 +186,12 @@ if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
     .unpaid{
         background: grey;
     }
-
-
+    .float-left{
+        float: left;
+    }
+    .float-right{
+        float: right;
+    }
 </style>
 </body>
 </html>

@@ -80,7 +80,7 @@ Route::get('cancel-pending-reservations', function (){
 
 Route::get('queue-work', function (){
     Artisan::call('queue:work');
-    sleep(15);
+    sleep(8);
     die();// to not log
 })->middleware(['throttle:30,1']);
 
