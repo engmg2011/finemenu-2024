@@ -34,8 +34,10 @@ class InvoicesController extends Controller
 
     public function filter(Request $request)
     {
-        $ordersList = $this->repository->filter($request);
-        return DataResource::collection($ordersList);
+        if (request('export') == 'true')
+            return $this->repository->exportInvoices($request);
+
+        return DataResource::collection($this->repository->getInvoices($request));
     }
 
     public function userInvoices()

@@ -11,6 +11,8 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
+use App\Services\Export\ExcelExportService;
+use App\Services\Export\Reports\InvoicesExport;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Carbon\Carbon;
@@ -200,6 +202,7 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         $businessId = request()->route('businessId');
         $business = Business::find($businessId);
         $query = $this->model->query()->leftJoin('reservations', 'reservations.id', '=', 'invoices.reservation_id')
+            ->with('forUser')
             ->select('invoices.*', 'reservations.status as reservation_status');
         if ($request->has('reference_id'))
             $query->where('reference_id', $request->reference_id);
@@ -236,9 +239,30 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
         $sortBy = request('sortBy', 'id');
         $sortType = request('sortType', 'desc');
-        return $query->where(['invoices.branch_id' => $branchId, 'invoices.business_id' => $businessId])
-            ->orderBy($sortBy, $sortType)
-            ->paginate(request('per-page', 15));
+        $query = $query->where([
+            'invoices.branch_id' => $branchId,
+            'invoices.business_id' => $businessId
+        ])->orderBy($sortBy, $sortType);
+        return $query;
     }
+
+    public function getInvoices(Request $request)
+    {
+        return $this->filter($request)->paginate(request('per-page', 15));
+    }
+
+    public function exportInvoices(Request $request)
+    {
+        $data = $this->filter($request)->get()->toArray();
+        $report = new InvoicesExport();
+        $timeNow = Carbon::now()->format('Y-m-d_H-i-s');
+        return app(ExcelExportService::class)->download(
+            'invoices_'.$timeNow.'.xlsx',
+            $report->headers(),
+            $report->rows($data)
+        );
+    }
+
+
 
 }
