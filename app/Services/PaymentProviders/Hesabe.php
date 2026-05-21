@@ -75,7 +75,8 @@ class Hesabe implements PaymentProviderInterface
 
         // Step 3: Validate the response
         if (!$decryptedDataObj || !isset($decryptedDataObj->response)) {
-            \Log::critical("Error: Invalid data received : " . $encryptedData);
+            if($encryptedData !== "" && $encryptedData !== null)
+                \Log::critical("Error: Invalid data received : " . $encryptedData);
             return redirect()->route('payment.failed');
         }
 
