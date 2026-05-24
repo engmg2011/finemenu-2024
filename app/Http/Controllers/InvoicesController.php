@@ -123,6 +123,8 @@ class InvoicesController extends Controller
         $rentAmount = $totalCredit - $totalDebit;
         $logoSetting =isset($invoice->reservation->business->settings) ?
             collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
+
+        $imageData = null;
         // create base64 image
         if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
             $avatarUrl = $logoSetting['data'][0]['src'];
@@ -137,7 +139,6 @@ class InvoicesController extends Controller
                 ),
             );
             $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-            $imageData = null;
             try{
                 $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
                 $avatarBase64Data = base64_encode($avatarData);
