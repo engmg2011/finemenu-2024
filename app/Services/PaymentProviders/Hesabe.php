@@ -2,12 +2,14 @@
 
 namespace App\Services\PaymentProviders;
 
+use App\Constants\MobileAppSettings;
 use App\Constants\PaymentConstants;
 use App\Events\UpdateOrder;
 use App\Events\UpdateReservation;
 use App\Jobs\SendUpdateOrderNotification;
 use App\Jobs\SendUpdateReservationNotification;
 use App\Models\Invoice;
+use App\Repository\Eloquent\SettingRepository;
 use Hesabe\Payment\HesabeCrypt;
 use Hesabe\Payment\Payment;
 
@@ -34,6 +36,9 @@ class Hesabe implements PaymentProviderInterface
         $invoice = Invoice::with('forUser')
             ->where('reference_id', $referenceNumber)->first();
 
+        $paymentHintSetting = app(SettingRepository::class)->getMobileAppSettingByKey( $invoice->branch_id,MobileAppSettings::PaymentHint);;
+        $paymentHint = $paymentHintSetting ? (___( $paymentHintSetting, \App::getLocale())["description"] ?? null) : null;
+
         if (!$invoice) {
             \Log::error("Invoice Not found for reference ".$referenceNumber );
             abort(400, "Invoice Not found for reference ".$referenceNumber );
@@ -55,7 +60,7 @@ class Hesabe implements PaymentProviderInterface
             "mobile_number" => $invoice->forUser?->phone,
             "email" => $invoice->forUser?->email,
             "webhookUrl" => route('payment.hesabe-completed', ['referenceId' => $referenceNumber]),
-            'description' => $invoice->description ?? "",
+            'description' => $invoice->description ?? $paymentHint ?? "",
         ];
         \Log::debug(json_encode($paymentData));
         return $this->payment->checkout($paymentData);

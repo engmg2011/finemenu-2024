@@ -133,13 +133,21 @@ use Carbon\Carbon;
                 <span style="font-weight:bold;"> ### {{ $invoice['reference_id'] }} ### </span>
             </p>
             <p>
+                <span>{{ __("invoices.Reservation Number") }}:</span>
+                <span style="font-weight:bold;"># {{ $reservation['id'] ?? "" }} #</span>
+            </p>
+            <p>
                 <span>{{ __("invoices.Customer Name") }}:</span> <span style="font-weight:bold;">
-            {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
+                {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
             </p>
             <p>
                 <span>{{ __("invoices.Customer Email") }}:</span>
                 <span style="font-weight:bold;">
-            {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
+                {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
+            </p>
+            <p>
+                <span>{{ __("invoices.Payment note") }}:</span>
+                <span style="font-weight:bold;"> {{ $invoice['description'] ?? "" }}</span>
             </p>
         @endif
 
