@@ -34,7 +34,7 @@ use Carbon\Carbon;
     <p>
         <span
             style="font-weight:bold;">
-            {{ __("invoices.Booking") }} {{  ___($reservable['locales'] , 'ar')['name'] ?? "" }} ,  {{ $nights }} {{ __("invoices.nights") }}
+            {{ __("invoices.Booking") }} {{  ___($reservable['locales'] , App::currentLocale())['name'] ?? "" }} ,  {{ $nights }} {{ __("invoices.nights") }}
             @if($reservation['unit']) , {{ __("invoices.Unit") }} ( {{$reservation['unit']}} ) @endif
         </span>
     </p>
@@ -62,11 +62,14 @@ use Carbon\Carbon;
             style="font-weight:bold;">{{ utcToBusinessConverter(Carbon::parse( $reservation['created_at'] ) , $reservation->business_id) }}</span>
     </p>
 
-    @if(isset($reservable['itemable']) && isset($reservable['itemable']['address']) && $reservable['itemable']['address']['en'] ?? false )
+    @if( isset($reservable['itemable']) &&
+         isset($reservable['itemable']['address']) &&
+         $reservable['itemable']['address'][App::currentLocale()] ?? false
+    )
         <p>
             <span>{{ __("invoices.Address") }}:</span>
             <span style="font-weight:bold;">
-                    {{ $reservable['itemable']['address']['en'] ?? "" }}</span>
+                    {{ $reservable['itemable']['address'][App::currentLocale()] ?? "" }}</span>
         </p>
     @endif
     @if( isset($reservable['itemable']['latitude']) )
@@ -130,13 +133,21 @@ use Carbon\Carbon;
                 <span style="font-weight:bold;"> ### {{ $invoice['reference_id'] }} ### </span>
             </p>
             <p>
+                <span>{{ __("invoices.Reservation Number") }}:</span>
+                <span style="font-weight:bold;"># {{ $reservation['id'] ?? "" }} #</span>
+            </p>
+            <p>
                 <span>{{ __("invoices.Customer Name") }}:</span> <span style="font-weight:bold;">
-            {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
+                {{ $reservation['data']['reserved_for']['name'] ?? "" }}</span>
             </p>
             <p>
                 <span>{{ __("invoices.Customer Email") }}:</span>
                 <span style="font-weight:bold;">
-            {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
+                {{ $reservation['data']['reserved_for']['email'] ?? "" }}</span>
+            </p>
+            <p>
+                <span>{{ __("invoices.Payment note") }}:</span>
+                <span style="font-weight:bold;"> {{ $invoice['description'] ?? "" }}</span>
             </p>
         @endif
 

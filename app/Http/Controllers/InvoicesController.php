@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Constants\AuditServices;
+use App\Constants\MobileAppSettings;
 use App\Constants\PaymentConstants;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
+use App\Repository\Eloquent\SettingRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
 use Exception;
@@ -97,6 +99,11 @@ class InvoicesController extends Controller
         $invoice = Invoice::with(InvoiceRepository::Relations)
             ->where('reference_id', $referenceId)->firstOrFail();
 
+
+        $paymentHintSetting = app(SettingRepository::class)->getMobileAppSettingByKey( $invoice->branch_id,MobileAppSettings::PaymentHint);;
+        $paymentHint = $paymentHintSetting ? (___( $paymentHintSetting, \App::getLocale())["description"] ?? null) : null;
+        if(!$invoice->description)
+            $invoice->description = $paymentHint;
 
         $reservation = $invoice['reservation'];
         $reservable = $invoice['reservation']['data']['reservable'];
