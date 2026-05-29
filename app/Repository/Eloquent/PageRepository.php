@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent;
 
 
+use App\Actions\MediaAction;
 use App\Models\Page;
 use App\Repository\PageRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
 {
     public static array $modelRelations = ['locales', 'media'];
 
-    public function __construct(Page $model, private LocaleRepository $localeAction)
+    public function __construct(Page $model, private LocaleRepository $localeAction, private MediaAction $mediaRepository)
     {
         parent::__construct($model);
     }
@@ -20,7 +21,7 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
     {
         $data['business_id'] = $businessId;
         $data['branch_id'] = $branchId;
-        return array_only($data, ['business_id', 'branch_id', 'slug', 'user_id']);
+        return array_only($data, ['business_id', 'branch_id', 'slug', 'user_id', 'sort']);
     }
 
     public function listModel($businessId, $branchId)
@@ -54,6 +55,8 @@ class PageRepository extends BaseRepository implements PageRepositoryInterface
                 abort(400,'Invalid Locales Data');
             $this->localeAction->setLocales($model, $data['locales']);
         }
+        if (isset($data['media']) && count($data['media']))
+            $this->mediaRepository->setMedia($model, $data['media']);
     }
 
     public function createModel($businessId, $branchId, array $data): Model
