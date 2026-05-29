@@ -120,6 +120,21 @@ if (! function_exists('_ـ_')) {
             return $locales[0];
         }
     }
+
+    /**
+     * @param $locales array
+     * @return void
+     */
+    if (! function_exists('locales_slug')) {
+        function locales_slug($locales)
+        {
+            $locale = collect($locales)->firstWhere('locale', 'en')
+                ?? $locales[0];
+
+            return Str::slug($locale['name']);
+        }
+    }
+
 }
 
 
