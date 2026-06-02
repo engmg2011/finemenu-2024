@@ -274,6 +274,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         // Remove not wanted data in caching
         $clone_reservable = json_decode(json_encode($reservation->reservable), true);
         $clone_reservable['itemable']['featuresData'] = null;
+        if(is_array($clone_reservable['locales']) && count($clone_reservable['locales'])){
+            foreach ($clone_reservable['locales'] as $key => $locale) {
+                $clone_reservable['locales'][$key]['description'] = null;
+            }
+        }
 
         $reservedForData = json_decode(json_encode($reservation->reservedFor), true);
         $reservedForData['business_control'] = null;

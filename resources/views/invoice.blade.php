@@ -130,7 +130,7 @@ use Carbon\Carbon;
             <!-- Other info after current invoice-->
             <p>
                 <span>{{ __("invoices.REFERENCE ID") }}:</span>
-                <span style="font-weight:bold;"> ### {{ $invoice['reference_id'] }} ### </span>
+                <span style="font-weight:bold;" class="reference_number"> ### {{ $invoice['reference_id'] }} ### </span>
             </p>
             <p>
                 <span>{{ __("invoices.Reservation Number") }}:</span>
