@@ -18,4 +18,7 @@ class BranchSettings
 
     const EnableOrdering = "EnableOrdering";
     const CartVisible = "CartVisible";
+
+    const MobileAppSettings = "MobileAppSettings";
+
 }

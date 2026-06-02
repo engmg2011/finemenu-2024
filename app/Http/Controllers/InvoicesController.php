@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Constants\AuditServices;
+use App\Constants\MobileAppSettings;
 use App\Constants\PaymentConstants;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
+use App\Repository\Eloquent\SettingRepository;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Services\AuditService;
 use Exception;
@@ -98,6 +100,11 @@ class InvoicesController extends Controller
             ->where('reference_id', $referenceId)->firstOrFail();
 
 
+        $paymentHintSetting = app(SettingRepository::class)->getMobileAppSettingByKey( $invoice->branch_id,MobileAppSettings::PaymentHint);;
+        $paymentHint = $paymentHintSetting ? (___( $paymentHintSetting, \App::getLocale())["description"] ?? null) : null;
+        if(!$invoice->description)
+            $invoice->description = $paymentHint;
+
         $reservation = $invoice['reservation'];
         $reservable = $invoice['reservation']['data']['reservable'];
         $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
@@ -116,6 +123,8 @@ class InvoicesController extends Controller
         $rentAmount = $totalCredit - $totalDebit;
         $logoSetting =isset($invoice->reservation->business->settings) ?
             collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
+
+        $imageData = null;
         // create base64 image
         if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
             $avatarUrl = $logoSetting['data'][0]['src'];
@@ -130,7 +139,6 @@ class InvoicesController extends Controller
                 ),
             );
             $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-            $imageData = null;
             try{
                 $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
                 $avatarBase64Data = base64_encode($avatarData);
