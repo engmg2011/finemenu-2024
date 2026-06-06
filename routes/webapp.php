@@ -40,6 +40,9 @@ Route::group(['prefix' => 'webapp',
 
             Route::group(['prefix' => '/{branchId}'], function () {
                 // Logged in only features
+                Route::group(['prefix' => 'reservations'], function () {
+                    Route::get('/filter', [ReservationsController::class, 'filterWebApp']);
+                });
                 Route::group([ 'middleware'=>'auth:sanctum', ], function () {
                     // orders
                     Route::group(['prefix' => 'orders'], function () {
@@ -55,7 +58,6 @@ Route::group(['prefix' => 'webapp',
                     //reservations
                     Route::group(['prefix' => 'reservations'], function () {
                         Route::get('/', [ReservationsController::class, 'userReservations']);
-                        Route::get('/filter', [ReservationsController::class, 'filterWebApp']);
                         Route::get('/{id}', [ReservationsController::class, 'showForReservationOwner']);
                         Route::post('/', [ReservationsController::class, 'create']);
                         Route::post('/check', [ReservationsController::class, 'isAvailable']);
@@ -77,6 +79,7 @@ Route::group(['prefix' => 'webapp',
                 });
 
                 Route::get('reservables/filter', [ReservationsController::class, 'filterReservables']);
+
             });
         });
 
