@@ -16,7 +16,9 @@ class SocialController extends Controller
         $callBack = request()->get('CallbackURL', false);
         if($callBack)
             session(['callback' => $callBack]);
-        return Socialite::driver($provider)->redirect();
+        return Socialite::driver($provider)
+            ->stateless()
+            ->with(['state'=> base64_encode($callBack)])->redirect();
     }
 
     /**
@@ -25,7 +27,9 @@ class SocialController extends Controller
     public function handleProviderCallback($provider)
     {
         // Get user information from the provider
-        $socialUser = Socialite::driver($provider)->user();
+        $socialUser = Socialite::driver($provider)
+            ->stateless()
+            ->user();
 
         // check if user with the same email exists
         $user = User::where('email', $socialUser->email)->first();
@@ -53,6 +57,12 @@ class SocialController extends Controller
         }
         // Generate a token for API authentication
         $token = $user->createToken('Register API Token')->plainTextToken;
+
+        $callbackApple = base64_decode(request()->get('state', false));
+        if($callbackApple) {
+            \Log::info('callbackApple: ' . $callbackApple);
+            return redirect($callbackApple . '?token=' . $token);
+        }
         $callback = session('callback');
         if(isset($callback) && $callback !== ''){
             session()->forget('callback');
