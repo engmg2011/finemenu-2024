@@ -33,28 +33,33 @@ class Payment
     public function checkout(array $params)
     {
         $encryptedData = HesabeCrypt::encrypt(json_encode($params), $this->secretKey, $this->ivKey);
+        try {
 
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->getRedirectBaseUrl()."/checkout",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => array('data' => $encryptedData),
-            CURLOPT_HTTPHEADER => array(
-                "accessCode: $this->accessCode",
-                "Accept: application/json"
-            ),
-        ));
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $this->getRedirectBaseUrl()."/checkout",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_SSL_VERIFYPEER => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => array('data' => $encryptedData),
+                CURLOPT_HTTPHEADER => array(
+                    "accessCode: $this->accessCode",
+                    "Accept: application/json"
+                ),
+            ));
 
-        $response = curl_exec($curl);
-        curl_close($curl);
+            $response = curl_exec($curl);
+            curl_close($curl);
+        }catch (\Exception $e){
+            \Log::critical("Hesabe : ".$e->getMessage());
+            die();
+        }
 
         $decryptedResponse = HesabeCrypt::decrypt($response, $this->secretKey, $this->ivKey);
         $jsonData = json_decode($decryptedResponse, true);
@@ -62,6 +67,13 @@ class Payment
         if (isset($jsonData['status']) && !$jsonData['status']) {
             \Log::critical("Hesabe : ".( $jsonData['message'] ?? "Error: Invalid data received" ));
             return $jsonData['message'] ?? "Error: Invalid data received";
+        }
+
+        if(!isset($jsonData['response'] ) || !isset($jsonData['response']['data'])){
+            \Log::debug([
+                "resp"=>$decryptedResponse,
+                "key" => $this->ivKey ,
+                "json_data" => $jsonData]);
         }
 
         $token = $jsonData['response']['data'];
