@@ -113,7 +113,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $endDate = businessToUtcConverter($data['to'], $business, 'Y-m-d H:i:s');
 
         // TODO :: agree on default
-        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
+        $reservations = Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
             ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById, $followerId) {
                 if (isset($itemId)) $query->where('reservable_id', $itemId);
@@ -132,6 +132,18 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                     });
             })
             ->paginate(request('per-page', 1200));
+        if(count($reservations)){
+            $user = auth('sanctum')->user();
+            if(
+                !$user ||
+                !$user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchId.'.'.PermissionServices::Reservations.'.'.PermissionActions::Read)
+            ){
+                foreach ($reservations as &$reservation) {
+                    $reservation['data'] = null;
+                }
+            }
+        }
+        return $reservations;
     }
 
     public function listModel($businessId, $branchId, $conditions = null)
