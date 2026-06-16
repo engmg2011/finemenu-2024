@@ -29,7 +29,6 @@ Route::get('/', function () {
     //return view('index');
 });
 
-Route::get('/phpinfo', fn() => phpinfo());
 /*
 Route::get('notification-sender', function (){
     $keyword = request('message');
