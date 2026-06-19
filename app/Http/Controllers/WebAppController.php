@@ -7,6 +7,7 @@ use App\Constants\BusinessTypes;
 use App\Constants\MenuTypes;
 use App\Models\Branch;
 use App\Models\Device;
+use App\Models\Item;
 use App\Models\Menu;
 use App\Notifications\OneSignalNotification;
 use App\Repository\BusinessRepositoryInterface;
@@ -108,5 +109,23 @@ class WebAppController extends Controller
     public function carBrands()
     {
         return response()->json(app(CarBrandRepository::class)->listModel());
+    }
+
+    public function googleMapImage($id){
+        $apiKey = env('GOOGLE_MAP_API_KEY');
+        if($id) {
+            $item = Item::with('itemable')->find($id);
+            if($item && $item->itemable) {
+                $lat = $item->itemable->latitude;
+                $lng = $item->itemable->longitude;
+
+                $size = request('size', "1200x630");
+                $zoom = request('zoom', "14");
+
+                if($lat && $lng)
+                    return view('google-map', compact( 'apiKey','lat', 'lng', 'zoom', 'size') );
+            }
+        }
+        return response()->json(['error' => 'Item not found'], 404);
     }
 }

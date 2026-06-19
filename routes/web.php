@@ -1,10 +1,13 @@
 <?php
 
 use App\Events\MyEvent;
+use App\Events\NewOrder;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\WebAppController;
 use App\Jobs\ProcessPodcast;
 use App\Mail\TestQueuedMail;
 use App\Services\OtpMailService;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -43,7 +46,7 @@ Route::get('/send', [HomeController::class, 'send'])->name('home.send');*/
 
 Route::get('orders-sender', function () {
     $business_id = request()->get('businessId');
-    event(new \App\Events\NewOrder(78));
+    event(new NewOrder(78));
 //    event(new \App\Events\SendOrders($business_id));
 //    event(new MyEvent('hello world'));
 
@@ -89,7 +92,7 @@ Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
 Route::get('ar-pdf',[InvoicesController::class , 'arPdf']);
 
-Route::get('send-sms', function(\App\Services\SmsService $twilio)
+Route::get('send-sms', function(SmsService $twilio)
 {
     $otp = rand(1000, 9999);
 //    $twilio->sendByTwilio('+96565708188', $otp);
@@ -134,4 +137,4 @@ Route::get('optimize-reservations', function (){
 //   }
 });
 
-
+Route::get('google-map/{id}',  [WebAppController::class, 'googleMapImage'])->name('google-map');;
