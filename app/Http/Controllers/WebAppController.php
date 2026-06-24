@@ -112,6 +112,7 @@ class WebAppController extends Controller
     }
 
     public function googleMapImage($id){
+        header('Access-Control-Allow-Origin', '*');
         $apiKey = env('GOOGLE_MAP_API_KEY');
         if($id) {
             $item = Item::with('itemable')->find($id);
