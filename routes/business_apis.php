@@ -148,9 +148,6 @@ Route::group(['middleware' => ['throttle:1000,1',
                     });
 
                     Route::group(['prefix' => 'pages'], function () {
-                        Route::get('/', [PagesController::class, 'index']);
-                        Route::get('/filter', [PagesController::class, 'filter']);
-                        Route::get('/{id}', [PagesController::class, 'show']);
                         Route::post('/', [PagesController::class, 'createModel']);
                         Route::post('/{id}/delete', [PagesController::class, 'destroy']);
                         Route::post('/{id}', [PagesController::class, 'update']);
@@ -294,5 +291,10 @@ Route::group(['middleware' => 'throttle:1000,1', 'prefix' => 'business/{business
     Route::group(['prefix' => 'branches/{branchId}'], function () {
         Route::get('/', [UsersController::class, 'index']);
         Route::get('login-qr', [UsersController::class, 'loginByQr'])->name('login.qr');
+        Route::group(['prefix' => 'pages'], function () {
+            Route::get('/', [PagesController::class, 'index']);
+            Route::get('/filter', [PagesController::class, 'filter']);
+            Route::get('/{id}', [PagesController::class, 'show']);
+        });
     });
 });
