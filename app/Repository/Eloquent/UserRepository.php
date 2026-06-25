@@ -61,6 +61,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                     ->orWhere('email', 'like', "%{$data['search']}%")
                     ->orWhere('phone', 'like', "%{$data['search']}%");
             })
+            ->where(function ($query) use ($data) {
+                $isEmployee = filter_var($data['isEmployee'] ?? false , FILTER_VALIDATE_BOOLEAN);
+                if($isEmployee){
+                    return $query->where('is_employee', $isEmployee);
+                }
+            })
             ->paginate(5);
     }
 
