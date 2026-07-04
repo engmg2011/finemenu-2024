@@ -12,6 +12,8 @@ use App\Http\Controllers\DiscountsController;
 use App\Http\Controllers\HolidaysController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\ItemsController;
+use App\Http\Controllers\LandingPagesController;
+use App\Http\Controllers\LandingPageWidgetsController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\OrdersController;
@@ -63,6 +65,22 @@ Route::group(['middleware' => ['throttle:1000,1',
                 Route::post('/', [MenusController::class, 'createModel']);
                 Route::post('/{id}/delete', [MenusController::class, 'destroy']);
                 Route::post('/{id}', [MenusController::class, 'update']);
+            });
+
+            Route::group(['prefix' => 'landing-pages'], function () {
+                Route::post('/', [LandingPagesController::class, 'create']);
+                Route::post('/sort', [LandingPagesController::class, 'sort']);
+                Route::post('/{id}', [LandingPagesController::class, 'update']);
+                Route::post('/{id}/delete', [LandingPagesController::class, 'destroy']);
+
+                Route::group(['prefix' => '/{landingPageId}/widgets'], function () {
+                    Route::get('/', [LandingPageWidgetsController::class, 'index']);
+                    Route::get('/{id}', [LandingPageWidgetsController::class, 'show']);
+                    Route::post('/', [LandingPageWidgetsController::class, 'create']);
+                    Route::post('/sort', [LandingPageWidgetsController::class, 'sort']);
+                    Route::post('/{id}', [LandingPageWidgetsController::class, 'update']);
+                    Route::post('/{id}/delete', [LandingPageWidgetsController::class, 'destroy']);
+                });
             });
 
             Route::group(['prefix' => 'holidays'], function () {

@@ -45,6 +45,8 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $locales_count
  * @property-read Collection<int, \App\Models\Media> $media
  * @property-read int|null $media_count
+ * @property-read Collection<int, \App\Models\LandingPage> $landingPages
+ * @property-read int|null $landing_pages_count
  * @property-read Collection<int, \App\Models\Menu> $menus
  * @property-read int|null $menus_count
  * @property-read Collection<int, \App\Models\Order> $orders
@@ -91,5 +93,10 @@ class Business extends Model
 
     public function menus(): HasMany{
         return $this->hasMany(Menu::class);
+    }
+
+    public function landingPages(): HasMany
+    {
+        return $this->hasMany(LandingPage::class)->orderBy('sort');
     }
 }

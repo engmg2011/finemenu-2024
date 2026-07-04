@@ -1,0 +1,475 @@
+{
+  "info": {
+    "_postman_id": "63f2e3ce-9f3d-48a8-9dd8-5c88b4c5fb50",
+    "name": "Landing Pages API",
+    "description": "Requests for testing business landing pages and landing page widgets. Set collection variables before running: base_url, token, business_id, landing_page_id, landing_page_key, widget_id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "business_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "landing_page_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "landing_page_key",
+      "value": "home",
+      "type": "string"
+    },
+    {
+      "key": "widget_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Landing Pages",
+      "item": [
+        {
+          "name": "List Landing Pages",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Landing Page By ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Landing Page By Key",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/key/{{landing_page_key}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "key",
+                "{{landing_page_key}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"home\",\n  \"slug\": \"home\",\n  \"active\": true,\n  \"sort\": 1,\n  \"data\": {\n    \"theme\": \"default\",\n    \"layout\": \"marketing\"\n  },\n  \"locales\": [\n    {\n      \"locale\": \"en\",\n      \"name\": \"Home Landing Page\",\n      \"description\": \"Main landing page for the business\"\n    },\n    {\n      \"locale\": \"ar\",\n      \"name\": \"صفحة البداية\",\n      \"description\": \"الصفحة الرئيسية للنشاط التجاري\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"home\",\n  \"slug\": \"home\",\n  \"active\": true,\n  \"sort\": 1,\n  \"data\": {\n    \"theme\": \"default\",\n    \"layout\": \"marketing\",\n    \"seo\": {\n      \"title\": \"Business Home\",\n      \"description\": \"Landing page rendered from dynamic widgets\"\n    }\n  },\n  \"locales\": [\n    {\n      \"locale\": \"en\",\n      \"name\": \"Updated Home Landing Page\",\n      \"description\": \"Updated main landing page\"\n    },\n    {\n      \"locale\": \"ar\",\n      \"name\": \"صفحة البداية المحدثة\",\n      \"description\": \"الصفحة الرئيسية المحدثة\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sort Landing Pages",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortedIds\": [\n    1,\n    2,\n    3\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/sort",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "sort"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "delete"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Landing Page Widgets",
+      "item": [
+        {
+          "name": "List Widgets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Widget",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets",
+                "{{widget_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Hero Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"hero\",\n  \"type\": \"hero\",\n  \"active\": true,\n  \"sort\": 1,\n  \"fields\": [\n    {\n      \"key\": \"title\",\n      \"type\": \"object\",\n      \"label\": {\n        \"en\": \"Title\",\n        \"ar\": \"العنوان\"\n      },\n      \"value\": {\n        \"en\": \"Fresh meals delivered daily\",\n        \"ar\": \"وجبات طازجة يوميا\"\n      }\n    },\n    {\n      \"key\": \"subtitle\",\n      \"type\": \"object\",\n      \"label\": {\n        \"en\": \"Subtitle\",\n        \"ar\": \"العنوان الفرعي\"\n      },\n      \"value\": {\n        \"en\": \"Choose a plan that fits your routine.\",\n        \"ar\": \"اختر خطة تناسب يومك.\"\n      }\n    },\n    {\n      \"key\": \"button_text\",\n      \"type\": \"object\",\n      \"label\": {\n        \"en\": \"Button Text\",\n        \"ar\": \"نص الزر\"\n      },\n      \"value\": {\n        \"en\": \"Start now\",\n        \"ar\": \"ابدأ الآن\"\n      }\n    },\n    {\n      \"key\": \"image_url\",\n      \"type\": \"string\",\n      \"label\": {\n        \"en\": \"Image URL\",\n        \"ar\": \"رابط الصورة\"\n      },\n      \"value\": \"https://example.com/hero.jpg\"\n    },\n    {\n      \"key\": \"display_order\",\n      \"type\": \"numeric\",\n      \"label\": {\n        \"en\": \"Display Order\",\n        \"ar\": \"ترتيب العرض\"\n      },\n      \"value\": 1\n    }\n  ],\n  \"data\": {\n    \"variant\": \"image-right\"\n  },\n  \"locales\": [\n    {\n      \"locale\": \"en\",\n      \"name\": \"Hero\",\n      \"description\": \"Top section\"\n    },\n    {\n      \"locale\": \"ar\",\n      \"name\": \"البطل\",\n      \"description\": \"القسم العلوي\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Plans Select Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"plans_filter\",\n  \"type\": \"select_filter\",\n  \"active\": true,\n  \"sort\": 2,\n  \"fields\": [\n    {\n      \"key\": \"title\",\n      \"type\": \"object\",\n      \"label\": {\n        \"en\": \"Title\",\n        \"ar\": \"العنوان\"\n      },\n      \"value\": {\n        \"en\": \"Find your meal plan\",\n        \"ar\": \"اختر خطتك الغذائية\"\n      }\n    },\n    {\n      \"key\": \"default_plan\",\n      \"type\": \"string\",\n      \"label\": {\n        \"en\": \"Default Plan\",\n        \"ar\": \"الخطة الافتراضية\"\n      },\n      \"value\": \"balanced\"\n    },\n    {\n      \"key\": \"options\",\n      \"type\": \"array\",\n      \"label\": {\n        \"en\": \"Options\",\n        \"ar\": \"الخيارات\"\n      },\n      \"value\": [\n        {\n          \"key\": \"balanced\",\n          \"label\": {\n            \"en\": \"Balanced\",\n            \"ar\": \"متوازن\"\n          }\n        },\n        {\n          \"key\": \"low_carb\",\n          \"label\": {\n            \"en\": \"Low Carb\",\n            \"ar\": \"قليل الكربوهيدرات\"\n          }\n        },\n        {\n          \"key\": \"high_protein\",\n          \"label\": {\n            \"en\": \"High Protein\",\n            \"ar\": \"عالي البروتين\"\n          }\n        }\n      ]\n    }\n  ],\n  \"data\": {\n    \"source\": \"diet_plans\"\n  },\n  \"locales\": [\n    {\n      \"locale\": \"en\",\n      \"name\": \"Plans Filter\",\n      \"description\": \"Select input widget for plans\"\n    },\n    {\n      \"locale\": \"ar\",\n      \"name\": \"فلتر الخطط\",\n      \"description\": \"ودجت اختيار الخطط\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"hero\",\n  \"type\": \"hero\",\n  \"active\": true,\n  \"sort\": 1,\n  \"fields\": [\n    {\n      \"key\": \"title\",\n      \"type\": \"object\",\n      \"value\": {\n        \"en\": \"Updated fresh meals delivered daily\",\n        \"ar\": \"وجبات طازجة محدثة يوميا\"\n      }\n    },\n    {\n      \"key\": \"image_url\",\n      \"type\": \"string\",\n      \"value\": \"https://example.com/updated-hero.jpg\"\n    },\n    {\n      \"key\": \"display_order\",\n      \"type\": \"numeric\",\n      \"value\": 1\n    }\n  ],\n  \"data\": {\n    \"variant\": \"centered\"\n  },\n  \"locales\": [\n    {\n      \"locale\": \"en\",\n      \"name\": \"Updated Hero\",\n      \"description\": \"Updated top section\"\n    },\n    {\n      \"locale\": \"ar\",\n      \"name\": \"البطل المحدث\",\n      \"description\": \"القسم العلوي المحدث\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets",
+                "{{widget_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sort Widgets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortedIds\": [\n    1,\n    2,\n    3\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/sort",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets",
+                "sort"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}/delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "landing-pages",
+                "{{landing_page_id}}",
+                "widgets",
+                "{{widget_id}}",
+                "delete"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
