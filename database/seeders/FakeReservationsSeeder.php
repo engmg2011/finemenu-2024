@@ -316,7 +316,10 @@ class FakeReservationsSeeder extends Seeder
             ? min($this->roundedAmount(50, 200, 50), $reservationPrice - 50)
             : 0;
         $creditTotal = $reservationPrice + $insuranceAmount;
-        $creditCount = $invoiceCount - ($hasInsurance ? 1 : 0);
+        $creditCount = min(
+            $invoiceCount - ($hasInsurance ? 1 : 0),
+            max(1, intdiv($creditTotal, 50))
+        );
         $creditAmounts = $this->splitRoundedAmount($creditTotal, max(1, $creditCount));
         $paidCreditCount = fake()->numberBetween(0, count($creditAmounts));
 
@@ -401,21 +404,20 @@ class FakeReservationsSeeder extends Seeder
 
     private function splitRoundedAmount(int $amount, int $parts): array
     {
+        $parts = max(1, min($parts, max(1, intdiv($amount, 50))));
+
         if ($parts === 1) {
             return [$amount];
         }
 
-        $remaining = $amount;
-        $amounts = [];
+        $amounts = array_fill(0, $parts, 50);
+        $remaining = $amount - ($parts * 50);
 
-        for ($i = $parts; $i > 1; $i--) {
-            $max = $remaining - (($i - 1) * 50);
-            $piece = $this->roundedAmount(50, max(50, $max), 50);
-            $amounts[] = $piece;
-            $remaining -= $piece;
+        while ($remaining > 0) {
+            $index = random_int(0, $parts - 1);
+            $amounts[$index] += 50;
+            $remaining -= 50;
         }
-
-        $amounts[] = $remaining;
 
         return $amounts;
     }
