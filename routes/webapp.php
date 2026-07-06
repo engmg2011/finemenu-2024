@@ -39,10 +39,10 @@ Route::group(['prefix' => 'webapp',
             Route::get('/', [BranchesController::class, 'index']);
 
             Route::group(['prefix' => '/{branchId}'], function () {
-                // Logged in only features
                 Route::group(['prefix' => 'reservations'], function () {
                     Route::get('/filter', [ReservationsController::class, 'filterWebApp']);
                 });
+                // Logged in only features
                 Route::group([ 'middleware'=>'auth:sanctum', ], function () {
                     // orders
                     Route::group(['prefix' => 'orders'], function () {
