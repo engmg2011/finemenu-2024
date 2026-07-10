@@ -59,7 +59,7 @@ class Hesabe implements PaymentProviderInterface
             "name" => $invoice->forUser?->name,
             "mobile_number" => $invoice->forUser?->phone,
             "email" => $invoice->forUser?->email,
-            "webhookUrl" => route('payment.hesabe-completed', ['referenceId' => $referenceNumber]),
+            "webhookUrl" => route('payment.hesabe-webhook-completed', ['referenceId' => $referenceNumber]),
             'description' => $invoice->description ?? $paymentHint ?? "",
         ];
         \Log::debug(json_encode($paymentData));
@@ -68,6 +68,11 @@ class Hesabe implements PaymentProviderInterface
 
     public function completed($request, $referenceNumber)
     {
+        \Log::debug(json_encode([
+            "completed called",
+            "referenceNumber" => $referenceNumber,
+            $request->all()]));
+
         // Step 1: Get encrypted data from Hesabe
         $encryptedData = $request->input('data'); // The 'data' field contains the encrypted payload
 
