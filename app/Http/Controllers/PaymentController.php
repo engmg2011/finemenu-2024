@@ -48,6 +48,12 @@ class PaymentController extends Controller
         return $this->paymentService->completed($request, $referenceNumber);
     }
 
+    public function hesabeWebhookCompleted(Request $request, $referenceNumber)
+    {
+        $this->paymentService = new PaymentService(new Hesabe());
+        return $this->paymentService->completed($request, $referenceNumber);
+    }
+
     public function success(Request $request)
     {
         $data = ["msg" => "Completed Successfully", "color" => "green"];
