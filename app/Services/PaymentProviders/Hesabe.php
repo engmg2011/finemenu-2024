@@ -12,6 +12,8 @@ use App\Models\Invoice;
 use App\Repository\Eloquent\SettingRepository;
 use Hesabe\Payment\HesabeCrypt;
 use Hesabe\Payment\Payment;
+use Illuminate\Support\Facades\Request;
+use Log;
 
 class Hesabe implements PaymentProviderInterface
 {
@@ -125,11 +127,100 @@ class Hesabe implements PaymentProviderInterface
                     return redirect()->route('payment.success' , ['encryptedData' => $request->query('encryptedData')]);
                 }
                 \Log::info("Invoice checked while it's paid");
-                return redirect()->route('payment.success');
+                return redirect()->route('payment.success' , ['encryptedData' => $request->query('encryptedData')]);
             }
         }
         return redirect()->route('payment.failed');
     }
 
+    public function hesabeWebhookCompleted(Request $request, string $referenceId)
+    {
+        Log::info('Hesabe webhook received', [
+            'referenceId' => $referenceId,
+            'payload' => $request->all(),
+        ]);
 
+        try {
+            $reference = $request->input('reference_number');
+            $status = $request->input('status');
+            if (!$reference) {
+                Log::error('Webhook missing reference_number');
+                return response()->json(['success' => false], 400);
+            }
+
+            $invoice = Invoice::where('reference_id', $reference)->first();
+            if (!$invoice) {
+                Log::error('Invoice not found', [
+                    'reference' => $reference,
+                ]);
+                return response()->json(['success' => false], 404);
+            }
+
+            // Store the raw webhook payload for debugging
+            $invoice->update([
+                'data' => $request->all(),
+            ]);
+
+            if ($status !== 'SUCCESSFUL') {
+                Log::info('Payment not successful', [
+                    'reference' => $reference,
+                    'status' => $status,
+                ]);
+                return response()->json(['success' => true]);
+            }
+
+            $processed = DB::transaction(function () use ($invoice) {
+                $invoice = Invoice::with(['reservation', 'order'])
+                    ->lockForUpdate()
+                    ->find($invoice->id);
+                if ($invoice->status === PaymentConstants::INVOICE_PAID) {
+                    return false;
+                }
+                $invoice->update([
+                    'status' => PaymentConstants::INVOICE_PAID,
+                    'paid_at' => now(),
+                ]);
+                if ($invoice->reservation) {
+                    $invoice->reservation->update([
+                        'status' => PaymentConstants::RESERVATION_COMPLETED,
+                    ]);
+                    app('App\Repository\Eloquent\ReservationRepository')
+                        ->setReservationCashedData($invoice->reservation->id);
+                }
+                if ($invoice->order) {
+                    $invoice->order->update([
+                        'paid' => true,
+                    ]);
+                }
+                return true;
+            });
+
+            if ($processed) {
+                if ($invoice->reservation) {
+                    event(new UpdateReservation($invoice->reservation_id));
+                    dispatch(new SendUpdateReservationNotification($invoice->reservation->id));
+                }
+                if ($invoice->order) {
+                    event(new UpdateOrder($invoice->order_id));
+                    dispatch(new SendUpdateOrderNotification($invoice->order_id));
+                }
+                Log::info('Invoice successfully processed', [
+                    'reference' => $reference,
+                ]);
+            } else {
+                Log::info('Invoice already processed', [
+                    'reference' => $reference,
+                ]);
+            }
+            return response()->json(['success' => true]);
+
+        } catch (\Throwable $e) {
+            Log::error('Webhook processing failed', [
+                'referenceId' => $referenceId,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['success' => false], 500);
+        }
+    }
 }
