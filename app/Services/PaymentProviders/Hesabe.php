@@ -13,6 +13,7 @@ use App\Repository\Eloquent\SettingRepository;
 use Hesabe\Payment\HesabeCrypt;
 use Hesabe\Payment\Payment;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\DB;
 use Log;
 
 class Hesabe implements PaymentProviderInterface
@@ -57,7 +58,7 @@ class Hesabe implements PaymentProviderInterface
             "failureUrl" => route('payment.failed', ['encryptedData' => $callBackUrlEncrypted]),
             "orderReferenceNumber" => "" . $referenceNumber,
             "variable1" => null,
-            "version" => "2.0",
+            "version" => "3.0",
             "name" => $invoice->forUser?->name,
             "mobile_number" => $invoice->forUser?->phone,
             "email" => $invoice->forUser?->email,
@@ -138,9 +139,18 @@ class Hesabe implements PaymentProviderInterface
         Log::info('Hesabe webhook received', [
             'referenceId' => $referenceId,
             'payload' => $request->all(),
+            'headers' => $request->header(),
         ]);
 
         try {
+            // Step 1: Verify HMAC signature
+            if (!$this->verifyWebhookSignature($request)) {
+                Log::error('Webhook signature verification failed', [
+                    'referenceId' => $referenceId,
+                ]);
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
             $reference = $request->input('reference_number');
             $status = $request->input('status');
             if (!$reference) {
@@ -222,5 +232,54 @@ class Hesabe implements PaymentProviderInterface
             ]);
             return response()->json(['success' => false], 500);
         }
+    }
+
+    /**
+     * Verify webhook signature using HMAC-SHA256
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return bool
+     */
+    private function verifyWebhookSignature($request): bool
+    {
+        // Get the signature from the header
+        $receivedSignature = $request->header('X-Signature');
+
+        if (!$receivedSignature) {
+            Log::error('X-Signature header missing');
+            return false;
+        }
+
+        // Get the access code (webhook secret)
+        $webhookSecret = env('HESABE_ACCESS_CODE');
+
+        // Build the HMAC string by concatenating all top-level payload fields except 'blocks'
+        $payload = $request->all();
+        $macString = '';
+        foreach ($payload as $key => $value) {
+            if ($key !== 'blocks') {
+                // Hesabe expects value as string; flatten arrays/objects if any
+                if (is_array($value) || is_object($value)) {
+                    $macString .= json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                } elseif ($value === null) {
+                    $macString .= '';
+                } else {
+                    $macString .= (string)$value;
+                }
+            }
+        }
+
+        // Generate HMAC-SHA256 hash
+        $computedSignature = hash_hmac('sha256', $macString, $webhookSecret);
+
+        Log::debug('HMAC Verification Debug', [
+            'receivedSignature' => $receivedSignature,
+            'computedSignature' => $computedSignature,
+            'macString' => $macString,
+            'payloadKeys' => array_keys($payload),
+        ]);
+
+        // Compare signatures securely
+        return hash_equals($computedSignature, $receivedSignature);
     }
 }
