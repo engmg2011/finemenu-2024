@@ -12,7 +12,7 @@ use App\Models\Invoice;
 use App\Repository\Eloquent\SettingRepository;
 use Hesabe\Payment\HesabeCrypt;
 use Hesabe\Payment\Payment;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
 
@@ -97,7 +97,9 @@ class Hesabe implements PaymentProviderInterface
 
         if (isset($decryptedDataObj->response->orderReferenceNumber)) {
             $invoice = Invoice::where(['reference_id' => $decryptedDataObj->response->orderReferenceNumber])->first();
-            $invoice->update(['data' => $decryptedDataObj->response]);
+            // to save the raw data even captured or not captured, but invoice shouldn't be paid
+            if ($invoice->status !== PaymentConstants::INVOICE_PAID)
+                $invoice->update(['data' => $decryptedDataObj->response]);
         }
 
         // Step 4: Check payment status

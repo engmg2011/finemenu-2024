@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\PaymentProviders;
 
-use Request;
+use Illuminate\Http\Request;
 
 interface PaymentProviderInterface{
     public function checkout($referenceNumber, $callbackUrl);

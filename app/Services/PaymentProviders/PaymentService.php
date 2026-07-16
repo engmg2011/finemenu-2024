@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Services\AuditService;
+use Illuminate\Http\Request;
 
 class PaymentService
 {
@@ -58,6 +59,11 @@ class PaymentService
         ]);
 
         return $process;
+    }
+
+    public function hesabeWebhookCompleted(Request $request, string $referenceId)
+    {
+        return $this->provider->hesabeWebhookCompleted($request, $referenceId);
     }
 
 }

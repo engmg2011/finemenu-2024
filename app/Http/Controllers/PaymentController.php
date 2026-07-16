@@ -51,7 +51,7 @@ class PaymentController extends Controller
     public function hesabeWebhookCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        return $this->paymentService->completed($request, $referenceNumber);
+        return $this->paymentService->hesabeWebhookCompleted($request, $referenceNumber);
     }
 
     public function success(Request $request)
