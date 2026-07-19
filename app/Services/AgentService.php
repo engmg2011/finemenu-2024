@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Constants\AuditServices;
 use App\Constants\PaymentConstants;
+use App\Events\NewReservation;
+use App\Jobs\SendNewReservationNotification;
 use App\Models\Business;
 use App\Models\Item;
 use App\Models\Reservation;
@@ -576,6 +579,11 @@ PROMPT;
         $reservation = Reservation::create($reservationData);
 
         app(ReservationRepository::class)->setReservationCashedData($reservation->id);
+
+        AuditService::log(AuditServices::Reservations, $reservation->id, "Created booking " . $reservation->id, $businessId, $branchId);
+
+        event(new NewReservation($reservation->id));
+        dispatch(new SendNewReservationNotification($reservation->id));
 
         $name = optional($item->locales->first())->name ?? "Unit #{$item->id}";
 
