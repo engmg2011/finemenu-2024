@@ -389,13 +389,37 @@ PROMPT;
         if ($items->isNotEmpty()) {
             return $items->map(function ($item) {
                 return [
-                    'id'       => $item->id,
-                    'locales'  => $item->locales->map(fn($l) => ['locale' => $l->locale, 'name' => $l->name])->values(),
+                    'id'      => $item->id,
+                    'locales' => $item->locales->map(fn($l) => ['locale' => $l->locale, 'name' => $l->name])->values()->toArray(),
                 ];
             })->values()->toArray();
         }
 
-        // Fallback: similarity search
+        // Second attempt: normalized LIKE search (always run, catches variants like "zawya" → "Zawaya")
+        $items = Item::with(['itemable', 'locales'])
+            ->where(function ($q) use ($businessId) {
+                $q->whereHas('category', function ($q2) use ($businessId) {
+                    $q2->where('business_id', $businessId);
+                });
+            })
+            ->whereHas('locales', function ($q) use ($normalizedSearch) {
+                $q->where('name', 'LIKE', "%{$normalizedSearch}%");
+            })
+            ->limit(5)
+            ->get();
+
+        \Log::info('Normalized search results for "'.$normalizedSearch.'":', $items->toArray());
+
+        if ($items->isNotEmpty()) {
+            return $items->map(function ($item) {
+                return [
+                    'id'      => $item->id,
+                    'locales' => $item->locales->map(fn($l) => ['locale' => $l->locale, 'name' => $l->name])->values()->toArray(),
+                ];
+            })->values()->toArray();
+        }
+
+        // Fallback: in-memory similarity + levenshtein scoring
         $items = Item::with('locales')
             ->where(function ($q) use ($businessId) {
                 $q->whereHas('category', function ($q2) use ($businessId) {
@@ -414,9 +438,23 @@ PROMPT;
 
                     similar_text($normalizedSearch, $name, $score);
 
+                    // Levenshtein bonus: reward close matches on short strings
+                    // e.g. "zawya" vs "zawaya" = distance of 1
+                    $lev = levenshtein($normalizedSearch, $name);
+                    $maxLen = max(mb_strlen($normalizedSearch), mb_strlen($name));
+                    if ($maxLen > 0) {
+                        $levScore = (1 - $lev / $maxLen) * 100;
+                        $score = max($score, $levScore);
+                    }
+
+                    // Bonus for substring containment in either direction
+                    if (str_contains($name, $normalizedSearch) || str_contains($normalizedSearch, $name)) {
+                        $score += 20;
+                    }
+
                     // Bonus for matching individual words
                     foreach (explode(' ', $normalizedSearch) as $word) {
-                        if ($word && str_contains($name, $word)) {
+                        if ($word && mb_strlen($word) > 2 && str_contains($name, $word)) {
                             $score += 10;
                         }
                     }
@@ -428,7 +466,7 @@ PROMPT;
 
                 return $item;
             })
-            ->filter(fn ($item) => $item->search_score > 20) // minimum similarity
+            ->filter(fn ($item) => $item->search_score > 50) // levenshtein-based scores are 0-100
             ->sortByDesc('search_score')
             ->take(5)
             ->values();
@@ -438,7 +476,7 @@ PROMPT;
         return $results->map(function ($item) {
             return [
                 'id'      => $item->id,
-                'locales' => $item->locales->map(fn($l) => ['locale' => $l->locale, 'name' => $l->name])->values(),
+                'locales' => $item->locales->map(fn($l) => ['locale' => $l->locale, 'name' => $l->name])->values()->toArray(),
             ];
         })->values()->toArray();
     }
