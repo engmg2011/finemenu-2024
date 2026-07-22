@@ -208,6 +208,11 @@ Route::group(['middleware' => ['auth:sanctum', 'throttle:1000,1',
 });
 
 
+// AI Agent
+Route::group(['middleware' => ['auth:sanctum', 'throttle:60,1']], function () {
+    Route::post('/agent/chat', [\App\Http\Controllers\AgentController::class, 'chat']);
+});
+
 Route::get('qr-app-version', [WebAppController::class, 'QRAppVersion']);
 Route::get('tablet-app-version', [WebAppController::class, 'TabletAppVersion']);
 Route::get('orders-app-version', [WebAppController::class, 'OrdersAppVersion']);
