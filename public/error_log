@@ -1,0 +1,600 @@
+[06-Jan-2026 09:41:54 America/Chicago] PHP Warning:  file_get_contents(/home1/psklwqte/public_html/api_barq/storage/Keys/Apple/AuthKey_.p8): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/app/Services/AppleToken.php on line 13
+[09-Jan-2026 15:00:34 UTC] PHP Fatal error:  Uncaught Error: Class "App\Exceptions\Log" not found in /home1/psklwqte/public_html/api_barq/app/Exceptions/Handler.php:65
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(183): App\Exceptions\Handler->report(Object(Error))
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Error))
+#2 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Error))
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/app/Exceptions/Handler.php on line 65
+[09-Jan-2026 15:00:39 UTC] PHP Fatal error:  Uncaught Error: Class "App\Exceptions\Log" not found in /home1/psklwqte/public_html/api_barq/app/Exceptions/Handler.php:65
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(183): App\Exceptions\Handler->report(Object(Error))
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Error))
+#2 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Error))
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/app/Exceptions/Handler.php on line 65
+[09-Jan-2026 09:36:27 America/Chicago] PHP Warning:  file_get_contents(/home1/psklwqte/public_html/api_barq/storage/Keys/Apple/AuthKey_.p8): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/app/Services/AppleToken.php on line 13
+[09-Jan-2026 15:42:27 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/psklwqte/public_html/api_barq/vendor/spatie/laravel-ignition/src/Views/ViewExceptionMapper.php on line 154
+[09-Jan-2026 15:42:53 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/psklwqte/public_html/api_barq/vendor/spatie/laravel-ignition/src/Views/ViewExceptionMapper.php on line 154
+[09-Jan-2026 15:43:23 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/psklwqte/public_html/api_barq/vendor/spatie/laravel-ignition/src/Views/ViewExceptionMapper.php on line 151
+[19-Jan-2026 04:33:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:33:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:33:36 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:33:39 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:34:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:34:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:35:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:35:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:36:02 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:36:02 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/polyfill-php72/bootstrap.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('25072dd6e247008...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInit0b6ef7c5b2ef8fec75310da68aef7cdc::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[19-Jan-2026 04:36:19 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:36:40 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:36:41 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:37:02 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:37:02 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:38:02 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:38:02 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:38:14 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:38:25 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:39:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:39:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:39:20 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:40:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:40:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:41:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:41:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:42:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:42:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:42:39 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:42:41 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:42:49 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:43:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:43:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:43:02 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:43:55 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:44:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:44:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:45:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:45:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:45:05 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:45:20 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.29. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[19-Jan-2026 04:46:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:46:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:47:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 04:47:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[19-Jan-2026 05:03:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../thecodingmachine/safe/lib/special_cases.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:39
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(43): {closure}('72243e5536b63e2...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInitf56b4f1b51757e24aa379d6539ba2283::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 39
+[19-Jan-2026 05:03:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../thecodingmachine/safe/lib/special_cases.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:39
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(43): {closure}('72243e5536b63e2...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInitf56b4f1b51757e24aa379d6539ba2283::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 39
+[22-Feb-2026 17:51:02 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:51:02 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:51:32 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:51:35 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:51:55 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:51:58 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:52:01 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[22-Feb-2026 17:52:01 UTC] PHP Fatal error:  Uncaught ReflectionException: Class "view" does not exist in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:912
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(912): ReflectionClass->__construct('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#19 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [view] does not exist. in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php:914
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(795): Illuminate\Container\Container->build('view')
+#1 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(955): Illuminate\Container\Container->resolve('view', Array, true)
+#2 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(731): Illuminate\Foundation\Application->resolve('view', Array)
+#3 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(940): Illuminate\Container\Container->make('view', Array)
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php(1454): Illuminate\Foundation\Application->make('view')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(237): Illuminate\Container\Container->offsetGet('view')
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(208): Illuminate\Support\Facades\Facade::resolveFacadeInstance('view')
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php(349): Illuminate\Support\Facades\Facade::getFacadeRoot()
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/RegisterErrorViewPaths.php(16): Illuminate\Support\Facades\Facade::__callStatic('replaceNamespac...', Array)
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(744): Illuminate\Foundation\Exceptions\RegisterErrorViewPaths->__invoke()
+#10 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(719): Illuminate\Foundation\Exceptions\Handler->registerErrorViewPaths()
+#11 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\Foundation\Exceptions\Handler->renderHttpException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#12 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#13 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#14 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Illuminate\Contracts\Container\BindingResolutionException))
+#15 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#16 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#17 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Illuminate\Contracts\Container\BindingResolutionException))
+#18 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 914
+[20-May-2026 09:32:01 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/vendor/paragonie/sodium_compat/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[20-May-2026 09:32:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../paragonie/sodium_compat/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('3109cb1a231dcd0...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInitf56b4f1b51757e24aa379d6539ba2283::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[20-May-2026 09:32:01 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/vendor/composer/../paragonie/sodium_compat/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[20-May-2026 09:32:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/vendor/composer/../paragonie/sodium_compat/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php:41
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php(45): {closure}('3109cb1a231dcd0...', '/home1/psklwqte...')
+#1 /home1/psklwqte/public_html/api_barq/vendor/autoload.php(25): ComposerAutoloaderInitf56b4f1b51757e24aa379d6539ba2283::getLoader()
+#2 /home1/psklwqte/public_html/api_barq/public/index.php(34): require('/home1/psklwqte...')
+#3 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/autoload_real.php on line 41
+[20-May-2026 09:33:01 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:33:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:33:01 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:33:01 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 14:33:02 UTC] PHP Fatal error:  Uncaught ErrorException: include(/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/http-kernel/Exception/HttpException.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php:576
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/home1/...', '/home1/psklwqte...', 576)
+#1 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(576): Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(2, 'include(/home1/...', '/home1/psklwqte...', 576)
+#2 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(576): include('/home1/psklwqte...')
+#3 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(427): Composer\Autoload\{closure}('/home1/psklwqte...')
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(646): Composer\Autoload\ClassLoader->loadClass('Symfony\\Compone...')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(ErrorException))
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(ErrorException))
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(ErrorException))
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(ErrorException))
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(ErrorException))
+#10 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(ErrorException))
+#11 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php on line 576
+[20-May-2026 09:34:02 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:34:02 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:34:02 America/Chicago] PHP Warning:  require(/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 09:34:02 America/Chicago] PHP Fatal error:  Uncaught Error: Failed opening required '/home1/psklwqte/public_html/api_barq/public/../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php83/root/usr/share/pear') in /home1/psklwqte/public_html/api_barq/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/public/index.php on line 34
+[20-May-2026 14:34:02 UTC] PHP Fatal error:  Uncaught ErrorException: include(/home1/psklwqte/public_html/api_barq/vendor/composer/../symfony/http-kernel/Exception/HttpException.php): Failed to open stream: No such file or directory in /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php:576
+Stack trace:
+#0 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include(/home1/...', '/home1/psklwqte...', 576)
+#1 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(576): Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(2, 'include(/home1/...', '/home1/psklwqte...', 576)
+#2 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(576): include('/home1/psklwqte...')
+#3 /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php(427): Composer\Autoload\{closure}('/home1/psklwqte...')
+#4 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(646): Composer\Autoload\ClassLoader->loadClass('Symfony\\Compone...')
+#5 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\Foundation\Exceptions\Handler->prepareResponse(Object(Illuminate\Http\Request), Object(ErrorException))
+#6 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse(Object(Illuminate\Http\Request), Object(ErrorException))
+#7 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(217): Illuminate\Foundation\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(ErrorException))
+#8 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(194): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(ErrorException))
+#9 /home1/psklwqte/public_html/api_barq/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(254): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(ErrorException))
+#10 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(ErrorException))
+#11 {main}
+  thrown in /home1/psklwqte/public_html/api_barq/vendor/composer/ClassLoader.php on line 576
+[20-May-2026 09:35:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.31. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[20-May-2026 09:35:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.31. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[20-May-2026 09:35:18 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.31. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[20-May-2026 09:36:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.31. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[20-May-2026 09:36:01 America/Chicago] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.3.31. in /home1/psklwqte/public_html/api_barq/vendor/composer/platform_check.php on line 26
+[09-Jun-2026 14:28:53 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in /home1/psklwqte/public_html/api_barq/vendor/symfony/console/Helper/Helper.php on line 89
