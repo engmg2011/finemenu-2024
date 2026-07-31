@@ -2,14 +2,6 @@
 
 namespace App\Services;
 
-use App\Constants\AuditServices;
-use App\Constants\PaymentConstants;
-use App\Events\NewReservation;
-use App\Jobs\SendNewReservationNotification;
-use App\Models\Business;
-use App\Models\Item;
-use App\Models\Reservation;
-use App\Repository\Eloquent\ReservationRepository;
 use App\Services\AgentTools\ReservationAIService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -23,7 +15,7 @@ class AgentService
 
     public function __construct()
     {
-        $this->apiKey = env('OPENAI_API_KEY');
+        $this->apiKey = config('services.openai.api_key');
     }
 
     /**

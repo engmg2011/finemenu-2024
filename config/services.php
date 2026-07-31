@@ -72,5 +72,8 @@ return [
         'from' => env('SENDGRID_FROM'),
         'name' => env('SENDGRID_FROM_NAME'),
     ],
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+    ]
 
 ];
