@@ -287,6 +287,7 @@ class OrderLineRepository extends BaseRepository implements OrderLineRepositoryI
         }
         $orderLine['subtotal_price'] = $price;
         $orderLine['total_price'] = $price;
+        // todo :: add discount to price
     }
 
 }

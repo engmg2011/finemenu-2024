@@ -11,6 +11,7 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FeaturesController;
+use App\Http\Controllers\LandingPagesController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
@@ -59,6 +60,12 @@ Route::group(['prefix' => 'features'], function () {
         });
     });
     Route::get('/{id}', [FeaturesController::class, 'show']);
+});
+
+Route::group(['middleware' => 'throttle:1000,1', 'prefix' => 'business/{businessId}/landing-pages'], function () {
+    Route::get('/', [LandingPagesController::class, 'index']);
+    Route::get('/key/{key}', [LandingPagesController::class, 'showByKey']);
+    Route::get('/{id}', [LandingPagesController::class, 'show']);
 });
 
 // TODO :: put admin only roles
