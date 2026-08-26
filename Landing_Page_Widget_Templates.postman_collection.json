@@ -1,0 +1,641 @@
+{
+  "info": {
+    "name": "Landing Page Widget Templates",
+    "_postman_id": "lp-widget-templates-collection",
+    "description": "Collection to test Landing Page & Widget Templates API endpoints for BarqSolutions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string",
+      "description": "Sanctum token – set this after Login"
+    },
+    {
+      "key": "business_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "landing_page_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "widget_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "template_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('Token saved:', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+96512345678\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Landing Pages (existing)",
+      "item": [
+        {
+          "name": "List Landing Pages",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages"]
+            }
+          }
+        },
+        {
+          "name": "Get Landing Page by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Landing Page by Key",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/key/home",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "key", "home"]
+            }
+          }
+        },
+        {
+          "name": "Create Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"home\",\n  \"slug\": \"home-page\",\n  \"active\": true,\n  \"sort\": 1,\n  \"data\": {\n    \"title\": \"Welcome\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages"]
+            }
+          }
+        },
+        {
+          "name": "Update Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"home\",\n  \"slug\": \"home-page\",\n  \"active\": true,\n  \"sort\": 1,\n  \"data\": {\n    \"title\": \"Welcome Updated\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Landing Page",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "delete"]
+            }
+          }
+        },
+        {
+          "name": "Sort Landing Pages",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortedIds\": [2, 1, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/sort",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "sort"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Widgets (existing)",
+      "item": [
+        {
+          "name": "List Widgets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets"]
+            }
+          }
+        },
+        {
+          "name": "Get Widget by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets", "{{widget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Widget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('widget_id', json.id);",
+                  "    console.log('widget_id saved:', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"hero_banner\",\n  \"type\": \"hero\",\n  \"active\": true,\n  \"sort\": 1,\n  \"fields\": {\n    \"background_color\": \"#ffffff\",\n    \"text_color\": \"#000000\"\n  },\n  \"data\": {\n    \"title\": \"Welcome to our store!\",\n    \"subtitle\": \"Best deals every day\",\n    \"button_text\": \"Shop Now\",\n    \"button_link\": \"/shop\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets"]
+            }
+          }
+        },
+        {
+          "name": "Update Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"hero_banner\",\n  \"type\": \"hero\",\n  \"active\": true,\n  \"sort\": 1,\n  \"fields\": {\n    \"background_color\": \"#f0f0f0\",\n    \"text_color\": \"#333333\"\n  },\n  \"data\": {\n    \"title\": \"Updated Title!\",\n    \"subtitle\": \"Updated subtitle\",\n    \"button_text\": \"Explore\",\n    \"button_link\": \"/explore\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets", "{{widget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/{{widget_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets", "{{widget_id}}", "delete"]
+            }
+          }
+        },
+        {
+          "name": "Sort Widgets",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sortedIds\": [3, 1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets/sort",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets", "sort"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Widget Templates (new)",
+      "item": [
+        {
+          "name": "List All Templates (public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates"]
+            },
+            "description": "Returns all templates. No authentication required."
+          }
+        },
+        {
+          "name": "List Templates – filter by business_type",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates?business_type=restaurant",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates"],
+              "query": [
+                {
+                  "key": "business_type",
+                  "value": "restaurant",
+                  "description": "Filter templates by the business type (e.g. restaurant, salon, hotel)"
+                }
+              ]
+            },
+            "description": "Pass ?business_type= to filter templates visible to a specific business category."
+          }
+        },
+        {
+          "name": "Get Template by ID (public)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/{{template_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "{{template_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Clone Widget → Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('template_id', json.data.id);",
+                  "    console.log('template_id saved:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hero Banner – Restaurant Template\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/clone-from-widget/{{widget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "clone-from-widget", "{{widget_id}}"]
+            },
+            "description": "Clones an existing widget (by widget_id) as a public template.\n\nThe business_type is automatically detected from the widget's business.\n\nReturns the new template. The test script saves the template ID to the {{template_id}} variable."
+          }
+        },
+        {
+          "name": "Clone Template → Widget (into a landing page)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('widget_id', json.data.id);",
+                  "    console.log('New widget_id saved:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"landing_page_id\": {{landing_page_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/{{template_id}}/clone-to-widget",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "{{template_id}}", "clone-to-widget"]
+            },
+            "description": "Clones the template into a specific landing page as a new widget.\n\nIf the widget key already exists on that landing page a suffix (_1, _2 …) is added automatically.\n\nReturns the newly created widget."
+          }
+        },
+        {
+          "name": "Delete Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/{{template_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "{{template_id}}", "delete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Happy-path flow (run in order)",
+      "item": [
+        {
+          "name": "Step 1 – Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+96512345678\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Step 2 – Create a Widget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('widget_id', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"promo_banner\",\n  \"type\": \"banner\",\n  \"active\": true,\n  \"sort\": 1,\n  \"fields\": {\n    \"bg\": \"#ff5733\"\n  },\n  \"data\": {\n    \"title\": \"Summer Sale!\",\n    \"discount\": \"50%\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/landing-pages/{{landing_page_id}}/widgets",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "landing-pages", "{{landing_page_id}}", "widgets"]
+            }
+          }
+        },
+        {
+          "name": "Step 3 – Clone Widget → Template",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    pm.collectionVariables.set('template_id', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer Sale Banner Template\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/clone-from-widget/{{widget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "clone-from-widget", "{{widget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Step 4 – List Templates (verify it appears)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates"]
+            }
+          }
+        },
+        {
+          "name": "Step 5 – Clone Template → Another Landing Page",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.id) {",
+                  "    console.log('New widget created with id:', json.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"landing_page_id\": {{landing_page_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/{{template_id}}/clone-to-widget",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "{{template_id}}", "clone-to-widget"]
+            }
+          }
+        },
+        {
+          "name": "Step 6 – Delete Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/landing-page-templates/{{template_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["landing-page-templates", "{{template_id}}", "delete"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
