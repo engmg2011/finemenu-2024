@@ -93,70 +93,12 @@ class InvoicesController extends Controller
 
     public function showInvoice($referenceId)
     {
-        $lang = request('lang' , 'en');
-        App::setLocale($lang);
-
-        $invoice = Invoice::with(InvoiceRepository::Relations)
-            ->where('reference_id', $referenceId)->firstOrFail();
-
-
-        $paymentHintSetting = app(SettingRepository::class)->getMobileAppSettingByKey( $invoice->branch_id,MobileAppSettings::PaymentHint);;
-        $paymentHint = $paymentHintSetting ? (___( $paymentHintSetting, \App::getLocale())["description"] ?? null) : null;
-        if(!$invoice->description)
-            $invoice->description = $paymentHint;
-
-        $reservation = $invoice['reservation'];
-        $reservable = $invoice['reservation']['data']['reservable'];
-        $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
-
-
-        $invoicesList = $invoice->reservation->invoices;
-        $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->prepend($invoice);
-
-
-        $creditInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT);
-        $totalCredit = $creditInvoices->sum('amount');
-
-        $debitInvoices = $invoicesList->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_DEBIT);
-        $totalDebit = $debitInvoices->sum('amount');
-
-        $rentAmount = $totalCredit - $totalDebit;
-        $logoSetting =isset($invoice->reservation->business->settings) ?
-            collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo') : [];
-
-        $imageData = null;
-        // create base64 image
-        if(isset($logoSetting['data']) && $logoSetting['data'][0]['src']){
-            $avatarUrl = $logoSetting['data'][0]['src'];
-            $storageUrl = str_replace("http://", "https://", url('/storage'));
-            // storage_path('app/public/10/5405_Shalehi_icon.png');
-            $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
-            $avatarUrl = storage_path($avatarUrl);
-            $arrContextOptions=array(
-                "ssl"=>array(
-                    "verify_peer"=>false,
-                    "verify_peer_name"=>false,
-                ),
-            );
-            $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
-            try{
-                $avatarData = file_get_contents($avatarUrl, false, stream_context_create($arrContextOptions));
-                $avatarBase64Data = base64_encode($avatarData);
-                $imageData = 'data:image/' . $type . ';base64,' . $avatarBase64Data;
-            }catch (Exception $e){
-                \Log::error("Can't get content for : ". $avatarUrl);
-            }
-        }
-        return view('invoice', compact('invoice',
-            'reservation', 'reservable', 'divStyle', 'imageData'
-            , 'rentAmount', 'totalCredit', 'totalDebit', 'invoices'));
+        return view('invoice', $this->invoiceViewData($referenceId));
     }
 
     public function download($referenceId){
-        $invoice = Invoice::with(InvoiceRepository::Relations)
-            ->where('reference_id', $referenceId)->firstOrFail();
 
-        $html = view('invoice', compact('invoice'))->render();
+        $html = view('invoice', $this->invoiceViewData($referenceId))->render();
 
         $Arabic = new Arabic();
 
@@ -172,21 +114,74 @@ class InvoicesController extends Controller
             ->download('invoice.pdf',array('Attachment'=>0));
     }
 
-    public function arPdf()
+    private function invoiceViewData($referenceId): array
     {
-        $html = view('arPdf')->render();
+        App::setLocale(request('lang', 'en'));
 
-        $Arabic = new Arabic();
+        $invoice = Invoice::with(InvoiceRepository::Relations)
+            ->where('reference_id', $referenceId)->firstOrFail();
 
-        $p = $Arabic->arIdentify($html);
+        $paymentHintSetting = app(SettingRepository::class)
+            ->getMobileAppSettingByKey($invoice->branch_id, MobileAppSettings::PaymentHint);
+        $paymentHint = $paymentHintSetting ? (___($paymentHintSetting, App::getLocale())["description"] ?? null) : null;
+        if (!$invoice->description)
+            $invoice->description = $paymentHint;
 
-        for ($i = count($p)-1; $i >= 0; $i-=2) {
-            $utf8ar = $Arabic->utf8Glyphs(substr($html, $p[$i-1], $p[$i] - $p[$i-1]));
-            $html   = substr_replace($html, $utf8ar, $p[$i-1], $p[$i] - $p[$i-1]);
-        }
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($html);
-        return $pdf->setOptions(['isHtml5ParserEnabled' => true, 'auto_language_detection'  => true,])
-            ->stream('invoice.pdf',array('Attachment'=>0));
+        $reservation = $invoice['reservation'];
+        $reservable = $invoice['reservation']['data']['reservable'];
+        $divStyle = "background-color:#f0f0f0;border-radius:5px;padding:5px;margin:5px 5px;font-size: 1rem";
+
+        $invoicesList = $invoice->reservation->invoices;
+        $invoices = $invoicesList->reject(fn($inv) => $inv->id == $invoice->id)->prepend($invoice);
+
+        $totalCredit = $invoicesList
+            ->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_CREDIT)
+            ->sum('amount');
+        $totalDebit = $invoicesList
+            ->filter(fn($inv) => $inv->type == PaymentConstants::INVOICE_DEBIT)
+            ->sum('amount');
+        $rentAmount = $totalCredit - $totalDebit;
+
+        return compact(
+            'invoice',
+            'reservation',
+            'reservable',
+            'divStyle',
+            'rentAmount',
+            'totalCredit',
+            'totalDebit',
+            'invoices'
+        ) + ['imageData' => $this->invoiceLogoImageData($invoice)];
     }
+
+    private function invoiceLogoImageData(Invoice $invoice): ?string
+    {
+        $logoSetting = isset($invoice->reservation->business->settings)
+            ? collect($invoice->reservation->business->settings)->firstWhere('key', 'Logo')
+            : [];
+
+        if (empty($logoSetting['data'][0]['src']))
+            return null;
+
+        $avatarUrl = $logoSetting['data'][0]['src'];
+        $storageUrl = str_replace("http://", "https://", url('/storage'));
+        $avatarUrl = str_replace($storageUrl, "/app/public", $avatarUrl);
+        $avatarUrl = storage_path($avatarUrl);
+        $contextOptions = [
+            "ssl" => [
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ],
+        ];
+        $type = pathinfo($avatarUrl, PATHINFO_EXTENSION);
+
+        try {
+            $avatarData = file_get_contents($avatarUrl, false, stream_context_create($contextOptions));
+            return 'data:image/' . $type . ';base64,' . base64_encode($avatarData);
+        } catch (Exception $e) {
+            \Log::error("Can't get content for : " . $avatarUrl);
+            return null;
+        }
+    }
+
 }

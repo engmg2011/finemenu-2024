@@ -203,7 +203,12 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $businessId = request()->route('businessId');
         if (Business::find($businessId)->type === BusinessTypes::CHALET) {
-            if (isset($data['from']) && isset($data['to'])) {
+            $isCurrentlyCancelled = $reservation->status === PaymentConstants::RESERVATION_CANCELED;
+            $isReactivating = isset($data['status']) && in_array($data['status'], [
+                PaymentConstants::RESERVATION_PENDING,
+                PaymentConstants::RESERVATION_COMPLETED,
+            ]);
+            if (isset($data['from']) && isset($data['to']) && (!$isCurrentlyCancelled || $isReactivating)) {
                 $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
             }
         }
@@ -428,8 +433,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $data['unit'] = intval($data['unit']['value']);
         }
 
-        $all = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
-        if (!$all)
+        $allowed = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
+        if (!$allowed)
             abort(400, "Unit isn't available, please choose different dates or try again later");
 
         $periodMap = array_map(function ($period) {
@@ -471,6 +476,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerReservations = $reservations->filter(fn($reservation) => $reservation['follower_id'] === $data['follower_id']);
         if ($followerReservations->count() > 0)
             abort(400, "Follower isn't available, please choose different dates or try again later");
+        return true;
     }
 
     public function filterReservables($data)
