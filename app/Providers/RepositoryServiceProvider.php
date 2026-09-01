@@ -43,6 +43,7 @@ use App\Repository\Eloquent\Itemable\SalonServiceRepository;
 use App\Repository\Eloquent\ItemRepository;
 use App\Repository\Eloquent\LandingPageRepository;
 use App\Repository\Eloquent\LandingPageWidgetRepository;
+use App\Repository\Eloquent\LandingPageWidgetTemplateRepository;
 use App\Repository\Eloquent\LocaleRepository;
 use App\Repository\Eloquent\MediaRepository;
 use App\Repository\Eloquent\MenuRepository;
@@ -73,6 +74,7 @@ use App\Repository\ItemableInterfaces\SalonServiceRepositoryInterface;
 use App\Repository\ItemRepositoryInterface;
 use App\Repository\LandingPageRepositoryInterface;
 use App\Repository\LandingPageWidgetRepositoryInterface;
+use App\Repository\LandingPageWidgetTemplateRepositoryInterface;
 use App\Repository\LocaleRepositoryInterface;
 use App\Repository\MediaRepositoryInterface;
 use App\Repository\MenuRepositoryInterface;
@@ -137,6 +139,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(HotelServiceRepositoryInterface::class, HotelServiceRepository::class);
         $this->app->bind(LandingPageRepositoryInterface::class, LandingPageRepository::class);
         $this->app->bind(LandingPageWidgetRepositoryInterface::class, LandingPageWidgetRepository::class);
+        $this->app->bind(LandingPageWidgetTemplateRepositoryInterface::class, LandingPageWidgetTemplateRepository::class);
 
     }
 
