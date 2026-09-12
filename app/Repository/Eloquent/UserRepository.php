@@ -37,7 +37,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         return array_only($data, ['name', 'email', 'phone', 'currency',
             'password', 'email_verified_at', 'phone_verified_at',
-            'business_id', 'dashboard_access', 'is_employee']);
+            'business_id', 'dashboard_access', 'is_employee',
+            'registration_source', 'created_by_user_id']);
     }
 
     public function createModel(array $data)

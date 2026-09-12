@@ -20,6 +20,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () 
     Route::get('info', [UsersController::class, 'info']);
     Route::get('notifications', [UsersController::class, 'notificationsList']);
     Route::get('unread-notifications', [UsersController::class, 'unreadNotificationsCount']);
+    Route::get('registration-sources', [UsersController::class, 'registrationSources']);
 });
 
 Route::group(['prefix' => 'verify', 'middleware' => 'auth:sanctum'], function () {
@@ -38,7 +39,8 @@ Route::group(['prefix' => 'auth'], function () {
 
 // TODO :: put admin only roles
 Route::group(['prefix' => 'users/{modelId}',
-    'middleware' => ['auth:sanctum', 'throttle:1000,1', SetRequestModel::class
+    'middleware' => ['auth:sanctum', 'throttle:1000,1', SetRequestModel::class ,
+        'role:' . businessRoles()
         //, CheckUserModel::class
     ]], function () {
     Route::get('/', [UsersController::class, 'index']);

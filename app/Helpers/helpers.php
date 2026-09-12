@@ -11,6 +11,16 @@ use App\Models\Business;
 use App\Models\Menu;
 use Carbon\Carbon;
 
+if (!function_exists('businessRoles')) {
+    function businessRoles(): string
+    {
+        return \App\Constants\RolesConstants::ADMIN . '|' . \App\Constants\RolesConstants::BUSINESS_OWNER . '|' .
+            \App\Constants\RolesConstants::BRANCH_MANAGER . '|' . \App\Constants\RolesConstants::KITCHEN . '|' .
+            \App\Constants\RolesConstants::SUPERVISOR . '|' . \App\Constants\RolesConstants::CASHIER . '|' .
+            \App\Constants\RolesConstants::DRIVER;
+    }
+}
+
 if (!function_exists('array_only')) {
     function array_only(array $array, array $keys): array
     {

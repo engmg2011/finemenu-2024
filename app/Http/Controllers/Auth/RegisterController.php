@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Actions\SubscriptionAction;
 use App\Constants\RolesConstants;
+use App\Enums\RegistrationSource;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\InitRegister;
@@ -339,6 +340,16 @@ class RegisterController extends Controller
             return response()->json(['message' => 'Wrong code, try again'], 400);
 
         $data['type'] = "";
+
+        // Detect registration source from explicit param or fallback to mobile_app (API default)
+        if (!isset($data['registration_source'])) {
+            $source = $request->header('X-App-Source', $request->input('source', 'mobile_app'));
+            $data['registration_source'] = match($source) {
+                'webapp'     => RegistrationSource::WEB_APP->value,
+                'dashboard'  => RegistrationSource::DASHBOARD->value,
+                default      => RegistrationSource::MOBILE_APP->value,
+            };
+        }
 
         if (!isset($data['email']) || empty($data['email']))
             $data['email'] = $data['phone'] . '@' . env('APP_DOMAIN');

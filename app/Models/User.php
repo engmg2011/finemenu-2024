@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\RegistrationSource;
 use App\Traits\Contactable;
 use App\Traits\Mediable;
 use App\Traits\Settable;
@@ -10,6 +11,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -128,7 +130,8 @@ class User extends Authenticatable
         'control' => 'array',
         'dashboard_access' => 'boolean',
         'is_employee' => 'boolean',
-        'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
+        'registration_source' => RegistrationSource::class,
     ];
 
     /**
@@ -175,6 +178,11 @@ class User extends Authenticatable
     public function followingReservations()
     {
         return $this->hasMany(Reservation::class, 'follower_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
     }
 
     /*

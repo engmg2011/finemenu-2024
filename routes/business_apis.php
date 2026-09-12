@@ -28,16 +28,6 @@ use App\Http\Middleware\SameBusinessMiddleware;
 use App\Http\Middleware\SetRequestModel;
 use Illuminate\Support\Facades\Route;
 
-if (!function_exists('businessRoles')) {
-    function businessRoles(): string
-    {
-        return RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' .
-            RolesConstants::BRANCH_MANAGER . '|' . RolesConstants::KITCHEN . '|' .
-            RolesConstants::SUPERVISOR . '|' . RolesConstants::CASHIER . '|' .
-            RolesConstants::DRIVER;
-    }
-}
-
 // Admin and business users
 Route::group(['middleware' => ['throttle:1000,1',
     'auth:sanctum', 'role:' . businessRoles()
