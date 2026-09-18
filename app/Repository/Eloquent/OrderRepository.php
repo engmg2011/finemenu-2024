@@ -250,11 +250,13 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $model->load('discounts');
         $discountsTotal = $model->discounts->sum('amount');
 
-        // Coupon percentage is applied on the price AFTER order-level discounts.
-        // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
+        // Coupon is applied on the price AFTER all discounts (item-level + order-level).
+        // $data['total_price'] already has item-level discounts deducted by OrderLineRepository.
+        // $discountsTotal covers any additional order-level discount records.
+        // e.g. item = 800, item-discount = 200 → total_price = 600, coupon 20% → 120, final = 480.
         if ($couponData !== null) {
             $coupon = \App\Models\Coupon::find($couponId);
-            $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+            $afterDiscountBase = max(0, $data['total_price'] - $discountsTotal);
             $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
             $couponData['discount_amount'] = $couponDiscount;
         }
