@@ -15,9 +15,9 @@ class CouponsController extends Controller
     }
 
     /**
-     * List coupons for a business (optionally filtered by branch).
+     * List coupons for a branch.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         return response()->json($this->couponRepository->list());
     }
@@ -25,8 +25,10 @@ class CouponsController extends Controller
     /**
      * Show a single coupon.
      */
-    public function show(int $id): JsonResponse
+    public function show(Request $request): JsonResponse
     {
+        $id = (int) $request->route('id');
+
         $coupon = $this->couponRepository->get($id);
         if (!$coupon) {
             return response()->json(['message' => 'Coupon not found.'], 404);
@@ -35,7 +37,7 @@ class CouponsController extends Controller
     }
 
     /**
-     * Create a new coupon (admin / business owner).
+     * Create a new coupon.
      *
      * Required date fields:
      *   usage_start_date / usage_end_date  — the window during which the coupon may be used (today check).
@@ -46,9 +48,9 @@ class CouponsController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        $data = $request->all();
-        $data['business_id'] = $request->route('businessId');
-        $data['branch_id']   = $request->route('branchId');
+        $data                = $request->all();
+        $data['business_id'] = (int) $request->route('businessId');
+        $data['branch_id']   = (int) $request->route('branchId');
 
         $validator = Validator::make($data, [
             'code'                   => 'sometimes|string|max:64|unique:coupons,code',
@@ -80,10 +82,11 @@ class CouponsController extends Controller
     }
 
     /**
-     * Update an existing coupon (admin / business owner).
+     * Update an existing coupon.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request): JsonResponse
     {
+        $id   = (int) $request->route('id');
         $data = $request->all();
 
         $validator = Validator::make($data, [
@@ -109,10 +112,11 @@ class CouponsController extends Controller
     }
 
     /**
-     * Delete a coupon (admin only).
+     * Delete a coupon.
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
+        $id = (int) $request->route('id');
         $this->couponRepository->destroy($id);
         return response()->json(['message' => 'Coupon deleted.']);
     }
@@ -127,9 +131,9 @@ class CouponsController extends Controller
      */
     public function checkCode(Request $request): JsonResponse
     {
-        $data = $request->all();
-        $data['business_id'] = $request->route('businessId');
-        $data['branch_id']   = $request->route('branchId');
+        $data                = $request->all();
+        $data['business_id'] = (int) $request->route('businessId');
+        $data['branch_id']   = (int) $request->route('branchId');
 
         $validator = Validator::make($data, [
             'code'                   => 'required|string',
@@ -144,13 +148,13 @@ class CouponsController extends Controller
             return response()->json(['message' => 'Validation error.', 'errors' => $validator->errors()], 422);
         }
 
-        $userId   = auth('sanctum')->id();
+        $userId   = (int) auth('sanctum')->id();
         $snapshot = $this->couponRepository->applyCoupon(
             $data['code'],
             (float) $data['subtotal'],
             $userId,
-            (int) $data['business_id'],
-            (int) $data['branch_id'],
+            $data['business_id'],
+            $data['branch_id'],
             $data['reservation_start_date'] ?? null,
             $data['reservation_end_date']   ?? null,
         );
