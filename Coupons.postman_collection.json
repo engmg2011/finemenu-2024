@@ -1,0 +1,798 @@
+{
+  "info": {
+    "name": "Coupons",
+    "_postman_id": "coupons-collection-v5",
+    "description": "Coupons feature for BarqSolutions. Base route: /business/{business_id}/branches/{branch_id}/coupons",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",    "value": "http://localhost/api", "type": "string" },
+    { "key": "token",       "value": "",                     "type": "string" },
+    { "key": "business_id", "value": "1",                    "type": "string" },
+    { "key": "branch_id",   "value": "1",                    "type": "string" },
+    { "key": "coupon_id",   "value": "",                     "type": "string" },
+    { "key": "coupon_code", "value": "",                     "type": "string" },
+    { "key": "order_id",    "value": "",                     "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('token', json.token);",
+                  "    console.log('Token saved:', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",       "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+96512345678\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Coupon CRUD",
+      "item": [
+        {
+          "name": "Create Coupon - fixed single-use",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('coupon_id', json.id);",
+                  "    pm.collectionVariables.set('coupon_code', json.code);",
+                  "    console.log('coupon_id:', json.id, '| code:', json.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon - percentage multi-use with limit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('coupon_id', json.id);",
+                  "    pm.collectionVariables.set('coupon_code', json.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PROMO15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 100,\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon - auto-generated code",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "List Coupons",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "List Coupons - paginated",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons?per-page=5",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"],
+              "query": [{ "key": "per-page", "value": "5" }]
+            }
+          }
+        },
+        {
+          "name": "Show Coupon by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Coupon - deactivate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Coupon - change code and dates",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"NEWYEAR26\",\n  \"start_date\": \"2026-12-25\",\n  \"end_date\": \"2027-01-05\",\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}", "delete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Check Coupon Code",
+      "item": [
+        {
+          "name": "Check Code - valid coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            },
+            "description": "Returns discount snapshot. Does NOT record a redemption."
+          }
+        },
+        {
+          "name": "Check Code - wrong business (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/999/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "999", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Check Code - wrong branch (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/999/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "999", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Check Code - non-existent code (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"DOESNOTEXIST\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Place Orders with Coupon",
+      "item": [
+        {
+          "name": "Create Order - coupon only",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('order_id', json.id);",
+                  "    console.log('order_id:', json.id);",
+                  "    console.log('total_price:', json.total_price);",
+                  "    console.log('discount_amount:', json.discount_amount);",
+                  "    console.log('coupon_data:', JSON.stringify(json.coupon_data));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "total_price = subtotal minus coupon_discount. coupon_data is cached on the order."
+          }
+        },
+        {
+          "name": "Create Order - coupon + discounts (both applied)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('order_id', json.id);",
+                  "    console.log('subtotal_price:', json.subtotal_price);",
+                  "    console.log('total_price:', json.total_price);",
+                  "    console.log('discount_amount:', json.discount_amount);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 3 }\n  ],\n  \"discounts\": [\n    { \"amount\": 2.000, \"type\": \"fixed\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "discount_amount = sum(discount records) + coupon_discount."
+          }
+        },
+        {
+          "name": "Create Order - no coupon (baseline)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) { pm.collectionVariables.set('order_id', json.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "No coupon. discount_amount should be 0 and coupon_data null."
+          }
+        },
+        {
+          "name": "Create Order - already used coupon (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "Run after payment succeeded on a single-use coupon. Expect 422."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Edge Cases",
+      "item": [
+        {
+          "name": "Create Coupon - expired dates",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"start_date\": \"2020-01-01\",\n  \"end_date\": \"2020-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Check Code - expired coupon (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon - inactive",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"is_active\": false,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Check Code - inactive coupon (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"subtotal\": 50.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Create Coupon - duplicate code (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "Should return 422: code SAVE10 already exists."
+          }
+        },
+        {
+          "name": "Create Coupon - end_date before start_date (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BADDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-12-31\",\n  \"end_date\": \"2026-01-01\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Show - non-existent coupon (expect 404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/99999",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "99999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Happy-Path Flow (run in order)",
+      "item": [
+        {
+          "name": "Step 1 - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",       "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+96512345678\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Step 2 - Create Coupon (15% multi-use limit 50)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('coupon_id', json.id);",
+                  "    pm.collectionVariables.set('coupon_code', json.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            }
+          }
+        },
+        {
+          "name": "Step 3 - Check Code (subtotal 100, expect discount 15)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"subtotal\": 100.000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Step 4 - Place Order with Coupon + Discount",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('order_id', json.id);",
+                  "    console.log('subtotal_price:', json.subtotal_price);",
+                  "    console.log('discount_amount:', json.discount_amount);",
+                  "    console.log('total_price:', json.total_price);",
+                  "    console.log('coupon_data:', JSON.stringify(json.coupon_data));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"HAPPY15\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ],\n  \"discounts\": [\n    { \"amount\": 5.000, \"type\": \"fixed\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "discount_amount = KD 5 (discount) + 15% of subtotal (coupon). total_price = subtotal minus combined discount."
+          }
+        },
+        {
+          "name": "Step 5 - Show Order (verify coupon_data cached)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Step 6 - Update Coupon code (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"HAPPY15V2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Step 7 - Delete Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}", "delete"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

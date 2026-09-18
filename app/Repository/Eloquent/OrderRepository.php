@@ -17,6 +17,7 @@ use App\Models\Item;
 use App\Models\Items\SalonProduct;
 use App\Models\Order;
 use App\Models\User;
+use App\Repository\CouponRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
@@ -37,6 +38,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                                 private readonly DiscountRepositoryInteface     $discountRepository,
                                 private readonly InvoiceRepositoryInterface     $invoiceRepository,
                                 private readonly ReservationRepositoryInterface $reservationRepository,
+                                private readonly CouponRepositoryInterface      $couponRepository,
     )
     {
         parent::__construct($model);
@@ -193,9 +195,44 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['total_price'] = $totalPrice;
         $data['subtotal_price'] = $subtotalPrice;
 
+        // Resolve coupon snapshot (does NOT reduce total yet)
+        $couponData     = null;
+        $couponId       = null;
+        $couponDiscount = 0;
+        if (!empty($data['coupon_code'])) {
+            $userId     = auth('sanctum')->user()->id;
+            $businessId = (int) $data['business_id'];
+            $branchId   = isset($data['branch_id']) ? (int) $data['branch_id'] : null;
+            $couponData = $this->couponRepository->applyCoupon(
+                $data['coupon_code'],
+                $data['subtotal_price'],
+                $userId,
+                $businessId,
+                $branchId
+            );
+            $couponDiscount = $couponData['discount_amount'];
+            $couponId       = $couponData['coupon_id'];
+        }
+
+        // Persist locales, prices, addons, discounts onto the order
         $this->setOrderData($model, $data);
-        $model->update(['total_price' => $data['total_price'],
-            'subtotal_price' => $data['subtotal_price']]);
+
+        // Sum all stored discount records (fixed amounts) after they are persisted
+        $model->load('discounts');
+        $discountsTotal = $model->discounts->sum('amount');
+
+        // Combined discount = order-level discounts + coupon discount
+        $totalDiscountAmount = round($discountsTotal + $couponDiscount, 3);
+
+        $finalTotal = max(0, round($data['total_price'] - $totalDiscountAmount, 3));
+
+        $model->update([
+            'total_price'     => $finalTotal,
+            'subtotal_price'  => $data['subtotal_price'],
+            'coupon_data'     => $couponData,
+            'coupon_id'       => $couponId,
+            'discount_amount' => $totalDiscountAmount,
+        ]);
         if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         }
@@ -280,6 +317,21 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function driverOrders()
     {
         return $this->list(['status', '!=', OrderStatus::Delivered]);
+    }
+
+    /**
+     * Record coupon redemption for an order after successful payment.
+     * Should be called from the payment success flow.
+     */
+    public function recordCouponRedemption(int $orderId): void
+    {
+        $order = Order::find($orderId);
+        if (!$order || !$order->coupon_id || !$order->coupon_data) {
+            return;
+        }
+
+        $userId = $order->user_id;
+        $this->couponRepository->recordRedemption($order->coupon_id, $userId, $orderId);
     }
 
     public function getOrderRequiredPermission(&$order): array
