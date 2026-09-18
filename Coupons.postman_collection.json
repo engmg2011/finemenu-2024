@@ -1,18 +1,20 @@
 {
   "info": {
     "name": "Coupons",
-    "_postman_id": "coupons-collection-v5",
-    "description": "Coupons feature for BarqSolutions. Base route: /business/{business_id}/branches/{branch_id}/coupons",
+    "_postman_id": "coupons-collection-v6",
+    "description": "Coupons feature for BarqSolutions.\n\nBase route: /business/{business_id}/branches/{branch_id}/coupons\n\nDate fields:\n  usage_start_date / usage_end_date  – window during which the coupon may be redeemed (checked against today)\n  reservation_start_date / reservation_end_date – optional constraint: the order's reservation must fall within this range",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url",    "value": "http://localhost/api", "type": "string" },
-    { "key": "token",       "value": "",                     "type": "string" },
-    { "key": "business_id", "value": "1",                    "type": "string" },
-    { "key": "branch_id",   "value": "1",                    "type": "string" },
-    { "key": "coupon_id",   "value": "",                     "type": "string" },
-    { "key": "coupon_code", "value": "",                     "type": "string" },
-    { "key": "order_id",    "value": "",                     "type": "string" }
+    { "key": "base_url",              "value": "http://localhost/api", "type": "string" },
+    { "key": "token",                 "value": "",                     "type": "string" },
+    { "key": "business_id",           "value": "1",                    "type": "string" },
+    { "key": "branch_id",             "value": "1",                    "type": "string" },
+    { "key": "coupon_id",             "value": "",                     "type": "string" },
+    { "key": "coupon_code",           "value": "",                     "type": "string" },
+    { "key": "res_coupon_id",         "value": "",                     "type": "string" },
+    { "key": "res_coupon_code",       "value": "",                     "type": "string" },
+    { "key": "order_id",              "value": "",                     "type": "string" }
   ],
   "item": [
     {
@@ -58,7 +60,7 @@
       "name": "2. Coupon CRUD",
       "item": [
         {
-          "name": "Create Coupon - fixed single-use",
+          "name": "Create Coupon - fixed single-use (general)",
           "event": [
             {
               "listen": "test",
@@ -84,17 +86,19 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
-            }
+            },
+            "description": "General coupon with no reservation constraint. Valid any day between usage_start_date and usage_end_date."
           }
         },
         {
-          "name": "Create Coupon - percentage multi-use with limit",
+          "name": "Create Coupon - percentage multi-use with limit (general)",
           "event": [
             {
               "listen": "test",
@@ -119,7 +123,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"PROMO15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 100,\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"code\": \"PROMO15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 100,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
@@ -129,7 +134,7 @@
           }
         },
         {
-          "name": "Create Coupon - auto-generated code",
+          "name": "Create Coupon - auto-generated code (general)",
           "request": {
             "method": "POST",
             "header": [
@@ -139,13 +144,75 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "No 'code' field – the server generates one automatically."
+          }
+        },
+        {
+          "name": "Create Coupon - reservation-scoped (fixed dates window)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('res_coupon_id', json.id);",
+                  "    pm.collectionVariables.set('res_coupon_code', json.code);",
+                  "    console.log('res_coupon_id:', json.id, '| code:', json.code);",
+                  "}"
+                ]
+              }
             }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"RESONLY20\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-01\",\n  \"reservation_end_date\": \"2026-10-31\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "Coupon only applies when the order's reservation falls within 2026-10-01 → 2026-10-31. Using it on a non-reservation order or a reservation outside that window returns 422."
+          }
+        },
+        {
+          "name": "Create Coupon - reservation_start_date only (open-ended end)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"RESFROM\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 8,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-15\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "reservation_end_date is null → any reservation on or after 2026-10-15 qualifies. reservation_start_date alone is enough to trigger the reservation-window check."
           }
         },
         {
@@ -205,7 +272,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"is_active\": false\n}"
+              "raw": "{\n  \"is_active\": false\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
@@ -215,7 +283,7 @@
           }
         },
         {
-          "name": "Update Coupon - change code and dates",
+          "name": "Update Coupon - change code and usage dates",
           "request": {
             "method": "POST",
             "header": [
@@ -225,13 +293,58 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"NEWYEAR26\",\n  \"start_date\": \"2026-12-25\",\n  \"end_date\": \"2027-01-05\",\n  \"is_active\": true\n}"
+              "raw": "{\n  \"code\": \"NEWYEAR26\",\n  \"usage_start_date\": \"2026-12-25\",\n  \"usage_end_date\": \"2027-01-05\",\n  \"is_active\": true\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
             }
+          }
+        },
+        {
+          "name": "Update Coupon - add reservation window to existing coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservation_start_date\": \"2026-11-01\",\n  \"reservation_end_date\": \"2026-11-30\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            },
+            "description": "Adds a reservation constraint to a coupon that previously had none. From now on the coupon only applies to reservations in November 2026."
+          }
+        },
+        {
+          "name": "Update Coupon - clear reservation window (set to null)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservation_start_date\": null,\n  \"reservation_end_date\": null\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+            },
+            "description": "Removes the reservation constraint, making the coupon general-purpose again."
           }
         },
         {
@@ -255,7 +368,7 @@
       "name": "3. Check Coupon Code",
       "item": [
         {
-          "name": "Check Code - valid coupon",
+          "name": "Check Code - valid general coupon",
           "request": {
             "method": "POST",
             "header": [
@@ -265,7 +378,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
@@ -273,6 +387,72 @@
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
             },
             "description": "Returns discount snapshot. Does NOT record a redemption."
+          }
+        },
+        {
+          "name": "Check Code - reservation coupon with valid reservation dates",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 80.000,\n  \"reservation_start_date\": \"2026-10-10\",\n  \"reservation_end_date\": \"2026-10-12\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            },
+            "description": "Reservation (Oct 10–12) is within the coupon's allowed reservation window (Oct 1–31). Expect 200 with 20% discount."
+          }
+        },
+        {
+          "name": "Check Code - reservation coupon WITHOUT reservation dates (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            },
+            "description": "RESONLY20 requires reservation dates but none are passed. Expect 422: 'This coupon is only valid when applied to a reservation.'"
+          }
+        },
+        {
+          "name": "Check Code - reservation outside coupon window (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 50.000,\n  \"reservation_start_date\": \"2026-12-01\",\n  \"reservation_end_date\": \"2026-12-03\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            },
+            "description": "Reservation is December; coupon only covers October. Expect 422: 'Coupon is not valid for the selected reservation dates.'"
           }
         },
         {
@@ -286,7 +466,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/999/branches/{{branch_id}}/coupons/check-code",
@@ -306,7 +487,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/999/coupons/check-code",
@@ -326,7 +508,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"DOESNOTEXIST\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"DOESNOTEXIST\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
@@ -341,7 +524,7 @@
       "name": "4. Place Orders with Coupon",
       "item": [
         {
-          "name": "Create Order - coupon only",
+          "name": "Create Order - general coupon only",
           "event": [
             {
               "listen": "test",
@@ -369,7 +552,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ]\n}"
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
@@ -380,7 +564,7 @@
           }
         },
         {
-          "name": "Create Order - coupon + discounts (both applied)",
+          "name": "Create Order - general coupon + item discounts",
           "event": [
             {
               "listen": "test",
@@ -407,7 +591,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 3 }\n  ],\n  \"discounts\": [\n    { \"amount\": 2.000, \"type\": \"fixed\" }\n  ]\n}"
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 3 }\n  ],\n  \"discounts\": [\n    { \"amount\": 2.000, \"type\": \"fixed\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
@@ -415,6 +600,90 @@
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
             },
             "description": "discount_amount = sum(discount records) + coupon_discount."
+          }
+        },
+        {
+          "name": "Create Order - reservation with reservation-scoped coupon (valid window)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('order_id', json.id);",
+                  "    console.log('order_id:', json.id);",
+                  "    console.log('total_price:', json.total_price);",
+                  "    console.log('discount_amount:', json.discount_amount);",
+                  "    console.log('coupon_data:', JSON.stringify(json.coupon_data));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 2,\n      \"reservation\": {\n        \"from\": \"2026-10-10\",\n        \"to\": \"2026-10-12\"\n      }\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "Reservation Oct 10–12 is within RESONLY20's reservation window (Oct 1–31). Expect 201 with 20% discount applied."
+          }
+        },
+        {
+          "name": "Create Order - reservation-scoped coupon on non-reservation order (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "Order has no reservation lines. RESONLY20 requires a reservation. Expect 422: 'This coupon is only valid when applied to a reservation.'"
+          }
+        },
+        {
+          "name": "Create Order - reservation outside coupon's reservation window (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 1,\n      \"reservation\": {\n        \"from\": \"2026-12-20\",\n        \"to\": \"2026-12-22\"\n      }\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "Reservation Dec 20–22 is outside RESONLY20's window (Oct 1–31). Expect 422: 'Coupon is not valid for the selected reservation dates.'"
           }
         },
         {
@@ -440,7 +709,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}"
+              "raw": "{\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
@@ -451,7 +721,7 @@
           }
         },
         {
-          "name": "Create Order - already used coupon (expect 422)",
+          "name": "Create Order - already exhausted single-use coupon (expect 422)",
           "request": {
             "method": "POST",
             "header": [
@@ -461,7 +731,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}"
+              "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
@@ -477,7 +748,7 @@
       "name": "5. Edge Cases",
       "item": [
         {
-          "name": "Create Coupon - expired dates",
+          "name": "Create Coupon - expired usage dates (can be stored, but will fail at check-code)",
           "request": {
             "method": "POST",
             "header": [
@@ -487,7 +758,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"start_date\": \"2020-01-01\",\n  \"end_date\": \"2020-12-31\"\n}"
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2020-01-01\",\n  \"usage_end_date\": \"2020-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
@@ -497,7 +769,7 @@
           }
         },
         {
-          "name": "Check Code - expired coupon (expect 422)",
+          "name": "Check Code - expired usage window (expect 422)",
           "request": {
             "method": "POST",
             "header": [
@@ -507,7 +779,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"EXPIRED\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
@@ -527,7 +800,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"is_active\": false,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"is_active\": false,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
@@ -547,7 +821,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"subtotal\": 50.000\n}"
+              "raw": "{\n  \"code\": \"INACTIVE\",\n  \"subtotal\": 50.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
@@ -567,7 +842,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
@@ -578,7 +854,7 @@
           }
         },
         {
-          "name": "Create Coupon - end_date before start_date (expect 422)",
+          "name": "Create Coupon - usage_end_date before usage_start_date (expect 422)",
           "request": {
             "method": "POST",
             "header": [
@@ -588,13 +864,37 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"BADDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"start_date\": \"2026-12-31\",\n  \"end_date\": \"2026-01-01\"\n}"
+              "raw": "{\n  \"code\": \"BADDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-12-31\",\n  \"usage_end_date\": \"2026-01-01\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
-            }
+            },
+            "description": "Validation rule: usage_end_date must be after_or_equal usage_start_date."
+          }
+        },
+        {
+          "name": "Create Coupon - reservation_end_date before reservation_start_date (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"BADRESDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-11-30\",\n  \"reservation_end_date\": \"2026-10-01\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "Validation rule: reservation_end_date must be after_or_equal reservation_start_date."
           }
         },
         {
@@ -615,7 +915,7 @@
       ]
     },
     {
-      "name": "6. Happy-Path Flow (run in order)",
+      "name": "6. Happy-Path Flow – General Coupon (run in order)",
       "item": [
         {
           "name": "Step 1 - Login",
@@ -674,7 +974,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"start_date\": \"2026-09-01\",\n  \"end_date\": \"2026-12-31\"\n}"
+              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
@@ -694,7 +995,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"subtotal\": 100.000\n}"
+              "raw": "{\n  \"code\": \"HAPPY15\",\n  \"subtotal\": 100.000\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
@@ -732,14 +1034,15 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"coupon_code\": \"HAPPY15\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ],\n  \"discounts\": [\n    { \"amount\": 5.000, \"type\": \"fixed\" }\n  ]\n}"
+              "raw": "{\n  \"coupon_code\": \"HAPPY15\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ],\n  \"discounts\": [\n    { \"amount\": 5.000, \"type\": \"fixed\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
             },
-            "description": "discount_amount = KD 5 (discount) + 15% of subtotal (coupon). total_price = subtotal minus combined discount."
+            "description": "discount_amount = KD 5 (item discount) + 15% of subtotal (coupon). total_price = subtotal minus combined discount."
           }
         },
         {
@@ -768,7 +1071,8 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"HAPPY15V2\"\n}"
+              "raw": "{\n  \"code\": \"HAPPY15V2\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
@@ -789,6 +1093,171 @@
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}/delete",
               "host": ["{{base_url}}"],
               "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}", "delete"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Happy-Path Flow – Reservation-Scoped Coupon (run in order)",
+      "item": [
+        {
+          "name": "Step 1 - Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.token) { pm.collectionVariables.set('token', json.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",       "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+96512345678\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Step 2 - Create Reservation-Scoped Coupon (20% for Oct reservations)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('res_coupon_id', json.id);",
+                  "    pm.collectionVariables.set('res_coupon_code', json.code);",
+                  "    console.log('res_coupon_id:', json.id, '| code:', json.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"OCT20\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 30,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-01\",\n  \"reservation_end_date\": \"2026-10-31\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+            },
+            "description": "Coupon may be redeemed Sep–Dec 2026, but only for reservations that fall in October 2026."
+          }
+        },
+        {
+          "name": "Step 3 - Check Code with October reservation (expect 200 + 20%)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"OCT20\",\n  \"subtotal\": 120.000,\n  \"reservation_start_date\": \"2026-10-15\",\n  \"reservation_end_date\": \"2026-10-17\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+            }
+          }
+        },
+        {
+          "name": "Step 4 - Place Reservation Order with Coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('order_id', json.id);",
+                  "    console.log('order_id:', json.id);",
+                  "    console.log('discount_amount:', json.discount_amount);",
+                  "    console.log('total_price:', json.total_price);",
+                  "    console.log('coupon_data:', JSON.stringify(json.coupon_data));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coupon_code\": \"OCT20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 2,\n      \"reservation\": {\n        \"from\": \"2026-10-15\",\n        \"to\": \"2026-10-17\"\n      }\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+            },
+            "description": "Reservation Oct 15–17 is within the coupon's reservation window. Expect 201 with 20% discount."
+          }
+        },
+        {
+          "name": "Step 5 - Show Order (verify coupon_data + reservation)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders", "{{order_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Step 6 - Delete Reservation Coupon",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{res_coupon_id}}/delete",
+              "host": ["{{base_url}}"],
+              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{res_coupon_id}}", "delete"]
             }
           }
         }

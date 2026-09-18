@@ -242,19 +242,22 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['total_price'] = $totalPrice;
         $data['subtotal_price'] = $subtotalPrice;
 
-        // Now recalculate the coupon discount with the real subtotal
-        if ($couponData !== null) {
-            $coupon = \App\Models\Coupon::find($couponId);
-            $couponDiscount = $coupon ? $coupon->calculateDiscount($data['subtotal_price']) : 0;
-            $couponData['discount_amount'] = $couponDiscount;
-        }
-
-        // Persist locales, prices, addons, discounts onto the order
+        // Persist locales, prices, addons, discounts onto the order FIRST
+        // so we know the exact discount total before calculating the coupon.
         $this->setOrderData($model, $data);
 
         // Sum all stored discount records (fixed amounts) after they are persisted
         $model->load('discounts');
         $discountsTotal = $model->discounts->sum('amount');
+
+        // Coupon percentage is applied on the price AFTER order-level discounts.
+        // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
+        if ($couponData !== null) {
+            $coupon = \App\Models\Coupon::find($couponId);
+            $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+            $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
+            $couponData['discount_amount'] = $couponDiscount;
+        }
 
         // Combined discount = order-level discounts + coupon discount
         $totalDiscountAmount = round($discountsTotal + $couponDiscount, 3);
