@@ -17,8 +17,16 @@ return new class extends Migration
             $table->unsignedInteger('usage_limit')->nullable()->comment('null = unlimited for multi-use');
             $table->unsignedInteger('redeemed_count')->default(0);
             $table->boolean('is_active')->default(true);
-            $table->date('start_date');
-            $table->date('end_date');
+
+            // When the coupon itself may be used (today must fall within this window)
+            $table->date('usage_start_date');
+            $table->date('usage_end_date');
+
+            // Optional: the reservation window this coupon is valid for.
+            // When set, the order's reservation dates must fall within these dates.
+            $table->date('reservation_start_date')->nullable();
+            $table->date('reservation_end_date')->nullable();
+
             $table->unsignedBigInteger('business_id');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->timestamps();

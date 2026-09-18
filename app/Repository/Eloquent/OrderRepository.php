@@ -191,13 +191,41 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             $userId     = (int) auth('sanctum')->user()->id;
             $businessId = (int) $data['business_id'];
             $branchId   = isset($data['branch_id']) ? (int) $data['branch_id'] : null;
+
+            // Extract reservation window from order lines if present
+            $reservationStart = null;
+            $reservationEnd   = null;
+            if (!empty($data['order_lines']) && is_array($data['order_lines'])) {
+                foreach ($data['order_lines'] as $line) {
+                    if (!empty($line['reservation'])) {
+                        $from = $line['reservation']['from'] ?? null;
+                        $to   = $line['reservation']['to']   ?? null;
+                        // Track the earliest start and latest end across all reservation lines
+                        if ($from !== null) {
+                            $fromDate = substr($from, 0, 10); // Y-m-d
+                            if ($reservationStart === null || $fromDate < $reservationStart) {
+                                $reservationStart = $fromDate;
+                            }
+                        }
+                        if ($to !== null) {
+                            $toDate = substr($to, 0, 10); // Y-m-d
+                            if ($reservationEnd === null || $toDate > $reservationEnd) {
+                                $reservationEnd = $toDate;
+                            }
+                        }
+                    }
+                }
+            }
+
             // applyCoupon calls abort() on failure — no DB writes have happened yet
             $couponData = $this->couponRepository->applyCoupon(
                 $data['coupon_code'],
-                0, // subtotal not yet known; validation (active, dates, branch, user) is done here
+                0, // subtotal not yet known; discount recalculated after order lines are summed
                 $userId,
                 $businessId,
-                $branchId
+                $branchId,
+                $reservationStart,
+                $reservationEnd
             );
             $couponId = $couponData['coupon_id'];
         }

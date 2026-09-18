@@ -19,7 +19,9 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         return array_only($data, [
             'code', 'discount_type', 'discount_value',
             'usage_type', 'usage_limit', 'is_active',
-            'start_date', 'end_date', 'business_id', 'branch_id',
+            'usage_start_date', 'usage_end_date',
+            'reservation_start_date', 'reservation_end_date',
+            'business_id', 'branch_id',
         ]);
     }
 
@@ -67,11 +69,26 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     }
 
     /**
-     * Validate and apply a coupon code, returning coupon snapshot data and the discount amount.
-     * Does NOT write a redemption record here — that is done after payment succeeds.
+     * Validate and apply a coupon code, returning a coupon snapshot and the discount amount.
+     * Does NOT write a redemption record — that happens after payment succeeds.
+     *
+     * @param string      $code              The coupon code to validate.
+     * @param float       $subtotal          Order subtotal (pass 0 for an early pre-check).
+     * @param int         $userId            Authenticated user.
+     * @param int         $businessId        Business the order belongs to.
+     * @param int|null    $branchId          Branch the order belongs to (if any).
+     * @param string|null $reservationStart  Y-m-d of the earliest reservation start in the order.
+     * @param string|null $reservationEnd    Y-m-d of the latest reservation end in the order.
      */
-    public function applyCoupon(string $code, float $subtotal, int $userId, int $businessId, ?int $branchId = null): array
-    {
+    public function applyCoupon(
+        string  $code,
+        float   $subtotal,
+        int     $userId,
+        int     $businessId,
+        ?int    $branchId = null,
+        ?string $reservationStart = null,
+        ?string $reservationEnd = null
+    ): array {
         $coupon = $this->getByCode($code);
 
         if (!$coupon) {
@@ -89,7 +106,15 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
             }
         }
 
-        if (!$coupon->isValid()) {
+        if (!$coupon->isValid($reservationStart, $reservationEnd)) {
+            // Give a specific message when the failure is about reservation dates
+            $hasResCoupon = $coupon->reservation_start_date !== null || $coupon->reservation_end_date !== null;
+            if ($hasResCoupon && $reservationStart === null && $reservationEnd === null) {
+                abort(422, 'This coupon is only valid when applied to a reservation.');
+            }
+            if ($hasResCoupon && ($reservationStart !== null || $reservationEnd !== null)) {
+                abort(422, 'Coupon is not valid for the selected reservation dates.');
+            }
             abort(422, 'Coupon is not valid or has expired.');
         }
 
@@ -101,8 +126,7 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         // The real discount_amount will be recalculated by the caller once the subtotal is known.
         $discountAmount = $subtotal > 0 ? $coupon->calculateDiscount($subtotal) : 0;
 
-        // Build a snapshot to cache with the order
-        $snapshot = [
+        return [
             'coupon_id'       => $coupon->id,
             'code'            => $coupon->code,
             'discount_type'   => $coupon->discount_type,
@@ -111,8 +135,6 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
             'business_id'     => $coupon->business_id,
             'branch_id'       => $coupon->branch_id,
         ];
-
-        return $snapshot;
     }
 
     /**

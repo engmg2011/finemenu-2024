@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repository\CouponRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class CouponsController extends Controller
@@ -35,6 +36,13 @@ class CouponsController extends Controller
 
     /**
      * Create a new coupon (admin / business owner).
+     *
+     * Required date fields:
+     *   usage_start_date / usage_end_date  — the window during which the coupon may be used (today check).
+     *
+     * Optional date fields:
+     *   reservation_start_date / reservation_end_date — when set, any order reservation must
+     *   fall within this period for the coupon to be valid.
      */
     public function create(Request $request): JsonResponse
     {
@@ -42,17 +50,21 @@ class CouponsController extends Controller
         $data['business_id'] = $request->route('businessId');
         $data['branch_id']   = $request->route('branchId');
 
-        $validator = \Illuminate\Support\Facades\Validator::make($data, [
-            'code'           => 'sometimes|string|max:64|unique:coupons,code',
-            'discount_type'  => 'required|in:fixed,percentage',
-            'discount_value' => 'required|numeric|min:0',
-            'usage_type'     => 'required|in:single,multi',
-            'usage_limit'    => 'nullable|integer|min:1',
-            'is_active'      => 'sometimes|boolean',
-            'start_date'     => 'required|date',
-            'end_date'       => 'required|date|after_or_equal:start_date',
-            'business_id'    => 'required|integer|exists:business,id',
-            'branch_id'      => 'required|integer|exists:branches,id',
+        $validator = Validator::make($data, [
+            'code'                   => 'sometimes|string|max:64|unique:coupons,code',
+            'discount_type'          => 'required|in:fixed,percentage',
+            'discount_value'         => 'required|numeric|min:0',
+            'usage_type'             => 'required|in:single,multi',
+            'usage_limit'            => 'nullable|integer|min:1',
+            'is_active'              => 'sometimes|boolean',
+            // Usage window (required)
+            'usage_start_date'       => 'required|date',
+            'usage_end_date'         => 'required|date|after_or_equal:usage_start_date',
+            // Reservation window (optional)
+            'reservation_start_date' => 'nullable|date',
+            'reservation_end_date'   => 'nullable|date|after_or_equal:reservation_start_date',
+            'business_id'            => 'required|integer|exists:business,id',
+            'branch_id'              => 'required|integer|exists:branches,id',
         ]);
 
         if ($validator->fails()) {
@@ -74,15 +86,19 @@ class CouponsController extends Controller
     {
         $data = $request->all();
 
-        $validator = \Illuminate\Support\Facades\Validator::make($data, [
-            'code'           => "sometimes|string|max:64|unique:coupons,code,{$id}",
-            'discount_type'  => 'sometimes|in:fixed,percentage',
-            'discount_value' => 'sometimes|numeric|min:0',
-            'usage_type'     => 'sometimes|in:single,multi',
-            'usage_limit'    => 'nullable|integer|min:1',
-            'is_active'      => 'sometimes|boolean',
-            'start_date'     => 'sometimes|date',
-            'end_date'       => 'sometimes|date|after_or_equal:start_date',
+        $validator = Validator::make($data, [
+            'code'                   => "sometimes|string|max:64|unique:coupons,code,{$id}",
+            'discount_type'          => 'sometimes|in:fixed,percentage',
+            'discount_value'         => 'sometimes|numeric|min:0',
+            'usage_type'             => 'sometimes|in:single,multi',
+            'usage_limit'            => 'nullable|integer|min:1',
+            'is_active'              => 'sometimes|boolean',
+            // Usage window
+            'usage_start_date'       => 'sometimes|date',
+            'usage_end_date'         => 'sometimes|date|after_or_equal:usage_start_date',
+            // Reservation window
+            'reservation_start_date' => 'nullable|date',
+            'reservation_end_date'   => 'nullable|date|after_or_equal:reservation_start_date',
         ]);
 
         if ($validator->fails()) {
@@ -104,6 +120,10 @@ class CouponsController extends Controller
     /**
      * Check a coupon code for a user before placing an order.
      * Returns the discount snapshot without recording a redemption.
+     *
+     * Optional body params for reservation orders:
+     *   reservation_start_date (Y-m-d) — earliest reservation start in the cart
+     *   reservation_end_date   (Y-m-d) — latest reservation end in the cart
      */
     public function checkCode(Request $request): JsonResponse
     {
@@ -111,11 +131,13 @@ class CouponsController extends Controller
         $data['business_id'] = $request->route('businessId');
         $data['branch_id']   = $request->route('branchId');
 
-        $validator = \Illuminate\Support\Facades\Validator::make($data, [
-            'code'        => 'required|string',
-            'subtotal'    => 'required|numeric|min:0',
-            'business_id' => 'required|integer',
-            'branch_id'   => 'required|integer|exists:branches,id',
+        $validator = Validator::make($data, [
+            'code'                   => 'required|string',
+            'subtotal'               => 'required|numeric|min:0',
+            'business_id'            => 'required|integer',
+            'branch_id'              => 'required|integer|exists:branches,id',
+            'reservation_start_date' => 'nullable|date',
+            'reservation_end_date'   => 'nullable|date|after_or_equal:reservation_start_date',
         ]);
 
         if ($validator->fails()) {
@@ -128,7 +150,9 @@ class CouponsController extends Controller
             (float) $data['subtotal'],
             $userId,
             (int) $data['business_id'],
-            (int) $data['branch_id']
+            (int) $data['branch_id'],
+            $data['reservation_start_date'] ?? null,
+            $data['reservation_end_date']   ?? null,
         );
 
         return response()->json($snapshot);
