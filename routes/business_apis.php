@@ -3,6 +3,7 @@
 use App\Constants\RolesConstants;
 use App\Http\Controllers\AddonsController;
 use App\Http\Controllers\AuditController;
+use App\Http\Controllers\CouponsController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\BusinessController;
 use App\Http\Controllers\CategoriesController;
@@ -103,6 +104,15 @@ Route::group(['middleware' => ['throttle:1000,1',
                         Route::get('/{id}', [OrdersController::class, 'show']);
                         Route::post('/', [OrdersController::class, 'create']);
                         Route::post('/{id}', [OrdersController::class, 'update']);
+                    });
+
+                    Route::group(['prefix' => 'coupons'], function () {
+                        Route::get('/', [CouponsController::class, 'index']);
+                        Route::get('/{id}', [CouponsController::class, 'show']);
+                        Route::post('/', [CouponsController::class, 'create']);
+                        Route::post('/check-code', [CouponsController::class, 'checkCode']);
+                        Route::post('/{id}', [CouponsController::class, 'update']);
+                        Route::post('/{id}/delete', [CouponsController::class, 'destroy']);
                     });
 
                     Route::group(['prefix' => 'reservations'], function () {
