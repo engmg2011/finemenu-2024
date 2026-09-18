@@ -250,20 +250,12 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $model->load('discounts');
         $discountsTotal = $model->discounts->sum('amount');
 
-        // Coupon is applied on the price AFTER all discounts (item-level + order-level).
-        // $data['total_price'] already has item-level discounts deducted by OrderLineRepository.
-        // $discountsTotal covers any additional order-level discount records.
-        // e.g. item = 800, item-discount = 200 → total_price = 600, coupon 20% → 120, final = 480.
-        // We use $couponData (already validated) instead of re-fetching the model to avoid
-        // scope/soft-delete issues on a second query.
+        // Coupon percentage is applied on the price AFTER order-level discounts.
+        // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
         if ($couponData !== null) {
-            $afterDiscountBase = max(0, $data['total_price'] - $discountsTotal);
-            if ($couponData['discount_type'] === 'percentage') {
-                $couponDiscount = round($afterDiscountBase * ($couponData['discount_value'] / 100), 3);
-            } else {
-                // fixed: cannot exceed the base amount
-                $couponDiscount = min((float) $couponData['discount_value'], $afterDiscountBase);
-            }
+            $coupon = \App\Models\Coupon::find($couponId);
+            $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+            $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
             $couponData['discount_amount'] = $couponDiscount;
         }
 
@@ -279,6 +271,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             'coupon_id'       => $couponId,
             'discount_amount' => $totalDiscountAmount,
         ]);
+        // Record coupon redemption so single-use / usage_limit coupons cannot be re-used
+        if ($couponId !== null) {
+            $this->couponRepository->recordRedemption($couponId, (int) $data['user_id'], $model->id);
+        }
+
         if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         }
