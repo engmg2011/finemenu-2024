@@ -183,6 +183,25 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
 
+        // Validate coupon BEFORE any DB writes so an invalid coupon aborts cleanly
+        $couponData     = null;
+        $couponId       = null;
+        $couponDiscount = 0;
+        if (!empty($data['coupon_code'])) {
+            $userId     = (int) auth('sanctum')->user()->id;
+            $businessId = (int) $data['business_id'];
+            $branchId   = isset($data['branch_id']) ? (int) $data['branch_id'] : null;
+            // applyCoupon calls abort() on failure — no DB writes have happened yet
+            $couponData = $this->couponRepository->applyCoupon(
+                $data['coupon_code'],
+                0, // subtotal not yet known; validation (active, dates, branch, user) is done here
+                $userId,
+                $businessId,
+                $branchId
+            );
+            $couponId = $couponData['coupon_id'];
+        }
+
         $model = $this->model->create($this->process($data));
 
         $orderLines = $this->orderLineRepository->createManyOLs($model->id, $data['order_lines']);
@@ -195,23 +214,11 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['total_price'] = $totalPrice;
         $data['subtotal_price'] = $subtotalPrice;
 
-        // Resolve coupon snapshot (does NOT reduce total yet)
-        $couponData     = null;
-        $couponId       = null;
-        $couponDiscount = 0;
-        if (!empty($data['coupon_code'])) {
-            $userId     = auth('sanctum')->user()->id;
-            $businessId = (int) $data['business_id'];
-            $branchId   = isset($data['branch_id']) ? (int) $data['branch_id'] : null;
-            $couponData = $this->couponRepository->applyCoupon(
-                $data['coupon_code'],
-                $data['subtotal_price'],
-                $userId,
-                $businessId,
-                $branchId
-            );
-            $couponDiscount = $couponData['discount_amount'];
-            $couponId       = $couponData['coupon_id'];
+        // Now recalculate the coupon discount with the real subtotal
+        if ($couponData !== null) {
+            $coupon = \App\Models\Coupon::find($couponId);
+            $couponDiscount = $coupon ? $coupon->calculateDiscount($data['subtotal_price']) : 0;
+            $couponData['discount_amount'] = $couponDiscount;
         }
 
         // Persist locales, prices, addons, discounts onto the order

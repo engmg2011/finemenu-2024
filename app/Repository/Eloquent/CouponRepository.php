@@ -97,17 +97,19 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
             abort(422, 'You have already used this coupon.');
         }
 
-        $discountAmount = $coupon->calculateDiscount($subtotal);
+        // When subtotal is 0 this is an early validation call (before order lines are saved).
+        // The real discount_amount will be recalculated by the caller once the subtotal is known.
+        $discountAmount = $subtotal > 0 ? $coupon->calculateDiscount($subtotal) : 0;
 
         // Build a snapshot to cache with the order
         $snapshot = [
-            'coupon_id'      => $coupon->id,
-            'code'           => $coupon->code,
-            'discount_type'  => $coupon->discount_type,
-            'discount_value' => $coupon->discount_value,
+            'coupon_id'       => $coupon->id,
+            'code'            => $coupon->code,
+            'discount_type'   => $coupon->discount_type,
+            'discount_value'  => $coupon->discount_value,
             'discount_amount' => $discountAmount,
-            'business_id'    => $coupon->business_id,
-            'branch_id'      => $coupon->branch_id,
+            'business_id'     => $coupon->business_id,
+            'branch_id'       => $coupon->branch_id,
         ];
 
         return $snapshot;
