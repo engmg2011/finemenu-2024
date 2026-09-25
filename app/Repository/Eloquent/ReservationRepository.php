@@ -113,7 +113,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $endDate = businessToUtcConverter($data['to'], $business, 'Y-m-d H:i:s');
 
         // TODO :: agree on default
-        $reservations = Reservation::with(['order:id,coupon_id,coupon_data,discount_amount,total_price,subtotal_price', 'order.coupon:id,code,discount_type,discount_value'])
+        $reservations = Reservation::with('order:id,coupon_id,coupon_data,discount_amount,total_price,subtotal_price')
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
             ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById, $followerId) {
@@ -152,7 +152,6 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         return Reservation::with([
                 'reservable.featuredImage',
                 'order:id,coupon_id,coupon_data,discount_amount,total_price,subtotal_price',
-                'order.coupon:id,code,discount_type,discount_value',
             ])
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where(fn($q) => $conditions ? $q->where(...$conditions) : $q)
