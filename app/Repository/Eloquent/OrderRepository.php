@@ -17,6 +17,7 @@ use App\Models\Item;
 use App\Models\Items\SalonProduct;
 use App\Models\Order;
 use App\Models\User;
+use App\Repository\CouponRepositoryInterface;
 use App\Repository\DiscountRepositoryInteface;
 use App\Repository\InvoiceRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
@@ -37,6 +38,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                                 private readonly DiscountRepositoryInteface     $discountRepository,
                                 private readonly InvoiceRepositoryInterface     $invoiceRepository,
                                 private readonly ReservationRepositoryInterface $reservationRepository,
+                                private readonly CouponRepositoryInterface      $couponRepository,
     )
     {
         parent::__construct($model);
@@ -181,6 +183,53 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['user_id'] = auth('sanctum')->user()->id;
         $data['status'] = $data['status'] ?? OrderStatus::Pending;
 
+        // Validate coupon BEFORE any DB writes so an invalid coupon aborts cleanly
+        $couponData     = null;
+        $couponId       = null;
+        $couponDiscount = 0;
+        if (!empty($data['coupon_code'])) {
+            $userId     = (int) auth('sanctum')->user()->id;
+            $businessId = (int) $data['business_id'];
+            $branchId   = isset($data['branch_id']) ? (int) $data['branch_id'] : null;
+
+            // Extract reservation window from order lines if present
+            $reservationStart = null;
+            $reservationEnd   = null;
+            if (!empty($data['order_lines']) && is_array($data['order_lines'])) {
+                foreach ($data['order_lines'] as $line) {
+                    if (!empty($line['reservation'])) {
+                        $from = $line['reservation']['from'] ?? null;
+                        $to   = $line['reservation']['to']   ?? null;
+                        // Track the earliest start and latest end across all reservation lines
+                        if ($from !== null) {
+                            $fromDate = substr($from, 0, 10); // Y-m-d
+                            if ($reservationStart === null || $fromDate < $reservationStart) {
+                                $reservationStart = $fromDate;
+                            }
+                        }
+                        if ($to !== null) {
+                            $toDate = substr($to, 0, 10); // Y-m-d
+                            if ($reservationEnd === null || $toDate > $reservationEnd) {
+                                $reservationEnd = $toDate;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // applyCoupon calls abort() on failure — no DB writes have happened yet
+            $couponData = $this->couponRepository->applyCoupon(
+                $data['coupon_code'],
+                0, // subtotal not yet known; discount recalculated after order lines are summed
+                $userId,
+                $businessId,
+                $branchId,
+                $reservationStart,
+                $reservationEnd
+            );
+            $couponId = $couponData['coupon_id'];
+        }
+
         $model = $this->model->create($this->process($data));
 
         $orderLines = $this->orderLineRepository->createManyOLs($model->id, $data['order_lines']);
@@ -193,9 +242,40 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $data['total_price'] = $totalPrice;
         $data['subtotal_price'] = $subtotalPrice;
 
+        // Persist locales, prices, addons, discounts onto the order FIRST
+        // so we know the exact discount total before calculating the coupon.
         $this->setOrderData($model, $data);
-        $model->update(['total_price' => $data['total_price'],
-            'subtotal_price' => $data['subtotal_price']]);
+
+        // Sum all stored discount records (fixed amounts) after they are persisted
+        $model->load('discounts');
+        $discountsTotal = $model->discounts->sum('amount');
+
+        // Coupon percentage is applied on the price AFTER order-level discounts.
+        // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
+        if ($couponData !== null) {
+            $coupon = \App\Models\Coupon::find($couponId);
+            $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+            $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
+            $couponData['discount_amount'] = $couponDiscount;
+        }
+
+        // Combined discount = order-level discounts + coupon discount
+        $totalDiscountAmount = round($discountsTotal + $couponDiscount, 3);
+
+        $finalTotal = max(0, round($data['total_price'] - $totalDiscountAmount, 3));
+
+        $model->update([
+            'total_price'     => $finalTotal,
+            'subtotal_price'  => $data['subtotal_price'],
+            'coupon_data'     => $couponData,
+            'coupon_id'       => $couponId,
+            'discount_amount' => $totalDiscountAmount,
+        ]);
+        // Record coupon redemption so single-use / usage_limit coupons cannot be re-used
+        if ($couponId !== null) {
+            $this->couponRepository->recordRedemption($couponId, (int) $data['user_id'], $model->id);
+        }
+
         if (isset($data['invoice']) && $data['invoice'] && $data['total_price'] > 0) {
             $this->invoiceRepository->setForOrder($model, $data['invoice']);
         }
@@ -280,6 +360,21 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     public function driverOrders()
     {
         return $this->list(['status', '!=', OrderStatus::Delivered]);
+    }
+
+    /**
+     * Record coupon redemption for an order after successful payment.
+     * Should be called from the payment success flow.
+     */
+    public function recordCouponRedemption(int $orderId): void
+    {
+        $order = Order::find($orderId);
+        if (!$order || !$order->coupon_id || !$order->coupon_data) {
+            return;
+        }
+
+        $userId = $order->user_id;
+        $this->couponRepository->recordRedemption($order->coupon_id, $userId, $orderId);
     }
 
     public function getOrderRequiredPermission(&$order): array

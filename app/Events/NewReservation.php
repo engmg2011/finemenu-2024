@@ -21,7 +21,7 @@ class NewReservation implements ShouldBroadcast
      */
     public function __construct($reservationId)
     {
-        $this->reservation = Reservation::find($reservationId);
+        $this->reservation = Reservation::with('order')->find($reservationId);
     }
 
     /**
