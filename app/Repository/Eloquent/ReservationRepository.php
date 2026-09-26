@@ -306,8 +306,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerData = json_decode(json_encode($reservation->follower), true);
         $followerData['business_control'] = null;
 
-        $cachedData = [];
-        $cachedData += [
+        // Preserve keys that this method does not recompute (e.g. discounts
+        // set from mobile/order-line data) so they are not wiped out on
+        // every reservation update.
+        $existingData = $reservation->data ?? [];
+
+        $cachedData = $existingData;
+        $cachedData = array_merge($cachedData, [
             "reservable" => $clone_reservable,
             "reserved_for" => $reservedForData,
             "reserved_by" => $reservedByData,
@@ -315,7 +320,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             "invoices" => $reservation->invoices,
             "subtotal_price" => $price,
             "total_price" => $price
-        ];
+        ]);
         $reservation->update(['data' => $cachedData]);
 
     }
