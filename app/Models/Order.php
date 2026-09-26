@@ -67,7 +67,12 @@ class Order extends Model
     use HasFactory, Localizable, Priceable, Discountable;
 
     protected $guarded = ['id'];
-    protected $casts = ['paid' => 'boolean', 'delivery_address' => 'json'];
+    protected $casts = [
+        'paid'             => 'boolean',
+        'delivery_address' => 'json',
+        'coupon_data'      => 'array',
+        'discount_amount'  => 'float',
+    ];
 
     /**
      * @return HasMany
@@ -95,6 +100,10 @@ class Order extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
 
+    public function coupon()
+    {
+        return $this->belongsTo(\App\Models\Coupon::class);
     }
 }

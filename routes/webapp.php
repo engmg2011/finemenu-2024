@@ -4,6 +4,7 @@
 // TODO :: put admin only roles
 use App\Http\Controllers\BookmarksController;
 use App\Http\Controllers\BranchesController;
+use App\Http\Controllers\CouponsController;
 use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\AreasController;
 use App\Http\Controllers\BusinessController;
@@ -70,6 +71,9 @@ Route::group(['prefix' => 'webapp',
 //                        Route::post('/', [InvoicesController::class, 'create']);
                     });
 
+                    Route::group(['prefix' => 'coupons'], function () {
+                        Route::post('/check-code', [CouponsController::class, 'checkCode']);
+                    });
                 });
 
                 // Business Branch areas
