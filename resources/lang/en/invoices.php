@@ -27,6 +27,6 @@ return [
     'REFERENCE ID' => 'REFERENCE ID',
     'Customer Name' => 'Customer Name',
     'Customer Email' => 'Customer Email',
-    '' => '',
-    '' => '',
+    'Payment note' => 'Payment note',
+    'Reservation Number' => 'Booking Number',
 ];

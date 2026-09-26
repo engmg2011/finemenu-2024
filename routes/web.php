@@ -1,10 +1,13 @@
 <?php
 
 use App\Events\MyEvent;
+use App\Events\NewOrder;
 use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\WebAppController;
 use App\Jobs\ProcessPodcast;
 use App\Mail\TestQueuedMail;
 use App\Services\OtpMailService;
+use App\Services\SmsService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SocialController;
 
@@ -29,7 +32,6 @@ Route::get('/', function () {
     //return view('index');
 });
 
-Route::get('/phpinfo', fn() => phpinfo());
 /*
 Route::get('notification-sender', function (){
     $keyword = request('message');
@@ -44,7 +46,7 @@ Route::get('/send', [HomeController::class, 'send'])->name('home.send');*/
 
 Route::get('orders-sender', function () {
     $business_id = request()->get('businessId');
-    event(new \App\Events\NewOrder(78));
+    event(new NewOrder(78));
 //    event(new \App\Events\SendOrders($business_id));
 //    event(new MyEvent('hello world'));
 
@@ -62,8 +64,8 @@ Route::middleware([
 
 Route::get('auth/app-token', [SocialController::class, 'appToken']);
 Route::get('auth/{provider}', [SocialController::class, 'redirectToProvider']);
-//Route::match(['get','post'], 'auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
-Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
+Route::match(['get','post'], 'auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
+//Route::get('auth/{provider}/callback', [SocialController::class, 'handleProviderCallback']);
 
 Route::get('job', function (){
     dispatch(new ProcessPodcast());
@@ -79,16 +81,17 @@ Route::get('cancel-pending-reservations', function (){
 })->middleware(['throttle:30,1']);
 
 Route::get('queue-work', function (){
-    Artisan::call('queue:work');
-    sleep(8);
+    Artisan::call('queue:work', [
+        '--max-time' => 60
+//        '--stop-when-empty' => true,
+    ]);
     die();// to not log
 })->middleware(['throttle:30,1']);
 
 Route::get('invoices/{referenceId}',[InvoicesController::class , 'showInvoice'])->name('invoice.show');
 Route::get('invoices/{referenceId}/pdf',[InvoicesController::class , 'download'])->name('invoice.download');
-Route::get('ar-pdf',[InvoicesController::class , 'arPdf']);
 
-Route::get('send-sms', function(\App\Services\SmsService $twilio)
+Route::get('send-sms', function(SmsService $twilio)
 {
     $otp = rand(1000, 9999);
 //    $twilio->sendByTwilio('+96565708188', $otp);
@@ -133,4 +136,4 @@ Route::get('optimize-reservations', function (){
 //   }
 });
 
-
+Route::get('google-map/{id}',  [WebAppController::class, 'googleMapImage'])->name('google-map');;

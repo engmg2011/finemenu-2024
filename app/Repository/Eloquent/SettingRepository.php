@@ -4,8 +4,10 @@ namespace App\Repository\Eloquent;
 
 //
 use App\Actions\MediaAction;
+use App\Constants\BranchSettings;
 use App\Constants\BusinessSettings;
 use App\Constants\SettingConstants;
+use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Setting;
 use App\Repository\DiscountRepositoryInteface;
@@ -155,4 +157,15 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
             ->where('key', BusinessSettings::getConstants()[$key] )
             ->first()?->data;
     }
+
+    public function getMobileAppSettingByKey($branchId, $key)
+    {
+        $branch = Branch::find($branchId);
+        $mobileAppSettings = $branch->settings
+            ->where('key', BranchSettings::MobileAppSettings)
+            ->first()?->data;
+        $data = collect($mobileAppSettings);
+        return $data->firstWhere('key', $key)["data"] ?? null;
+    }
+
 }

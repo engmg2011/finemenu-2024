@@ -11,6 +11,8 @@ use App\Http\Controllers\DietPlansController;
 use App\Http\Controllers\DietPlanSubscriptionsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FeaturesController;
+use App\Http\Controllers\LandingPagesController;
+use App\Http\Controllers\LandingPageWidgetTemplatesController;
 use App\Http\Controllers\LocalesController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenusController;
@@ -59,6 +61,28 @@ Route::group(['prefix' => 'features'], function () {
         });
     });
     Route::get('/{id}', [FeaturesController::class, 'show']);
+});
+
+Route::group(['middleware' => 'throttle:1000,1', 'prefix' => 'business/{businessId}/landing-pages'], function () {
+    Route::get('/', [LandingPagesController::class, 'index']);
+    Route::get('/key/{key}', [LandingPagesController::class, 'showByKey']);
+    Route::get('/{id}', [LandingPagesController::class, 'show']);
+});
+
+// Widget Templates – public listing
+Route::group(['middleware' => 'throttle:1000,1', 'prefix' => 'landing-page-templates'], function () {
+    Route::get('/', [LandingPageWidgetTemplatesController::class, 'index']);
+    Route::get('/{id}', [LandingPageWidgetTemplatesController::class, 'show']);
+});
+
+// Widget Templates – protected operations
+Route::group(['middleware' => ['auth:sanctum', 'throttle:1000,1', 'role:' . RolesConstants::ADMIN . '|' . RolesConstants::BUSINESS_OWNER . '|' . RolesConstants::BRANCH_MANAGER], 'prefix' => 'landing-page-templates'], function () {
+    // Clone an existing widget into a shared template
+    Route::post('/clone-from-widget/{widgetId}', [LandingPageWidgetTemplatesController::class, 'cloneFromWidget']);
+    // Clone a template into a business landing page as a new widget
+    Route::post('/{templateId}/clone-to-widget', [LandingPageWidgetTemplatesController::class, 'cloneToWidget']);
+    // Delete a template
+    Route::post('/{id}/delete', [LandingPageWidgetTemplatesController::class, 'destroy']);
 });
 
 // TODO :: put admin only roles

@@ -26,3 +26,4 @@ docker-compose.yml
 /storage
 storage/
 package.xml
+.env-shalehi

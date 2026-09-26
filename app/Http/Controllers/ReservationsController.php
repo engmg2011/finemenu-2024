@@ -94,10 +94,11 @@ class ReservationsController extends Controller
             checkUserPermission($user, $data['branch_id'],
                 PermissionServices::Invoices, PermissionActions::Create);
 
-        $business = Business::find($data['business_id']);
-
-        $data['from'] = businessToUtcConverter($data['from'], $business);
-        $data['to'] = businessToUtcConverter($data['to'], $business);
+        if(isset($data['from']) && isset($data['to'])) {
+            $business = Business::find($data['business_id']);
+            $data['from'] = businessToUtcConverter($data['from'], $business);
+            $data['to'] = businessToUtcConverter($data['to'], $business);
+        }
     }
 
     public function create(Request $request)

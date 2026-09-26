@@ -43,7 +43,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
     public function process(array $data): array
     {
-        if(empty($data['unit'])) {
+        if (empty($data['unit'])) {
             $data['unit'] = 1;
             \Log::debug("empty or null unit id");
         }
@@ -51,7 +51,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             "from", "to", "reservable_id", "reservable_type", "status",
             "data", "order_id", "order_line_id", "reserved_by_id", "reserved_for_id",
             "business_id", "branch_id", "created_at", "updated_at", 'notes', 'follower_id',
-            "unit" , "seat_id"
+            "unit", "seat_id", 'color'
         ]);
     }
 
@@ -83,15 +83,15 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         $data = $request->all();
         // Convert to Carbon instances to compare
-        if(str_contains($data['from'], "T")){
-            if(strlen($data['from']) === 16){
+        if (str_contains($data['from'], "T")) {
+            if (strlen($data['from']) === 16) {
                 $from = Carbon::createFromFormat('Y-m-d\\TH:i', $data['from']);
                 $to = Carbon::createFromFormat('Y-m-d\\TH:i', $data['to']);
-            }else{
+            } else {
                 $from = Carbon::createFromFormat('Y-m-d\\TH:i:s', $data['from']);
                 $to = Carbon::createFromFormat('Y-m-d\\TH:i:s', $data['to']);
             }
-        }else{
+        } else {
             $from = Carbon::parse($data['from']);
             $to = Carbon::parse($data['to']);
         }
@@ -109,11 +109,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerId = $request->input('follower_id');
 
         $business = Business::find($businessId);
-        $startDate = businessToUtcConverter($data['from'], $business,'Y-m-d H:i:s');
-        $endDate = businessToUtcConverter($data['to'], $business,'Y-m-d H:i:s');
+        $startDate = businessToUtcConverter($data['from'], $business, 'Y-m-d H:i:s');
+        $endDate = businessToUtcConverter($data['to'], $business, 'Y-m-d H:i:s');
 
         // TODO :: agree on default
-        return Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
+        $reservations = Reservation::where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->whereHas('reservable')
             ->where(function ($query) use ($itemId, $status, $reservedForId, $reservedById, $followerId) {
                 if (isset($itemId)) $query->where('reservable_id', $itemId);
@@ -132,6 +132,18 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
                     });
             })
             ->paginate(request('per-page', 1200));
+        if(count($reservations)){
+            $user = auth('sanctum')->user();
+            if(
+                !$user ||
+                !$user->hasPermissionTo(PermissionsConstants::Branch . '.' . $branchId.'.'.PermissionServices::Reservations.'.'.PermissionActions::Read)
+            ){
+                foreach ($reservations as &$reservation) {
+                    $reservation['data'] = null;
+                }
+            }
+        }
+        return $reservations;
     }
 
     public function listModel($businessId, $branchId, $conditions = null)
@@ -148,7 +160,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $branchId = request()->route('branchId');
         $businessId = request()->route('businessId');
 
-        if(Business::find($businessId)->type === BusinessTypes::CHALET){
+        if (Business::find($businessId)->type === BusinessTypes::CHALET) {
             $this->checkAllowedReservationUnits($data, $businessId, $branchId);
         }
 
@@ -190,12 +202,17 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $data['reservable_id'] = $reservation->reservable_id;
 
         $businessId = request()->route('businessId');
-        if(Business::find($businessId)->type === BusinessTypes::CHALET) {
-            if (isset($data['from']) && isset($data['to'])) {
+        if (Business::find($businessId)->type === BusinessTypes::CHALET) {
+            $isCurrentlyCancelled = $reservation->status === PaymentConstants::RESERVATION_CANCELED;
+            $isReactivating = isset($data['status']) && in_array($data['status'], [
+                PaymentConstants::RESERVATION_PENDING,
+                PaymentConstants::RESERVATION_COMPLETED,
+            ]);
+            if (isset($data['from']) && isset($data['to']) && (!$isCurrentlyCancelled || $isReactivating)) {
                 $this->checkAllowedReservationUnits($data, $reservation->business_id, $reservation->branch_id, $id);
             }
         }
-        if(Business::find($businessId)->type === BusinessTypes::SALON) {
+        if (Business::find($businessId)->type === BusinessTypes::SALON) {
             if (isset($data['from']) && isset($data['to'])) {
                 $this->isFollowerAvailable($data, $reservation->business_id, $reservation->branch_id, $id);
             }
@@ -274,14 +291,19 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         // Remove not wanted data in caching
         $clone_reservable = json_decode(json_encode($reservation->reservable), true);
         $clone_reservable['itemable']['featuresData'] = null;
+        if(is_array($clone_reservable['locales']) && count($clone_reservable['locales'])){
+            foreach ($clone_reservable['locales'] as $key => $locale) {
+                $clone_reservable['locales'][$key]['description'] = null;
+            }
+        }
 
-        $reservedForData = json_decode(json_encode( $reservation->reservedFor), true);
+        $reservedForData = json_decode(json_encode($reservation->reservedFor), true);
         $reservedForData['business_control'] = null;
 
-        $reservedByData = json_decode(json_encode( $reservation->reservedBy), true);
+        $reservedByData = json_decode(json_encode($reservation->reservedBy), true);
         $reservedByData['business_control'] = null;
 
-        $followerData = json_decode(json_encode( $reservation->follower), true);
+        $followerData = json_decode(json_encode($reservation->follower), true);
         $followerData['business_control'] = null;
 
         $cachedData = [];
@@ -329,7 +351,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     // checking if there is current reservation
     public function getSameReservation($reservationData, $reservable_id, $businessId, $branchId)
     {
-        $res =  Reservation::where('reserved_for_id', auth()->user()->id)
+        $res = Reservation::where('reserved_for_id', auth()->user()->id)
             ->where('reservable_id', $reservable_id)
             ->where('from', $reservationData['from'])
             ->where('to', $reservationData['to'])
@@ -337,11 +359,11 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             ->where('branch_id', $branchId)
             ->where('status', PaymentConstants::RESERVATION_PENDING)
             ->where(function ($query) use ($reservationData) {
-                if(isset($reservationData['unit']))
+                if (isset($reservationData['unit']))
                     $query->where('unit', $reservationData['unit']);
             })
             ->first();
-        \Log::debug("same reservation", [$res] );
+        \Log::debug("same reservation", [$res]);
         return $res;
 
     }
@@ -353,14 +375,13 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
 
         // todo:: make it configurable
         $enableMarginCheck = true;
-        if($enableMarginCheck){
+        if ($enableMarginCheck) {
             // Reservation Margin Before and after any reservation
-            $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN , 0);
+            $reservationMargin = $business->getConfig(ConfigurationConstants::RESERVATIONS_MARGIN, 0);
             // UTC dates as it's an inner function
-            $startDate =  (clone $data['from'])->subSeconds($reservationMargin);
+            $startDate = (clone $data['from'])->subSeconds($reservationMargin);
             $endDate = (clone $data['to'])->addSeconds($reservationMargin);
-        }
-        else {
+        } else {
             $startDate = (clone $data['from']);
             $endDate = (clone $data['to']);
         }
@@ -368,7 +389,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $reservable_id = $data['reservable_id'];
         // todo :: test for same id
         return Reservation::
-        select(['from', 'to' , 'unit'])
+        select(['from', 'to', 'unit'])
             ->where(['branch_id' => $branchId, 'business_id' => $businessId])
             ->where('status', '!=', PaymentConstants::RESERVATION_CANCELED)
             ->where(function ($query) use ($checkSameItem, $reservable_id) {
@@ -408,12 +429,12 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         if (!isset($data['unit']))
             $data['unit'] = 1;
 
-        if( isset($data['unit']['value']) ){
+        if (isset($data['unit']['value'])) {
             $data['unit'] = intval($data['unit']['value']);
         }
 
-        $all = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
-        if (!$all)
+        $allowed = $this->isUnitAllowed($item, $currentReservations, $data['unit']);
+        if (!$allowed)
             abort(400, "Unit isn't available, please choose different dates or try again later");
 
         $periodMap = array_map(function ($period) {
@@ -445,15 +466,17 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     }
 
     // If the employee (the service provider)not available in the same time
-    public function isFollowerAvailable($data, $businessId, $branchId, $updateId = null){
-        if(isEmpty($data['follower_id'])) {
+    public function isFollowerAvailable($data, $businessId, $branchId, $updateId = null)
+    {
+        if (isEmpty($data['follower_id'])) {
             \Log::error("follower_id is empty");
             return true;
         }
         $reservations = $this->currentReservations($data, $businessId, $branchId, $updateId, false);
         $followerReservations = $reservations->filter(fn($reservation) => $reservation['follower_id'] === $data['follower_id']);
-        if($followerReservations->count() > 0)
+        if ($followerReservations->count() > 0)
             abort(400, "Follower isn't available, please choose different dates or try again later");
+        return true;
     }
 
     public function filterReservables($data)

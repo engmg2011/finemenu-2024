@@ -28,6 +28,6 @@ return [
     'REFERENCE ID' => 'رقم مرجعي',
     'Customer Name' => 'اسم العميل',
     'Customer Email' => 'بريد الكتروني',
-    '' => '',
-    '' => '',
+    'Payment note' => 'ملاحظات',
+    'Reservation Number' => 'رقم الحجز',
 ];

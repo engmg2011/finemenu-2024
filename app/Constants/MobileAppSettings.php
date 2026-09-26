@@ -17,6 +17,7 @@ class MobileAppSettings
     const MenuLayout = "MenuLayout";
     const HomeAd = "HomeAd";
     const HomeAdLink = "HomeAdLink";
+    const PaymentHint= "paymentHint";
 
     const MobileMenuLayoutOptions = [
         'full-menu',
