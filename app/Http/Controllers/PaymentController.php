@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Constants\PaymentConstants;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\Reservation;
+use App\Repository\Eloquent\OrderRepository;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Http\Request;
@@ -12,8 +14,13 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
 
-    public function __construct(private PaymentService $paymentService = new PaymentService())
-    {
+    public function __construct(
+        private PaymentService $paymentService = new PaymentService(),
+        private ?OrderRepository $orderRepository = null
+    ) {
+        if ($this->orderRepository === null) {
+            $this->orderRepository = app(OrderRepository::class);
+        }
     }
 
     public function paymentAvailableInvoice($referenceNumber)
@@ -45,13 +52,29 @@ class PaymentController extends Controller
     public function hesabeCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        return $this->paymentService->completed($request, $referenceNumber);
+        $result = $this->paymentService->completed($request, $referenceNumber);
+
+        // Record coupon redemption if payment succeeded
+        $invoice = Invoice::where('reference_id', $referenceNumber)->first();
+        if ($invoice && $invoice->order_id) {
+            $this->orderRepository->recordCouponRedemption($invoice->order_id);
+        }
+
+        return $result;
     }
 
     public function hesabeWebhookCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        return $this->paymentService->hesabeWebhookCompleted($request, $referenceNumber);
+        $result = $this->paymentService->hesabeWebhookCompleted($request, $referenceNumber);
+
+        // Record coupon redemption if payment succeeded via webhook
+        $invoice = Invoice::where('reference_id', $referenceNumber)->first();
+        if ($invoice && $invoice->order_id) {
+            $this->orderRepository->recordCouponRedemption($invoice->order_id);
+        }
+
+        return $result;
     }
 
     public function success(Request $request)

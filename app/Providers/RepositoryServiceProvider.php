@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Repository\AreaRepositoryInterface;
 use App\Repository\BookmarkRepositoryInterface;
+use App\Repository\CouponRepositoryInterface;
 use App\Repository\BranchRepositoryInterface;
 use App\Repository\BusinessRepositoryInterface;
 use App\Repository\CategoryRepositoryInterface;
@@ -23,6 +24,7 @@ use App\Repository\Eloquent\ContactRepository;
 use App\Repository\Eloquent\DeviceRepository;
 use App\Repository\Eloquent\DietPlanRepository;
 use App\Repository\Eloquent\DietPlanSubscriptionRepository;
+use App\Repository\Eloquent\CouponRepository;
 use App\Repository\Eloquent\DiscountRepository;
 use App\Repository\Eloquent\EventRepository;
 use App\Repository\Eloquent\FeatureOptionsRepository;
@@ -140,6 +142,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(LandingPageRepositoryInterface::class, LandingPageRepository::class);
         $this->app->bind(LandingPageWidgetRepositoryInterface::class, LandingPageWidgetRepository::class);
         $this->app->bind(LandingPageWidgetTemplateRepositoryInterface::class, LandingPageWidgetTemplateRepository::class);
+        $this->app->bind(CouponRepositoryInterface::class, CouponRepository::class);
 
     }
 
