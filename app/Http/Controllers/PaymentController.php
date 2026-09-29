@@ -6,7 +6,7 @@ use App\Constants\PaymentConstants;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Reservation;
-use App\Repository\Eloquent\OrderRepository;
+use App\Repository\CouponRepositoryInterface;
 use App\Services\PaymentProviders\Hesabe;
 use App\Services\PaymentProviders\PaymentService;
 use Illuminate\Http\Request;
@@ -16,10 +16,10 @@ class PaymentController extends Controller
 
     public function __construct(
         private PaymentService $paymentService = new PaymentService(),
-        private ?OrderRepository $orderRepository = null
+        private ?CouponRepositoryInterface $couponRepository = null
     ) {
-        if ($this->orderRepository === null) {
-            $this->orderRepository = app(OrderRepository::class);
+        if ($this->couponRepository === null) {
+            $this->couponRepository = app(CouponRepositoryInterface::class);
         }
     }
 
@@ -42,6 +42,14 @@ class PaymentController extends Controller
         // disable multiple payment
         if (!$this->paymentAvailableInvoice($referenceNumber))
             return redirect()->route('invoice.show', $referenceNumber);
+        // Make sure the order's coupon code is still reserved before the customer pays
+        $invoice = Invoice::where('reference_id', $referenceNumber)->first();
+        if ($invoice->order_id && !$this->couponRepository->holdForPayment($invoice->order_id)) {
+            return view('payment.failed', [
+                'msg'   => 'The coupon code on this order is no longer available. Please place a new order.',
+                'color' => 'red',
+            ]);
+        }
         $checkoutLink = $this->paymentService->checkout($referenceNumber);
         if (str_contains($checkoutLink, 'http'))
             return redirect($checkoutLink);
@@ -52,29 +60,15 @@ class PaymentController extends Controller
     public function hesabeCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        $result = $this->paymentService->completed($request, $referenceNumber);
-
-        // Record coupon redemption if payment succeeded
-        $invoice = Invoice::where('reference_id', $referenceNumber)->first();
-        if ($invoice && $invoice->order_id) {
-            $this->orderRepository->recordCouponRedemption($invoice->order_id);
-        }
-
-        return $result;
+        // Coupon redemption is confirmed by the Order model when the order is marked paid.
+        return $this->paymentService->completed($request, $referenceNumber);
     }
 
     public function hesabeWebhookCompleted(Request $request, $referenceNumber)
     {
         $this->paymentService = new PaymentService(new Hesabe());
-        $result = $this->paymentService->hesabeWebhookCompleted($request, $referenceNumber);
-
-        // Record coupon redemption if payment succeeded via webhook
-        $invoice = Invoice::where('reference_id', $referenceNumber)->first();
-        if ($invoice && $invoice->order_id) {
-            $this->orderRepository->recordCouponRedemption($invoice->order_id);
-        }
-
-        return $result;
+        // Coupon redemption is confirmed by the Order model when the order is marked paid.
+        return $this->paymentService->hesabeWebhookCompleted($request, $referenceNumber);
     }
 
     public function success(Request $request)

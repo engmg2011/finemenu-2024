@@ -67,6 +67,16 @@ class Order extends Model
     use HasFactory, Localizable, Priceable, Discountable;
 
     protected $guarded = ['id'];
+
+    protected static function booted(): void
+    {
+        // Covers every way an order becomes paid: Hesabe redirect, Hesabe webhook, staff update.
+        static::updated(function (Order $order) {
+            if ($order->coupon_code_id && $order->wasChanged('paid') && $order->paid) {
+                app(\App\Repository\CouponRepositoryInterface::class)->confirmRedemption($order->id);
+            }
+        });
+    }
     protected $casts = [
         'paid'             => 'boolean',
         'delivery_address' => 'json',
@@ -105,5 +115,10 @@ class Order extends Model
     public function coupon()
     {
         return $this->belongsTo(\App\Models\Coupon::class);
+    }
+
+    public function couponCode()
+    {
+        return $this->belongsTo(\App\Models\CouponCode::class);
     }
 }
