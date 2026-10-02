@@ -2,19 +2,65 @@
   "info": {
     "name": "Coupons",
     "_postman_id": "coupons-collection-v6",
-    "description": "Coupons feature for BarqSolutions.\n\nBase route: /business/{business_id}/branches/{branch_id}/coupons\n\nDate fields:\n  usage_start_date / usage_end_date  – window during which the coupon may be redeemed (checked against today)\n  reservation_start_date / reservation_end_date – optional constraint: the order's reservation must fall within this range",
+    "description": "Coupons feature for BarqSolutions.\n\nBase route: /business/{business_id}/branches/{branch_id}/coupons\n\nDate fields:\n  usage_start_date / usage_end_date  – window during which the coupon may be redeemed (checked against today)\n  reservation_start_date / reservation_end_date – optional constraint: the order's reservation must fall within this range\n\nCodes:\n  A coupon holds the rules; its codes live in coupon_codes. Responses include first_code and codes_count.\n  Send `code` for a single manual code, or `code_prefix` + `codes_count` to generate codes (see folder 8).\n  Codes are case-insensitive.\n\nUsage:\n  Placing an order holds the code for 30 minutes (renewed at checkout). It is counted as used only when the order is paid.\n  Max 6 failed coupon attempts per user per minute, then 429.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url",              "value": "http://localhost/api", "type": "string" },
-    { "key": "token",                 "value": "",                     "type": "string" },
-    { "key": "business_id",           "value": "1",                    "type": "string" },
-    { "key": "branch_id",             "value": "1",                    "type": "string" },
-    { "key": "coupon_id",             "value": "",                     "type": "string" },
-    { "key": "coupon_code",           "value": "",                     "type": "string" },
-    { "key": "res_coupon_id",         "value": "",                     "type": "string" },
-    { "key": "res_coupon_code",       "value": "",                     "type": "string" },
-    { "key": "order_id",              "value": "",                     "type": "string" }
+    {
+      "key": "base_url",
+      "value": "http://localhost/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "business_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "branch_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "coupon_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "coupon_code",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "res_coupon_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "res_coupon_code",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "zain_coupon_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "zain_code",
+      "value": "",
+      "type": "string"
+    }
   ],
   "item": [
     {
@@ -40,8 +86,14 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",       "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -49,8 +101,13 @@
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
-              "host": ["{{base_url}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         }
@@ -70,8 +127,8 @@
                   "var json = pm.response.json();",
                   "if (json.id) {",
                   "    pm.collectionVariables.set('coupon_id', json.id);",
-                  "    pm.collectionVariables.set('coupon_code', json.code);",
-                  "    console.log('coupon_id:', json.id, '| code:', json.code);",
+                  "    pm.collectionVariables.set('coupon_code', (json.first_code ? json.first_code.code : null));",
+                  "    console.log('coupon_id:', json.id, '| code:', (json.first_code ? json.first_code.code : null));",
                   "}"
                 ]
               }
@@ -80,19 +137,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "General coupon with no reservation constraint. Valid any day between usage_start_date and usage_end_date."
           }
@@ -108,7 +186,7 @@
                   "var json = pm.response.json();",
                   "if (json.id) {",
                   "    pm.collectionVariables.set('coupon_id', json.id);",
-                  "    pm.collectionVariables.set('coupon_code', json.code);",
+                  "    pm.collectionVariables.set('coupon_code', (json.first_code ? json.first_code.code : null));",
                   "}"
                 ]
               }
@@ -117,19 +195,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"PROMO15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 100,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             }
           }
         },
@@ -138,19 +237,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "No 'code' field – the server generates one automatically."
           }
@@ -166,8 +286,8 @@
                   "var json = pm.response.json();",
                   "if (json.id) {",
                   "    pm.collectionVariables.set('res_coupon_id', json.id);",
-                  "    pm.collectionVariables.set('res_coupon_code', json.code);",
-                  "    console.log('res_coupon_id:', json.id, '| code:', json.code);",
+                  "    pm.collectionVariables.set('res_coupon_code', (json.first_code ? json.first_code.code : null));",
+                  "    console.log('res_coupon_id:', json.id, '| code:', (json.first_code ? json.first_code.code : null));",
                   "}"
                 ]
               }
@@ -176,19 +296,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"RESONLY20\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-01\",\n  \"reservation_end_date\": \"2026-10-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "Coupon only applies when the order's reservation falls within 2026-10-01 → 2026-10-31. Using it on a non-reservation order or a reservation outside that window returns 422."
           }
@@ -198,19 +339,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"RESFROM\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 8,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-15\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "reservation_end_date is null → any reservation on or after 2026-10-15 qualifies. reservation_start_date alone is enough to trigger the reservation-window check."
           }
@@ -220,13 +382,27 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             }
           }
         },
@@ -235,14 +411,33 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons?per-page=5",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"],
-              "query": [{ "key": "per-page", "value": "5" }]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ],
+              "query": [
+                {
+                  "key": "per-page",
+                  "value": "5"
+                }
+              ]
             }
           }
         },
@@ -251,13 +446,28 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
             }
           }
         },
@@ -266,19 +476,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"is_active\": false\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
             }
           }
         },
@@ -287,20 +519,43 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"NEWYEAR26\",\n  \"usage_start_date\": \"2026-12-25\",\n  \"usage_end_date\": \"2027-01-05\",\n  \"is_active\": true\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
-            }
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
+            },
+            "description": " Only allowed on coupons that have exactly one code (422 otherwise)."
           }
         },
         {
@@ -308,19 +563,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reservation_start_date\": \"2026-11-01\",\n  \"reservation_end_date\": \"2026-11-30\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
             },
             "description": "Adds a reservation constraint to a coupon that previously had none. From now on the coupon only applies to reservations in November 2026."
           }
@@ -330,19 +607,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reservation_start_date\": null,\n  \"reservation_end_date\": null\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
             },
             "description": "Removes the reservation constraint, making the coupon general-purpose again."
           }
@@ -352,13 +651,29 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}/delete",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}", "delete"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}",
+                "delete"
+              ]
             }
           }
         }
@@ -372,21 +687,43 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             },
-            "description": "Returns discount snapshot. Does NOT record a redemption."
+            "description": "Returns discount snapshot (including coupon_code_id). Does NOT reserve the code."
           }
         },
         {
@@ -394,19 +731,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 80.000,\n  \"reservation_start_date\": \"2026-10-10\",\n  \"reservation_end_date\": \"2026-10-12\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             },
             "description": "Reservation (Oct 10–12) is within the coupon's allowed reservation window (Oct 1–31). Expect 200 with 20% discount."
           }
@@ -416,19 +775,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             },
             "description": "RESONLY20 requires reservation dates but none are passed. Expect 422: 'This coupon is only valid when applied to a reservation.'"
           }
@@ -438,19 +819,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"RESONLY20\",\n  \"subtotal\": 50.000,\n  \"reservation_start_date\": \"2026-12-01\",\n  \"reservation_end_date\": \"2026-12-03\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             },
             "description": "Reservation is December; coupon only covers October. Expect 422: 'Coupon is not valid for the selected reservation dates.'"
           }
@@ -460,19 +863,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"{{coupon_code}}\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/999/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "999", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "999",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -481,19 +906,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"SAVE10\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/999/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "999", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "999",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -502,19 +949,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"DOESNOTEXIST\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         }
@@ -546,19 +1015,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "total_price = subtotal minus coupon_discount. coupon_data is cached on the order."
           }
@@ -585,19 +1075,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 3 }\n  ],\n  \"discounts\": [\n    { \"amount\": 2.000, \"type\": \"fixed\" }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "discount_amount = sum(discount records) + coupon_discount."
           }
@@ -625,19 +1136,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 2,\n      \"reservation\": {\n        \"from\": \"2026-10-10\",\n        \"to\": \"2026-10-12\"\n      }\n    }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "Reservation Oct 10–12 is within RESONLY20's reservation window (Oct 1–31). Expect 201 with 20% discount applied."
           }
@@ -647,19 +1179,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "Order has no reservation lines. RESONLY20 requires a reservation. Expect 422: 'This coupon is only valid when applied to a reservation.'"
           }
@@ -669,19 +1222,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"RESONLY20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 1,\n      \"reservation\": {\n        \"from\": \"2026-12-20\",\n        \"to\": \"2026-12-22\"\n      }\n    }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "Reservation Dec 20–22 is outside RESONLY20's window (Oct 1–31). Expect 422: 'Coupon is not valid for the selected reservation dates.'"
           }
@@ -703,43 +1277,85 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "No coupon. discount_amount should be 0 and coupon_data null."
           }
         },
         {
-          "name": "Create Order - already exhausted single-use coupon (expect 422)",
+          "name": "Create Order - single-use code already used on a PAID order (expect 422)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"{{coupon_code}}\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 1 }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
-            "description": "Run after payment succeeded on a single-use coupon. Expect 422."
+            "description": "Run after the first order with this code has been paid. A code only counts as used once its order is paid. While the first order is still unpaid, a new order by the same user succeeds and the code's hold moves to it; a different user gets 422 while the hold is active (30 minutes, renewed at checkout)."
           }
         }
       ]
@@ -752,19 +1368,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"EXPIRED\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2020-01-01\",\n  \"usage_end_date\": \"2020-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             }
           }
         },
@@ -773,19 +1410,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"EXPIRED\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -794,19 +1453,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"INACTIVE\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"is_active\": false,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             }
           }
         },
@@ -815,19 +1495,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"INACTIVE\",\n  \"subtotal\": 50.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -836,19 +1538,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"SAVE10\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 10,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "Should return 422: code SAVE10 already exists."
           }
@@ -858,19 +1581,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"BADDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-12-31\",\n  \"usage_end_date\": \"2026-01-01\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "Validation rule: usage_end_date must be after_or_equal usage_start_date."
           }
@@ -880,19 +1624,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"BADRESDATE\",\n  \"discount_type\": \"fixed\",\n  \"discount_value\": 5,\n  \"usage_type\": \"multi\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-11-30\",\n  \"reservation_end_date\": \"2026-10-01\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "Validation rule: reservation_end_date must be after_or_equal reservation_start_date."
           }
@@ -902,13 +1667,28 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/99999",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "99999"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "99999"
+              ]
             }
           }
         }
@@ -934,8 +1714,14 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",       "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -943,8 +1729,13 @@
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
-              "host": ["{{base_url}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -959,7 +1750,7 @@
                   "var json = pm.response.json();",
                   "if (json.id) {",
                   "    pm.collectionVariables.set('coupon_id', json.id);",
-                  "    pm.collectionVariables.set('coupon_code', json.code);",
+                  "    pm.collectionVariables.set('coupon_code', (json.first_code ? json.first_code.code : null));",
                   "}"
                 ]
               }
@@ -968,19 +1759,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"HAPPY15\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 15,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 50,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             }
           }
         },
@@ -989,19 +1801,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"HAPPY15\",\n  \"subtotal\": 100.000\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -1028,19 +1862,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"HAPPY15\",\n  \"order_lines\": [\n    { \"item_id\": 1, \"count\": 2 }\n  ],\n  \"discounts\": [\n    { \"amount\": 5.000, \"type\": \"fixed\" }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "discount_amount = KD 5 (item discount) + 15% of subtotal (coupon). total_price = subtotal minus combined discount."
           }
@@ -1050,13 +1905,28 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders/{{order_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders", "{{order_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders",
+                "{{order_id}}"
+              ]
             }
           }
         },
@@ -1065,20 +1935,43 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"HAPPY15V2\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}"]
-            }
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}"
+              ]
+            },
+            "description": " Only allowed on coupons that have exactly one code (422 otherwise)."
           }
         },
         {
@@ -1086,13 +1979,29 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{coupon_id}}/delete",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{coupon_id}}", "delete"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{coupon_id}}",
+                "delete"
+              ]
             }
           }
         }
@@ -1118,8 +2027,14 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",       "value": "application/json" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -1127,8 +2042,13 @@
             },
             "url": {
               "raw": "{{base_url}}/auth/login",
-              "host": ["{{base_url}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -1143,8 +2063,8 @@
                   "var json = pm.response.json();",
                   "if (json.id) {",
                   "    pm.collectionVariables.set('res_coupon_id', json.id);",
-                  "    pm.collectionVariables.set('res_coupon_code', json.code);",
-                  "    console.log('res_coupon_id:', json.id, '| code:', json.code);",
+                  "    pm.collectionVariables.set('res_coupon_code', (json.first_code ? json.first_code.code : null));",
+                  "    console.log('res_coupon_id:', json.id, '| code:', (json.first_code ? json.first_code.code : null));",
                   "}"
                 ]
               }
@@ -1153,19 +2073,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"OCT20\",\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"multi\",\n  \"usage_limit\": 30,\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\",\n  \"reservation_start_date\": \"2026-10-01\",\n  \"reservation_end_date\": \"2026-10-31\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
             },
             "description": "Coupon may be redeemed Sep–Dec 2026, but only for reservations that fall in October 2026."
           }
@@ -1175,19 +2116,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"OCT20\",\n  \"subtotal\": 120.000,\n  \"reservation_start_date\": \"2026-10-15\",\n  \"reservation_end_date\": \"2026-10-17\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "check-code"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
             }
           }
         },
@@ -1214,19 +2177,40 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"coupon_code\": \"OCT20\",\n  \"order_lines\": [\n    {\n      \"item_id\": 1,\n      \"count\": 2,\n      \"reservation\": {\n        \"from\": \"2026-10-15\",\n        \"to\": \"2026-10-17\"\n      }\n    }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders"
+              ]
             },
             "description": "Reservation Oct 15–17 is within the coupon's reservation window. Expect 201 with 20% discount."
           }
@@ -1236,13 +2220,28 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/orders/{{order_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "orders", "{{order_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "orders",
+                "{{order_id}}"
+              ]
             }
           }
         },
@@ -1251,14 +2250,388 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Accept",        "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
             ],
             "url": {
               "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{res_coupon_id}}/delete",
-              "host": ["{{base_url}}"],
-              "path": ["business", "{{business_id}}", "branches", "{{branch_id}}", "coupons", "{{res_coupon_id}}", "delete"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{res_coupon_id}}",
+                "delete"
+              ]
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Company Coupon Codes – e.g. Zain employees (run in order)",
+      "description": "One coupon (the discount rule) with many generated single-use codes \"{code_prefix}-{8 random chars}\".\nCodes are case-insensitive. Each code can be used once; each user can use only one code of the same coupon.\nA code is held for 30 minutes when an order is placed and counted as used only when the order is paid.\nMax 6 failed coupon attempts per user per minute (check-code and order creation), then 429.",
+      "item": [
+        {
+          "name": "Step 1 - Create coupon with 5 generated codes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons"
+              ]
+            },
+            "description": "Creates the coupon and its codes in one call. `code` and `code_prefix` cannot be sent together. codes_count max 5000.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_prefix\": \"ZAIN20\",\n  \"codes_count\": 5,\n  \"discount_type\": \"percentage\",\n  \"discount_value\": 20,\n  \"usage_type\": \"single\",\n  \"is_active\": true,\n  \"usage_start_date\": \"2026-09-01\",\n  \"usage_end_date\": \"2026-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.id) {",
+                  "    pm.collectionVariables.set('zain_coupon_id', json.id);",
+                  "    console.log('zain_coupon_id:', json.id, '| codes_count:', json.codes_count);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 2 - List codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{zain_coupon_id}}/codes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{zain_coupon_id}}",
+                "codes"
+              ]
+            },
+            "description": "Paginated list of the coupon's codes. Saves the first code for the next steps."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.length) {",
+                  "    pm.collectionVariables.set('zain_code', json.data[0].code);",
+                  "    console.log('zain_code:', json.data[0].code);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Step 3 - Generate 10 more codes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{zain_coupon_id}}/codes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{zain_coupon_id}}",
+                "codes"
+              ]
+            },
+            "description": "Adds codes to the same coupon (e.g. the company orders more). Same discount and dates. count max 5000.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"count\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Step 4 - List unused codes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{zain_coupon_id}}/codes?redeemed=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{zain_coupon_id}}",
+                "codes"
+              ],
+              "query": [
+                {
+                  "key": "redeemed",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "redeemed=0 → never used, redeemed=1 → used on a paid order."
+          }
+        },
+        {
+          "name": "Step 5 - Check code in lowercase (case-insensitive)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
+            },
+            "description": "Codes are stored uppercase and input is uppercased, so a lowercase code matches. Tip: type the code in lowercase here to try it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{zain_code}}\",\n  \"subtotal\": 100.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Step 6 - Wrong code (repeat 7 times → 429)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/check-code",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "check-code"
+              ]
+            },
+            "description": "Each failed attempt counts. After 6 failures within a minute the user gets 429 with the wait time, even for valid codes, until the minute passes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ZAIN20-WRONG000\",\n  \"subtotal\": 100.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Step 7 - Change prefix after generating (expect 422)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{zain_coupon_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{zain_coupon_id}}"
+              ]
+            },
+            "description": "The prefix is locked once codes exist, so all codes of a coupon share it.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code_prefix\": \"ZAIN30\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Step 8 - Delete coupon (deletes its codes)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/{{business_id}}/branches/{{branch_id}}/coupons/{{zain_coupon_id}}/delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "{{business_id}}",
+                "branches",
+                "{{branch_id}}",
+                "coupons",
+                "{{zain_coupon_id}}",
+                "delete"
+              ]
+            },
+            "description": ""
           }
         }
       ]
