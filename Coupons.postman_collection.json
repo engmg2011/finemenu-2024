@@ -2,7 +2,7 @@
   "info": {
     "name": "Coupons",
     "_postman_id": "coupons-collection-v6",
-    "description": "Coupons feature for BarqSolutions.\n\nBase route: /business/{business_id}/branches/{branch_id}/coupons\n\nDate fields:\n  usage_start_date / usage_end_date  – window during which the coupon may be redeemed (checked against today)\n  reservation_start_date / reservation_end_date – optional constraint: the order's reservation must fall within this range\n\nCodes:\n  A coupon holds the rules; its codes live in coupon_codes. Responses include first_code and codes_count.\n  Send `code` for a single manual code, or `code_prefix` + `codes_count` to generate codes (see folder 8).\n  Codes are case-insensitive.\n\nUsage:\n  Placing an order holds the code for 30 minutes (renewed at checkout). It is counted as used only when the order is paid.\n  Max 6 failed coupon attempts per user per minute, then 429.",
+    "description": "Coupons feature for BarqSolutions.\n\nBase route: /business/{business_id}/branches/{branch_id}/coupons\n\nDate fields:\n  usage_start_date / usage_end_date  – window during which the coupon may be redeemed (checked against today)\n  reservation_start_date / reservation_end_date – optional constraint: the order's reservation must fall within this range\n\nCodes:\n  A coupon holds the rules; its codes live in coupon_codes. Responses include first_code and codes_count.\n  Send `code` for a single manual code, or `code_prefix` + `codes_count` to generate codes (see folder 8).\n  Codes are case-insensitive.\n\nUsage:\n  Placing an order holds the code for 30 minutes (renewed at checkout). It is counted as used only when the order is paid.\n  Max 6 failed coupon attempts per user per minute and 20 per day, then 429.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -2280,7 +2280,7 @@
     },
     {
       "name": "8. Company Coupon Codes – e.g. Zain employees (run in order)",
-      "description": "One coupon (the discount rule) with many generated single-use codes \"{code_prefix}-{8 random chars}\".\nCodes are case-insensitive. Each code can be used once; each user can use only one code of the same coupon.\nA code is held for 30 minutes when an order is placed and counted as used only when the order is paid.\nMax 6 failed coupon attempts per user per minute (check-code and order creation), then 429.",
+      "description": "One coupon (the discount rule) with many generated single-use codes \"{code_prefix}-{6 random chars}\".\nCodes are case-insensitive. Each code can be used once; each user can use only one code of the same coupon.\nA code is held for 30 minutes when an order is placed and counted as used only when the order is paid.\nMax 6 failed coupon attempts per user per minute and 20 per day (check-code and order creation), then 429.",
       "item": [
         {
           "name": "Step 1 - Create coupon with 5 generated codes",

@@ -17,8 +17,8 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     /** Random part alphabet: uppercase letters and digits without look-alikes (0/O, 1/I). */
     protected const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-    /** 32^8 ≈ 1.1 trillion combinations — guessing a live code is impractical under the rate limit. */
-    protected const RANDOM_LENGTH = 8;
+    /** 32^6 ≈ 1.07 billion combinations — guessing a live code is impractical under the attempt limits. */
+    protected const RANDOM_LENGTH = 6;
 
     /** Rows inserted per query when generating codes. */
     protected const INSERT_CHUNK = 500;
@@ -26,6 +26,10 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     /** Failed coupon attempts allowed per user per window. */
     protected const MAX_FAILED_ATTEMPTS = 6;
     protected const FAILED_ATTEMPTS_WINDOW_SECONDS = 60;
+
+    /** Daily cap on failed attempts per user — stops slow guessing that stays under the per-minute limit. */
+    protected const MAX_FAILED_ATTEMPTS_PER_DAY = 20;
+    protected const FAILED_ATTEMPTS_DAY_SECONDS = 86400;
 
     /** How long an unpaid order reserves its coupon code. Renewed when the customer opens checkout. */
     protected const HOLD_MINUTES = 30;
@@ -140,8 +144,8 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
      * Validate a code for a user and return a snapshot with the discount amount.
      * Does NOT reserve the code — see holdCode().
      *
-     * Every failed attempt counts toward a per-user limit (MAX_FAILED_ATTEMPTS per window)
-     * to stop code guessing. This runs for both the check-code endpoint and order creation,
+     * Every failed attempt counts toward per-user limits (MAX_FAILED_ATTEMPTS per minute and
+     * MAX_FAILED_ATTEMPTS_PER_DAY per day) to stop code guessing. This runs for both the check-code endpoint and order creation,
      * so the limit cannot be bypassed by submitting guesses as orders.
      */
     public function applyCoupon(
@@ -154,47 +158,52 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         ?string $reservationEnd = null
     ): array {
         $limiterKey = 'coupon-failed-attempts:' . $userId;
+        $dailyKey   = 'coupon-failed-attempts-daily:' . $userId;
 
         if (RateLimiter::tooManyAttempts($limiterKey, self::MAX_FAILED_ATTEMPTS)) {
             $seconds = RateLimiter::availableIn($limiterKey);
             abort(429, "Too many invalid coupon attempts. Please try again in {$seconds} seconds.");
         }
+        if (RateLimiter::tooManyAttempts($dailyKey, self::MAX_FAILED_ATTEMPTS_PER_DAY)) {
+            $minutes = (int) ceil(RateLimiter::availableIn($dailyKey) / 60);
+            abort(429, "Too many invalid coupon attempts today. Please try again in {$minutes} minutes.");
+        }
 
         $couponCode = $this->findCode($code);
         if (!$couponCode) {
-            $this->reject($limiterKey, 'Coupon code not found.');
+            $this->reject($userId, 'Coupon code not found.');
         }
 
         $coupon = $couponCode->coupon;
 
         if ((int) $coupon->business_id !== $businessId) {
-            $this->reject($limiterKey, 'Coupon does not belong to this business.');
+            $this->reject($userId, 'Coupon does not belong to this business.');
         }
 
         // If the coupon is scoped to a specific branch, the order branch must match
         if ($coupon->branch_id !== null && ($branchId === null || (int) $coupon->branch_id !== $branchId)) {
-            $this->reject($limiterKey, 'Coupon is not valid for this branch.');
+            $this->reject($userId, 'Coupon is not valid for this branch.');
         }
 
         if (!$coupon->isValid($reservationStart, $reservationEnd)) {
             // Give a specific message when the failure is about reservation dates
             $hasResCoupon = $coupon->reservation_start_date !== null || $coupon->reservation_end_date !== null;
             if ($hasResCoupon && $reservationStart === null && $reservationEnd === null) {
-                $this->reject($limiterKey, 'This coupon is only valid when applied to a reservation.');
+                $this->reject($userId, 'This coupon is only valid when applied to a reservation.');
             }
             if ($hasResCoupon && ($reservationStart !== null || $reservationEnd !== null)) {
-                $this->reject($limiterKey, 'Coupon is not valid for the selected reservation dates.');
+                $this->reject($userId, 'Coupon is not valid for the selected reservation dates.');
             }
-            $this->reject($limiterKey, 'Coupon is not valid or has expired.');
+            $this->reject($userId, 'Coupon is not valid or has expired.');
         }
 
         if (!$this->hasCapacityFor($couponCode, $userId)) {
-            $this->reject($limiterKey, 'This coupon code has already been used.');
+            $this->reject($userId, 'This coupon code has already been used.');
         }
 
         // One paid use per user per coupon — e.g. an employee cannot use two ZAIN20 codes.
         if ($coupon->isRedeemedByUser($userId)) {
-            $this->reject($limiterKey, 'You have already used this coupon.');
+            $this->reject($userId, 'You have already used this coupon.');
         }
 
         // Note: the failure counter is intentionally NOT cleared on success, otherwise a user
@@ -452,10 +461,11 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
         return strtoupper(trim($code));
     }
 
-    /** Counts the failed attempt toward the user's limit, then rejects the request. */
-    protected function reject(string $limiterKey, string $message): never
+    /** Counts the failed attempt toward the user's per-minute and daily limits, then rejects the request. */
+    protected function reject(int $userId, string $message): never
     {
-        RateLimiter::hit($limiterKey, self::FAILED_ATTEMPTS_WINDOW_SECONDS);
+        RateLimiter::hit('coupon-failed-attempts:' . $userId, self::FAILED_ATTEMPTS_WINDOW_SECONDS);
+        RateLimiter::hit('coupon-failed-attempts-daily:' . $userId, self::FAILED_ATTEMPTS_DAY_SECONDS);
         abort(422, $message);
     }
 
