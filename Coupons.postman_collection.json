@@ -2280,7 +2280,7 @@
     },
     {
       "name": "8. Company Coupon Codes – e.g. Zain employees (run in order)",
-      "description": "One coupon (the discount rule) with many generated single-use codes \"{code_prefix}-{6 random chars}\".\nCodes are case-insensitive. Each code can be used once; each user can use only one code of the same coupon.\nA code is held for 30 minutes when an order is placed and counted as used only when the order is paid.\nMax 6 failed coupon attempts per user per minute and 20 per day (check-code and order creation), then 429.",
+      "description": "One coupon (the discount rule) with many generated single-use codes \"{code_prefix}-{4 random chars}\".\nCodes are case-insensitive. Each code can be used once; each user can use only one code of the same coupon.\nA code is held for 30 minutes when an order is placed and counted as used only when the order is paid.\nMax 6 failed coupon attempts per user per minute and 20 per day (check-code and order creation), then 429.",
       "item": [
         {
           "name": "Step 1 - Create coupon with 5 generated codes",

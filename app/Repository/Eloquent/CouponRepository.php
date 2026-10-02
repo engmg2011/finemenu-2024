@@ -17,8 +17,8 @@ class CouponRepository extends BaseRepository implements CouponRepositoryInterfa
     /** Random part alphabet: uppercase letters and digits without look-alikes (0/O, 1/I). */
     protected const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-    /** 32^6 ≈ 1.07 billion combinations — guessing a live code is impractical under the attempt limits. */
-    protected const RANDOM_LENGTH = 6;
+    /** 32^4 ≈ 1.05 million combinations per prefix — protected by the failed-attempt limits below. */
+    protected const RANDOM_LENGTH = 4;
 
     /** Rows inserted per query when generating codes. */
     protected const INSERT_CHUNK = 500;
