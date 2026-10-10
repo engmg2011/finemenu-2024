@@ -8,6 +8,7 @@ use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Middleware\CheckUserModel;
 use App\Http\Middleware\SetRequestModel;
 
 
@@ -36,10 +37,10 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('reset-password', [RegisterController::class, 'resetPassword']);
 });
 
-// TODO :: put admin only roles
+// TODO :: add admin ability if not the same logged in user
 Route::group(['prefix' => 'users/{modelId}',
     'middleware' => ['auth:sanctum', 'throttle:1000,1', SetRequestModel::class
-        //, CheckUserModel::class
+        , CheckUserModel::class
     ]], function () {
     Route::get('/', [UsersController::class, 'index']);
     Route::post('/', [UsersController::class, 'update']);
