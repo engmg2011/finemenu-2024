@@ -119,6 +119,8 @@ Route::group(['middleware' => ['throttle:1000,1',
                     Route::group(['prefix' => 'coupons'], function () {
                         Route::get('/', [CouponsController::class, 'index']);
                         Route::get('/{id}', [CouponsController::class, 'show']);
+                        Route::get('/{id}/codes', [CouponsController::class, 'codes']);
+                        Route::post('/{id}/codes', [CouponsController::class, 'generateCodes']);
                         Route::post('/', [CouponsController::class, 'create']);
                         Route::post('/check-code', [CouponsController::class, 'checkCode']);
                         Route::post('/{id}', [CouponsController::class, 'update']);
