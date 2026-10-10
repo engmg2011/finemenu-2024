@@ -271,6 +271,24 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             $this->create($reservationData);
     }
 
+    /**
+     * subtotal = sum of credit invoices (what was charged, insurance included)
+     * total    = subtotal - debit invoices (e.g. refundable insurance)
+     * @return array{0: float, 1: float} [subtotal, total]
+     */
+    private function calculateInvoicesPrices($invoices): array
+    {
+        $subtotal = 0;
+        $debit = 0;
+        foreach ($invoices as $invoice) {
+            if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
+                $subtotal += $invoice->amount;
+            elseif ($invoice->type === PaymentConstants::INVOICE_DEBIT)
+                $debit += $invoice->amount;
+        }
+        return [$subtotal, $subtotal - $debit];
+    }
+
     public function setReservationCashedData($reservationId)
     {
         /**
@@ -284,13 +302,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             'reservedBy'
         )->find($reservationId);
 
-        $price = 0;
-        foreach ($reservation->invoices as $invoice) {
-            if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
-                $price += $invoice->amount;
-            if ($invoice->type === PaymentConstants::INVOICE_DEBIT)
-                $price -= $invoice->amount;
-        }
+        [$subtotal, $total] = $this->calculateInvoicesPrices($reservation->invoices);
 
         // Remove not wanted data in caching
         $clone_reservable = json_decode(json_encode($reservation->reservable), true);
@@ -322,8 +334,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
             "reserved_by" => $reservedByData,
             "follower" => $followerData,
             "invoices" => $reservation->invoices,
-            "subtotal_price" => $price,
-            "total_price" => $price
+            "subtotal_price" => $subtotal,
+            "total_price" => $total
         ]);
         $reservation->update(['data' => $cachedData]);
 
@@ -337,13 +349,7 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
          */
         $reservation = Reservation::with('invoices')->find($reservationId);
 
-        $price = 0;
-        foreach ($reservation->invoices as $invoice) {
-            if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
-                $price += $invoice->amount;
-            if ($invoice->type === PaymentConstants::INVOICE_DEBIT)
-                $price -= $invoice->amount;
-        }
+        [$subtotal, $total] = $this->calculateInvoicesPrices($reservation->invoices);
 
         $cachedData = $reservation->data;
         unset($cachedData['invoices']);
@@ -351,8 +357,8 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         unset($cachedData['total_price']);
         $cachedData += [
             "invoices" => $reservation->invoices,
-            "subtotal_price" => $price,
-            "total_price" => $price
+            "subtotal_price" => $subtotal,
+            "total_price" => $total
         ];
         $reservation->update(['data' => $cachedData]);
     }
