@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Coupon extends Model
 {
@@ -39,16 +40,33 @@ class Coupon extends Model
         return $this->hasMany(CouponRedemption::class);
     }
 
-    /**
-     * Check if a given user has already redeemed this coupon.
-     */
-    public function isRedeemedByUser(int $userId): bool
+    public function codes(): HasMany
     {
-        return $this->redemptions()->where('user_id', $userId)->exists();
+        return $this->hasMany(CouponCode::class);
     }
 
     /**
-     * Check if the coupon is currently valid.
+     * The coupon's first code. For a manually created coupon this is its only code.
+     */
+    public function firstCode(): HasOne
+    {
+        return $this->hasOne(CouponCode::class)->oldestOfMany();
+    }
+
+    /**
+     * Check if a given user has already used this coupon on a paid order.
+     */
+    public function isRedeemedByUser(int $userId): bool
+    {
+        return $this->redemptions()
+            ->where('user_id', $userId)
+            ->where('status', CouponRedemption::STATUS_CONFIRMED)
+            ->exists();
+    }
+
+    /**
+     * Check if the coupon's rules allow it to be used now (active, dates).
+     * Per-code usage limits are checked separately on CouponCode.
      *
      * Two independent date constraints are enforced:
      *
@@ -110,17 +128,7 @@ class Coupon extends Model
             }
         }
 
-        // 3. Usage limits
-        if ($this->usage_type === 'single' && $this->redeemed_count >= 1) {
-            return false;
-        }
-
-        if ($this->usage_type === 'multi'
-            && $this->usage_limit !== null
-            && $this->redeemed_count >= $this->usage_limit) {
-            return false;
-        }
-
+        // Usage limits are enforced per code, including holds by unpaid orders — see CouponRepository::hasCapacityFor().
         return true;
     }
 
