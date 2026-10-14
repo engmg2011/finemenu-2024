@@ -64,7 +64,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     }
 
     public static array $modelRelations = ['locales', 'media', 'prices.locales', 'addons.locales',
-        'discounts.locales', 'itemable.features.locales', 'settings'];
+        'discounts.locales', 'itemable.features.locales', 'settings', 'holidays'];
 
 
     public function list()
@@ -272,6 +272,7 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 
         $item = $this->model->find($itemId);
         $item->holidays()->sync($holidaysData);
+        app(CachingService::class)->clearMenuCache($item->category_id);
         return ['message' => 'Holidays synced successfully.'];
     }
 
