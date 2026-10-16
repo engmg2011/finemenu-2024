@@ -134,14 +134,6 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
         }
     }
 
-    public function updateReservationInvoicesData($reservationId, $invoices)
-    {
-        $res = Reservation::find($reservationId);
-        $cachedReservationData = $res->data;
-        $cachedReservationData['invoices'] = $invoices;
-        $res->update(['data' => $cachedReservationData]);
-    }
-
     public function setForOrder(Order $order, array &$orderInvoice)
     {
         /**
@@ -184,8 +176,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                 $invoice['id'] = $inv->id;
             }
         }
+        // The reservation cache was built from the order line (before the coupon and
+        // invoices existed), so rebuild invoices AND prices from the saved invoices.
         if ($reservation)
-            $this->updateReservationInvoicesData($reservation->id, $invoices);
+            app(ReservationRepository::class)->setReservationInvoicesCashedData($reservation->id);
     }
 
     public function pay($referenceNumber)
