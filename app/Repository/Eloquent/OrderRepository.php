@@ -250,11 +250,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         $model->load('discounts');
         $discountsTotal = $model->discounts->sum('amount');
 
-        // Coupon percentage is applied on the price AFTER order-level discounts.
-        // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
+        // Insurance is a refundable deposit, not rent, so coupons never apply to it.
+        $insuranceTotal = 0;
+        foreach ($orderLines as $line) {
+            $insuranceTotal += $line->item?->itemable?->insurance ?? 0;
+        }
+
+        // Coupon is applied on the rent AFTER item & order-level discounts, without insurance.
+        // e.g. rent 500 + insurance 100, coupon 10% → base 500, coupon 50, total = 550.
         if ($couponData !== null) {
             $coupon = \App\Models\Coupon::find($couponId);
-            $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+            $afterDiscountBase = max(0, $data['total_price'] - $insuranceTotal - $discountsTotal);
             $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
             $couponData['discount_amount'] = $couponDiscount;
         }
