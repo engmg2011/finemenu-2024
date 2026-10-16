@@ -272,21 +272,25 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
     }
 
     /**
-     * subtotal = sum of credit invoices (what was charged, insurance included)
-     * total    = subtotal - debit invoices (e.g. refundable insurance)
-     * @return array{0: float, 1: float} [subtotal, total]
+     * subtotal   = order line price before discounts & coupon (insurance included).
+     *              Invoices are created after discounts/coupon so they can't give it;
+     *              reservations without an order line (dashboard) fall back to credits.
+     * total      = sum of credit invoices (what the customer pays, insurance included)
+     * rent_total = credits - debits (rent only; insurance = sum of debit invoices)
+     * @return array{0: float, 1: float, 2: float} [subtotal, total, rentTotal]
      */
-    private function calculateInvoicesPrices($invoices): array
+    private function calculatePrices(Reservation $reservation): array
     {
-        $subtotal = 0;
+        $credit = 0;
         $debit = 0;
-        foreach ($invoices as $invoice) {
+        foreach ($reservation->invoices as $invoice) {
             if ($invoice->type === PaymentConstants::INVOICE_CREDIT)
-                $subtotal += $invoice->amount;
+                $credit += $invoice->amount;
             elseif ($invoice->type === PaymentConstants::INVOICE_DEBIT)
                 $debit += $invoice->amount;
         }
-        return [$subtotal, $subtotal - $debit];
+        $subtotal = $reservation->orderline?->subtotal_price ?? $credit;
+        return [$subtotal, $credit, $credit - $debit];
     }
 
     public function setReservationCashedData($reservationId)
@@ -296,13 +300,14 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
          * as they are coming from mobiles not dashboard
          */
         $reservation = Reservation::with('invoices',
+            'orderline',
             'reservable.locales',
             'reservable.itemable',
             'reservedFor',
             'reservedBy'
         )->find($reservationId);
 
-        [$subtotal, $total] = $this->calculateInvoicesPrices($reservation->invoices);
+        [$subtotal, $total, $rentTotal] = $this->calculatePrices($reservation);
 
         // Remove not wanted data in caching
         $clone_reservable = json_decode(json_encode($reservation->reservable), true);
@@ -322,21 +327,17 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
         $followerData = json_decode(json_encode($reservation->follower), true);
         $followerData['business_control'] = null;
 
-        // Preserve keys that this method does not recompute (e.g. discounts
-        // set from mobile/order-line data) so they are not wiped out on
-        // every reservation update.
-        $existingData = $reservation->data ?? [];
-
-        $cachedData = $existingData;
-        $cachedData = array_merge($cachedData, [
+        $cachedData = [];
+        $cachedData += [
             "reservable" => $clone_reservable,
             "reserved_for" => $reservedForData,
             "reserved_by" => $reservedByData,
             "follower" => $followerData,
             "invoices" => $reservation->invoices,
             "subtotal_price" => $subtotal,
-            "total_price" => $total
-        ]);
+            "total_price" => $total,
+            "rent_total" => $rentTotal
+        ];
         $reservation->update(['data' => $cachedData]);
 
     }
@@ -347,18 +348,20 @@ class ReservationRepository extends BaseRepository implements ReservationReposit
          * note: prices & discounts on orders table
          * as they are coming from mobiles not dashboard
          */
-        $reservation = Reservation::with('invoices')->find($reservationId);
+        $reservation = Reservation::with('invoices', 'orderline')->find($reservationId);
 
-        [$subtotal, $total] = $this->calculateInvoicesPrices($reservation->invoices);
+        [$subtotal, $total, $rentTotal] = $this->calculatePrices($reservation);
 
         $cachedData = $reservation->data;
         unset($cachedData['invoices']);
         unset($cachedData['subtotal_price']);
         unset($cachedData['total_price']);
+        unset($cachedData['rent_total']);
         $cachedData += [
             "invoices" => $reservation->invoices,
             "subtotal_price" => $subtotal,
-            "total_price" => $total
+            "total_price" => $total,
+            "rent_total" => $rentTotal
         ];
         $reservation->update(['data' => $cachedData]);
     }
