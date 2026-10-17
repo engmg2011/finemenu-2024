@@ -23,6 +23,11 @@ class PaymentConstants
     const RESERVATION_NOT_PAID = 'not_paid';
     const RESERVATION_PARTIALLY_PAID = "partially_paid";
 
+    // orders.refund_status (mirrors debit invoices)
+    const REFUND_NONE = "none";
+    const REFUND_PARTIAL = "partial";
+    const REFUND_FULL = "full";
+
 
     const TYPE_CASH = "cash";
     const TYPE_ONLINE = "online";
