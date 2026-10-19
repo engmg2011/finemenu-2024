@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Constants\PaymentConstants;
+
 use App\Traits\Discountable;
 use App\Traits\Localizable;
 use App\Traits\Priceable;
@@ -82,6 +84,8 @@ class Order extends Model
         'delivery_address' => 'json',
         'coupon_data'      => 'array',
         'discount_amount'  => 'float',
+        'refund_amount'    => 'float',
+        'refunded_amount'  => 'float',
     ];
 
     /**
@@ -115,6 +119,33 @@ class Order extends Model
     public function coupon()
     {
         return $this->belongsTo(\App\Models\Coupon::class);
+    }
+
+    /**
+     * Refund fields mirror the order's debit invoices (money to return, e.g. chalet insurance):
+     *  refund_amount   = all debits (what should be returned)
+     *  refunded_amount = paid debits (what was actually returned)
+     *  refund_status   = none (nothing paid) | partial (some paid) | full (all paid)
+     */
+    public function syncRefundFromInvoices(): void
+    {
+        $debits = $this->invoices()
+            ->where('type', PaymentConstants::INVOICE_DEBIT)
+            ->where('status', '!=', PaymentConstants::INVOICE_CANCELED)
+            ->get();
+        $paid = $debits->where('status', PaymentConstants::INVOICE_PAID);
+
+        $status = PaymentConstants::REFUND_NONE;
+        if ($paid->isNotEmpty())
+            $status = $paid->count() === $debits->count()
+                ? PaymentConstants::REFUND_FULL
+                : PaymentConstants::REFUND_PARTIAL;
+
+        $this->update([
+            'refund_amount'   => round($debits->sum('amount'), 3),
+            'refunded_amount' => round($paid->sum('amount'), 3),
+            'refund_status'   => $status,
+        ]);
     }
 
     public function couponCode()

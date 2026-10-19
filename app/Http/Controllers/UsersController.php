@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RegistrationSource;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Resources\DataResource;
 use App\Models\Category;
@@ -57,6 +58,8 @@ class UsersController extends Controller
             return response()->json(['message' => 'error occurred', 'errors' => $validator->errors()], 400);
 
         $data['business_id'] = $request->route('businessId');
+        $data['registration_source'] = RegistrationSource::ADMIN->value;
+        $data['created_by_user_id'] = auth()->id();
         return \response()->json($this->userRepository->createModel($data));
     }
 
@@ -235,6 +238,19 @@ class UsersController extends Controller
             ], [
             'phone_required' => "phone or email required"
         ]);
+    }
+
+    public function registrationSources(): JsonResponse
+    {
+        $sources = array_map(function (\App\Enums\RegistrationSource $source) {
+            return [
+                'key' => $source->value,
+                'en'  => __('registration_sources.' . $source->value, [], 'en'),
+                'ar'  => __('registration_sources.' . $source->value, [], 'ar'),
+            ];
+        }, \App\Enums\RegistrationSource::cases());
+
+        return response()->json($sources);
     }
 
     public function sendOTP(Request $request): JsonResponse

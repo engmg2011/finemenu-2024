@@ -8,6 +8,7 @@ use App\Constants\MobileAppSettings;
 use App\Constants\PaymentConstants;
 use App\Http\Resources\DataResource;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Repository\Eloquent\InvoiceRepository;
 use App\Repository\Eloquent\ReservationRepository;
 use App\Repository\Eloquent\SettingRepository;
@@ -87,6 +88,8 @@ class InvoicesController extends Controller
         $deleted = $this->repository->delete($id);
         AuditService::log(AuditServices::Invoices, $id,"Deleted invoice " . $invoice->id,
             $invoice->business_id, $invoice->branch_id);
+        if ($invoice->type === PaymentConstants::INVOICE_DEBIT && $invoice->order_id)
+            Order::find($invoice->order_id)?->syncRefundFromInvoices();
         app(ReservationRepository::class)->setReservationInvoicesCashedData($reservation_id);
         return \response()->json($deleted);
     }

@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent;
 
 use App\Constants\BusinessTypes;
 use App\Constants\OrderStatus;
+use App\Constants\PaymentConstants;
 use App\Constants\PermissionActions;
 use App\Constants\PermissionsConstants;
 use App\Constants\PermissionServices;
@@ -233,7 +234,7 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         // Order rows and the coupon hold succeed or fail together: if the code was
         // taken by someone else in the meantime, no half-created order is left behind.
-        $model = DB::transaction(function () use (&$data, &$couponData, $couponId) {
+        $model = DB::transaction(function () use (&$data, &$couponData, $couponId, $business) {
             $couponDiscount = 0;
             $model = $this->model->create($this->process($data));
 
@@ -255,11 +256,17 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             $model->load('discounts');
             $discountsTotal = $model->discounts->sum('amount');
 
-            // Coupon percentage is applied on the price AFTER order-level discounts.
-            // e.g. item = 800, discount = 200 → base = 600, coupon 20% → 120, total = 480.
+            // Insurance is a refundable deposit, not rent, so coupons never apply to it.
+            $insuranceTotal = 0;
+            foreach ($orderLines as $line) {
+                $insuranceTotal += $line->item?->itemable?->insurance ?? 0;
+            }
+
+            // Coupon is applied on the rent AFTER item & order-level discounts, without insurance.
+            // e.g. rent 500 + insurance 100, coupon 10% → base 500, coupon 50, total = 550.
             if ($couponData !== null) {
                 $coupon = \App\Models\Coupon::find($couponId);
-                $afterDiscountBase = max(0, $data['subtotal_price'] - $discountsTotal);
+                $afterDiscountBase = max(0, $data['total_price'] - $insuranceTotal - $discountsTotal);
                 $couponDiscount = $coupon ? $coupon->calculateDiscount($afterDiscountBase) : 0;
                 $couponData['discount_amount'] = $couponDiscount;
             }
@@ -276,6 +283,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
                 'coupon_id'       => $couponId,
                 'coupon_code_id'  => $couponData['coupon_code_id'] ?? null,
                 'discount_amount' => $totalDiscountAmount,
+                // Chalets: insurance is returned to the customer later (debit invoice)
+                'refund_amount'   => $business?->type === BusinessTypes::CHALET ? $insuranceTotal : 0,
             ]);
             // Reserve the code for this unpaid order; it is counted as used only once paid.
             if ($couponData !== null) {
@@ -302,6 +311,50 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
         return $this->get($model->id);
     }
 
+    /**
+     * Dashboard refund update from the order (chalets only, single debit invoice).
+     * The debit invoice is the source of truth:
+     *  - refund_amount → debit invoice amount
+     *  - refund_status → "full" marks it paid, "none" marks it pending
+     *    (paid_at + Audit handled by InvoiceRepository, which re-syncs the order).
+     * Orders with several debit invoices are managed per invoice from the invoices screen.
+     */
+    private function applyRefundUpdate(Order $order, array $data): void
+    {
+        if (!array_key_exists('refund_amount', $data) && !array_key_exists('refund_status', $data))
+            return;
+        if ($order->orderable?->business?->type !== BusinessTypes::CHALET)
+            return;
+
+        $debits = $order->invoices()
+            ->where('type', PaymentConstants::INVOICE_DEBIT)
+            ->where('status', '!=', PaymentConstants::INVOICE_CANCELED)
+            ->get();
+        if ($debits->count() !== 1)
+            abort(422, "This order has " . $debits->count() . " refund (debit) invoices, update them from the invoices instead");
+        $debit = $debits->first();
+
+        $changes = [];
+        if (array_key_exists('refund_amount', $data)) {
+            $amount = (float)$data['refund_amount'];
+            if ($amount < 0 || $amount > $order->total_price)
+                abort(422, "refund_amount must be between 0 and the order total");
+            $changes['amount'] = $amount;
+        }
+        if (array_key_exists('refund_status', $data)) {
+            $changes['status'] = match ($data['refund_status']) {
+                PaymentConstants::REFUND_FULL => PaymentConstants::INVOICE_PAID,
+                PaymentConstants::REFUND_NONE => PaymentConstants::INVOICE_PENDING,
+                default => abort(422, "refund_status must be 'full' or 'none' for a single refund invoice"),
+            };
+        }
+
+        $this->invoiceRepository->update($debit->id, $changes);
+
+        if ($debit->reservation_id)
+            app(ReservationRepository::class)->setReservationInvoicesCashedData($debit->reservation_id);
+    }
+
     public function setOrderData(&$model, &$data)
     {
         if (isset($data['locales']))
@@ -324,6 +377,8 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
             "branch." . $order->orderable_id . "." . PermissionServices::Orders . "." . PermissionActions::Update
         ]))
             abort(403, 'You Don\'t have permission');
+
+        $this->applyRefundUpdate($order, $data);
 
         // TODO:: check if data['paid']
         $model = tap($this->model->find($id))

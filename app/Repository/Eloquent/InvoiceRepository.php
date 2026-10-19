@@ -76,6 +76,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
 
         AuditService::log(AuditServices::Invoices, $model->id, "Created invoice " . $model->id,
             $model->business_id, $model->branch_id);
+
+        if ($model->type === PaymentConstants::INVOICE_DEBIT && $model->order_id)
+            Order::find($model->order_id)?->syncRefundFromInvoices();
+
         return $this->get($model->id);
     }
 
@@ -110,7 +114,13 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
 
         AuditService::log(AuditServices::Invoices, $id, "Updated invoice " . $invoice->id,
             $invoice->business_id, $invoice->branch_id);
-        return Invoice::find($id);
+
+        $updated = Invoice::find($id);
+        if ($updated->order_id && ($invoice->type === PaymentConstants::INVOICE_DEBIT
+                || $updated->type === PaymentConstants::INVOICE_DEBIT))
+            Order::find($updated->order_id)?->syncRefundFromInvoices();
+
+        return $updated;
     }
 
 
@@ -132,14 +142,6 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
             else
                 $this->create($invoiceData);
         }
-    }
-
-    public function updateReservationInvoicesData($reservationId, $invoices)
-    {
-        $res = Reservation::find($reservationId);
-        $cachedReservationData = $res->data;
-        $cachedReservationData['invoices'] = $invoices;
-        $res->update(['data' => $cachedReservationData]);
     }
 
     public function setForOrder(Order $order, array &$orderInvoice)
@@ -184,8 +186,10 @@ class InvoiceRepository extends BaseRepository implements InvoiceRepositoryInter
                 $invoice['id'] = $inv->id;
             }
         }
+        // The reservation cache was built from the order line (before the coupon and
+        // invoices existed), so rebuild invoices AND prices from the saved invoices.
         if ($reservation)
-            $this->updateReservationInvoicesData($reservation->id, $invoices);
+            app(ReservationRepository::class)->setReservationInvoicesCashedData($reservation->id);
     }
 
     public function pay($referenceNumber)
