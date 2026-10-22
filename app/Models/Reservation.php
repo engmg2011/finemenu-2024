@@ -77,7 +77,8 @@ class Reservation extends Model
 
     public function orderline()
     {
-        return $this->belongsTo(OrderLine::class);
+        // column is order_line_id (Laravel would guess orderline_id from the method name)
+        return $this->belongsTo(OrderLine::class, 'order_line_id');
     }
 
     public function reservedBy()
