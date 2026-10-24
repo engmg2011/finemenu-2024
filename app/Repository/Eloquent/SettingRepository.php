@@ -69,11 +69,18 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
      */
     public function createSetting($relationModel, $data)
     {
+        $setting = $this->insertSetting($relationModel, $data);
+        // clear AFTER saving, so a request in between can't re-cache the old menu
+        app(CachingService::class)->clearMenuCache();
+        return $setting;
+    }
+
+    private function insertSetting($relationModel, $data)
+    {
         $this->setSettable($relationModel, $data);
         $this->relationsProcess($relationModel, $data);
         $data['user_id'] = auth('sanctum')->user()->id;
 
-        app(CachingService::class)->clearMenuCache();
         return $this->model->create($this->process($data));
     }
 
@@ -86,9 +93,10 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
     {
         $this->setSettable($relationModel, $data);
         $this->relationsProcess($relationModel, $data);
-        app(CachingService::class)->clearMenuCache();
-        return tap($this->model->find($data['id']))
+        $setting = tap($this->model->find($data['id']))
             ->update($this->process($data));
+        app(CachingService::class)->clearMenuCache();
+        return $setting;
     }
 
     /**
@@ -101,10 +109,11 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
         $this->setSettable($relationModel, $deleteData);
         unset($deleteData['user_id']);
         $setting = $this->model->where($deleteData)->find($data['id']);
+        if (!$setting)
+            abort(400, "No data found!");
+        $deleted = $setting->delete();
         app(CachingService::class)->clearMenuCache();
-        if ($setting)
-            return $setting->delete();
-        abort(400, "No data found!");
+        return $deleted;
     }
 
     public function set($model, $data)
@@ -144,8 +153,9 @@ class SettingRepository extends BaseRepository implements SettingRepositoryInter
             if ($keySetting)
                 $keySetting->update(['data' => $setting['data']]);
             else
-                $this->createSetting($relationModel, $setting);
+                $this->insertSetting($relationModel, $setting);
         }
+        // one clear after all settings are saved
         app(CachingService::class)->clearMenuCache();
         return $this->listSettings($relationModel);
     }
