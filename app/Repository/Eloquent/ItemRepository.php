@@ -261,9 +261,9 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
     {
         $request = request();
         $request->validate([
-            'holidays' => 'required|array',
-            'holidays.*.holidayId' => 'required|exists:holidays,id',
-            'holidays.*.price' => 'required|numeric|min:0',
+            'holidays'              => 'sometimes|array',
+            'holidays.*.holidayId'  => 'required|exists:holidays,id',
+            'holidays.*.price'      => 'required|numeric|min:0',
         ]);
 
         $holidaysData = collect($request->holidays)->mapWithKeys(function ($holiday) {
